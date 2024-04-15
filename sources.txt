@@ -1,0 +1,6 @@
+Base/sample library
+https://github.com/navdeep-G/samplemod
+
+instructions for sample library
+https://python-docs.readthedocs.io/en/latest/writing/structure.html
+
