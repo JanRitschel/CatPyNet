@@ -18,8 +18,10 @@ from __future__ import annotations
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
+import re
 from MoleculeType import MoleculeType
 from copy import copy, deepcopy
+from io.ModelIO import FORMAL_FOOD
 # Java modules to find replacements for
 '''
 import jloda.fx.window.NotificationManager 
@@ -35,19 +37,23 @@ import static catlynet.io.ModelIO.FORMAL_FOOD
 
 # inintial definition. What is Comparable?
 # class Reaction implements Comparable<Reaction>
+
+
 class Reaction(type):
     '''*
     * a reaction
     * Daniel Huson, 6.2019
     '''
-    
+
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)
         _copy = memo.get(id_self)
         if _copy == None:
-            _copy = Reaction(deepcopy(self.name, memo), deepcopy(self.warned_about_suppressing_coefficients, memo), 
-                             deepcopy(self.reactants, memo), deepcopy(self.products, memo), deepcopy(self.catalysts, memo), 
-                             deepcopy(self.inhibitions, memo), deepcopy(self.reactant_coefficients, memo), 
+            _copy = Reaction(deepcopy(self.name, memo), deepcopy(self.warned_about_suppressing_coefficients, memo),
+                             deepcopy(self.reactants, memo), deepcopy(
+                                 self.products, memo), deepcopy(self.catalysts, memo),
+                             deepcopy(self.inhibitions, memo), deepcopy(
+                                 self.reactant_coefficients, memo),
                              deepcopy(self.product_coefficients, memo), deepcopy(self.direction, memo))
             memo[id_self] = _copy
         return _copy
@@ -57,7 +63,7 @@ class Reaction(type):
         '''
         Construct a Reaction given all parameters.
         '''
-        DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
+        self.DIRECTION = {"forward": 'forward', "reverse": 'reverse', "both": 'both'}
 
         self.warned_about_suppressing_coefficients = warned_about_suppressing_coefficients
         self.name = name
@@ -68,12 +74,12 @@ class Reaction(type):
         self.reactant_coefficients = reactant_coefficients
         self.product_coefficients = product_coefficients
         self.direction = direction
-    
+
     def __init__(self, name: str = None):
         '''
         Construct an empty Reaction with only a name.
         '''
-        DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
+        self.DIRECTION = {"forward": 'forward', "reverse": 'reverse', "both": 'both'}
 
         self.warned_about_suppressing_coefficients: bool = False
         self.name = name
@@ -83,103 +89,251 @@ class Reaction(type):
         self.inhibitions = []
         self.reactant_coefficients = {}
         self.product_coefficients = {}
-        self.direction = DIRECTION[1]
+        self.direction = self.DIRECTION["forward"]
 
     def is_catalyzed_uninhibited_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
         return False
-    
+
     def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
-                                            food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
+                                               food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
         return False
-    
+
     def is_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
         return False
-    
+
     def get_direction(self) -> str:
         return self.direction
-    
+
     def get_name(self) -> str:
         return self.name
-    
+
     def get_inhibitions(self) -> list:
         return self.inhibitions
-    
+
     def get_reactants(self) -> list:
         return self.reactants
-    
+
     def get_products(self) -> list:
         return self.products
-    
+
     def get_catalysts(self) -> list:
         return self.catalysts
-    
+
     def set_direction(self, direction: str):
         self.direction = direction
 
     def set_catalysts(self, catalysts: list = None):
-        self.direction = catalysts
-    
+        self.catalysts = catalysts
+
     def __eq__(self, other: Reaction) -> bool:
-        if self == other: return True           #FEHLERANFÄLLIG
-        if not(isinstance(other, Reaction)): return False
-        return 
-        return (self.name == other.name) & isinstance(other, Reaction)
-    
+        if self == other:
+            return True  # FEHLERANFÄLLIG
+        if not (isinstance(other, Reaction)):
+            return False
+        return (self.name == other.name and isinstance(other, Reaction)
+                and self.reactants == other.reactants
+                and self.products == other.products
+                and self.catalysts == other.catalysts
+                and self.inhibitions == other.inhibitions
+                and self.reactant_coefficients == other.reactant_coefficients
+                and self.product_coefficients == other.product_coefficients
+                and self.direction == other.direction)
+
     def __lt__(self, other: Reaction) -> bool:
         return hash(self) < hash(other)
-    
+
     def __hash__(self) -> int:
         return hash(self.name)
-    
-    def parse(self, line: str, aux_reations: list[Reaction], tabbed_format: bool)-> Reaction:  #ZU MACHEN
+
+    # ZU MACHEN
+    def parse(self, line: str, aux_reations: list[Reaction], tabbed_format: bool) -> Reaction:
         '''
         parses a reaction
         ReactionNotation:
-        name tab: [coefficient] reactant ... '[' catalyst ...']'  ['{' inhibitor ... '}'] -> [coefficient] product ...
+        name <tab>: [coefficient] reactant ... '[' catalyst ...']'  ['{' inhibitor ... '}'] -> [coefficient] product ...
         or
-        name tab: [coefficient] reactant ... '[' catalyst ... ']'  ['{' inhibitor ... '}'] <- [coefficient] product ...
+        name <tab>: [coefficient] reactant ... '[' catalyst ... ']'  ['{' inhibitor ... '}'] <- [coefficient] product ...
         or
-        name tab: [coefficient] reactant ... '[' catalyst ... ']' ['{' inhibitor ... '}'] <-> [coefficient] product ...
+        name <tab>: [coefficient] reactant ... '[' catalyst ... ']' ['{' inhibitor ... '}'] <-> [coefficient] product ...
         <p>
         Reactants can be separated by white space or +
         Products can be separated by white space or +
         Catalysts can be separated by white space or , (for or), or all can be separated by & (for 'and')
+
+        The tabbed format is:
+        name <tab> [coefficient] reactant ... -> [coefficient] product ... <tab> '[' catalyst ...']'  <tab> ['{' inhibitor ... '}']
         '''
+        line = line.replace("->", "=>")
+        line = line.replace("<-", "<=")
+
+        if tabbed_format:
+            tokens = line.split('\t')
+            for t in tokens:
+                t = t.strip()
+            if len(tokens) == 3 or len(tokens) == 4:
+                if tokens[1].find("<=") == -1:
+                    arrow_start = tokens[1].find("=>") 
+                else:
+                    arrow_start = tokens[1].index("<=")
+                
+                if arrow_start != -1:
+                    if len(tokens) == 3:
+                        line = (tokens[0] + ": " + tokens[1][0:arrow_start]
+                                + " [" + tokens[2] + "] "
+                                + tokens[1][arrow_start:len(tokens[1])-1])
+                    else:
+                        line = (tokens[0] + ": " + tokens[1][0:arrow_start] + " [" + tokens[2] +
+                                "] " + " {" + tokens[3] + "} " +
+                                tokens[1][arrow_start:len(tokens[1])-1])
+
+        colon_pos = line.find(':')
+        open_squarebracket = line.find('[')
+        close_squarebracket = line.find(']')
+        open_curlybracket = line.find('{')
+        close_curlybracket = line.find('}')
+        
+        if (colon_pos == -1
+            or (open_squarebracket != -1 
+                and (open_squarebracket < colon_pos 
+                     or close_squarebracket < open_squarebracket)) 
+            or (open_squarebracket == -1
+                and close_squarebracket != -1)
+            or (open_curlybracket != -1 
+                and (open_curlybracket < colon_pos 
+                     or close_curlybracket < open_curlybracket)) 
+            or (open_curlybracket == -1
+                and close_curlybracket != -1)):
+            
+            print("Can't parse reaction: " + line)
+            raise ValueError    
+        
+        start_arrow:int
+        end_arrow:int
+        direction:int
+
+        if "<=>" in line:
+            self.direction = self.DIRECTION["both"]
+            start_arrow = line.find("<=>")
+            end_arrow = start_arrow + 2
+        elif "=>" in line:
+            self.direction = self.DIRECTION["forward"]
+            start_arrow = line.find("=>")
+            end_arrow = start_arrow + 1
+        elif "<=" in line:
+            self.direction = self.DIRECTION["reverse"]
+            start_arrow = line.find("<=")
+            end_arrow = start_arrow + 1
+        else:
+            print("Can't parse reaction: " + line)
+            raise ValueError    
+        
+        reaction_name = line[0,colon_pos].strip()
+        end_of_reactants:int
+        
+        if open_squarebracket != -1:
+            end_of_reactants = open_squarebracket
+        elif open_squarebracket == -1:
+            if open_curlybracket != -1:
+                end_of_reactants = open_curlybracket
+            elif open_curlybracket == -1:
+                end_of_reactants = start_arrow
+            else:
+                print('''open_curlybracket has no int value.
+                      Can't parse reaction: ''' + line)
+                raise ValueError
+        else:
+            print('''open_squarebracket has no int value.
+                      Can't parse reaction: ''' + line)
+            raise ValueError
+        reactants = line[colon_pos+1:end_of_reactants].split()
+        for r in reactants: r = r.strip()
+
+        catalysts:str
+        if open_squarebracket == -1:
+            catalysts = FORMAL_FOOD.getName()
+        else:
+            catalysts=line[open_squarebracket+1, close_squarebracket].strip()
+            catalysts = re.sub("\\|", ",", catalysts)
+            catalysts = re.sub("\\*", "&", catalysts)
+            catalysts = re.sub("\\s*\\(\\s*", "(", catalysts)
+            catalysts = re.sub("\\s*\\)\\s*", ")", catalysts)
+            catalysts = re.sub("\\s*&\\s*", "&", catalysts)
+            catalysts = re.sub("\\s*,\\s*", ",", catalysts)
+            catalysts = re.sub("\\s+", ",", catalysts)
+
+        inhibitors:list
+        #UNSCHÖN
+        if open_curlybracket != -1 and close_curlybracket != -1:
+            inhibitor_string = (line[open_curlybracket+1, close_curlybracket]
+                                .strip())
+            inhibitor_string = re.sub("\\|", ",", inhibitor_string)
+            inhibitor_string = re.sub("\\*", "&", inhibitor_string)
+            inhibitor_string = re.sub("\\s*\\(\\s*", "(", inhibitor_string)
+            inhibitor_string = re.sub("\\s*\\)\\s*", ")", inhibitor_string)
+            inhibitor_string = re.sub("\\s*&\\s*", "&", inhibitor_string)
+            inhibitor_string = re.sub("\\s*,\\s*", ",", inhibitor_string)
+            inhibitor_string = re.sub("\\s+", ",", inhibitor_string)
+            inhibitors = inhibitor_string.split(",")
+        else:
+            inhibitors = [0]
+        
+        products = line[end_arrow+1].split("+") #FEHLERANFÄLLIG/NEU
+        reaction = Reaction(reaction_name)
+        if all(r.isnumeric() for r in reactants):
+            reactant_list = MoleculeType.values_of(names=reactants)
+            for r in reactant_list: reaction.get_reactants().append(r)
+        else:
+            coefficient = -1
+            for token in reactants:
+                if token.isdigit():
+                    if coefficient == -1:
+                        coefficient = int(token)
+                    else:
+                        print("Can't distinguish between coefficients and reactant names : ")
+                        print(reactants)
+                        raise ValueError
+                else:
+                    if coefficient == -1 or coefficient > 0:
+                        
         return Reaction('res')
-    
-    def get_catalyst_conjunctions(self) -> list[MoleculeType]:  #UNKlAR
+
+    def get_catalyst_conjunctions(self) -> list[MoleculeType]:  # UNKlAR
         '''
         wofür?
         '''
         return []
-    
-    def get_catalyst_elements(self) -> list[MoleculeType]: #UNKLAR
+
+    def get_catalyst_elements(self) -> list[MoleculeType]:  # UNKLAR
         '''
         wofür
         '''
-        return[]
-    
+        return []
+
     def get_reactant_coefficient(self, reactant: MoleculeType) -> int:
         '''
         Returns coefficient mapped to reactant in reactand_coefficients.
         If no coefficient is assigned returns 1.
         '''
         return self.reactant_coefficients[reactant] if self.reactant_coefficients[reactant] else 1
-    
+
     def set_reactant_coefficient(self, reactant: MoleculeType, coefficient: int) -> None:
-        if not(reactant in self.reactant_coefficients): self.reactant_coefficients[reactant] = coefficient
-        else: print('reactant already in coefficients')
-    
+        if not (reactant in self.reactant_coefficients):
+            self.reactant_coefficients[reactant] = coefficient
+        else:
+            print('reactant already in coefficients')
+
     def get_product_coefficient(self, product: MoleculeType):
         '''
         Returns coefficient mapped to reactant in reactand_coefficients.
         If no coefficient is assigned returns 1.
         '''
         return self.product_coefficients[product] if self.product_coefficients[product] else 1
-    
+
     def set_product_coefficient(self, product: MoleculeType, coefficient: int) -> None:
-        if not(product in self.product_coefficients): self.product_coefficients[product] = coefficient
-        else: print('product already in coefficients')
+        if not (product in self.product_coefficients):
+            self.product_coefficients[product] = coefficient
+        else:
+            print('product already in coefficients')
 
     def any_as_forward(self) -> list[Reaction]:
         '''
@@ -188,12 +342,12 @@ class Reaction(type):
         match self.get_direction:
             case "forward":
                 return [deepcopy(self)]
-            case "reverse": 
+            case "reverse":
                 reverse = deepcopy(self)
                 reverse.swap_reactants_and_products()
                 return [reverse]
             case "both":
-                forward, reverse = deepcopy(self), deepcopy(self) #UNSCHÖN
+                forward, reverse = deepcopy(self), deepcopy(self)  # UNSCHÖN
                 forward.name = forward.name + "[+]"
                 reverse.name = reverse.name + "[-]"
                 reverse.swap_reactants_and_products()
@@ -201,6 +355,3 @@ class Reaction(type):
 
     def swap_reactants_and_products(self):
         self.products, self.reactants = self.reactants, self.products
-
-    
-        
