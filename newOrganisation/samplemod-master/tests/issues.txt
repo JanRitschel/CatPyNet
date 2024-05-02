@@ -1,0 +1,6 @@
+General:
+    - usage of only append may cause elements to be added twice.        [Reaction.py]
+        -> especially bad for sets
+    - isDigit might be an issue if coefficients can be doubles          [Reaction.py]
+        -> stattdessen isNumeric oder isDouble? was ist schneller?
+    - unclear if sets can fulfill all roles that may be required        [Reaction.py]

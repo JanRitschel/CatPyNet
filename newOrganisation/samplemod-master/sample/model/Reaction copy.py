@@ -59,10 +59,14 @@ class Reaction(type):
             memo[id_self] = _copy
         return _copy
 
-    def __init__(self, warned_about_suppressing_coefficients: bool = None, name: str = None, reactants: list = None, products: list = None, catalysts: list = None, inhibitions: list = None,
-                 reactant_coefficients: dict = None, product_coefficients: dict = None, direction: str = None):
+    def __init__(self, warned_about_suppressing_coefficients: bool = None, 
+                 name: str = None, reactants: list = None, 
+                 products: list = None, catalysts: list = None, 
+                 inhibitions: list = None, reactant_coefficients: dict = None,
+                 product_coefficients: dict = None, direction: str = None):
         '''
         Construct a Reaction given all parameters.
+        Fills in None for any not given.
         '''
         self.DIRECTION = {"forward": 'forward',
                           "reverse": 'reverse', "both": 'both'}
@@ -351,7 +355,7 @@ class Reaction(type):
                 raise ValueError(msg)
 
         reaction.set_catalysts(catalysts)
-        for inhibitor in inhibitors: #UNSCHÖN
+        for inhibitor in inhibitors:  # UNSCHÖN
             reaction.get_inhibitions().append(MoleculeType.value_of(inhibitor))
         reaction.set_direction(direction)
 
@@ -359,7 +363,9 @@ class Reaction(type):
 
     def get_catalyst_conjunctions(self) -> set[MoleculeType]:  # UNKlAR
         '''
-        wofür?
+        returns conjunctions of catalysts as a set.
+        One element of this set is one permutation of elements that can catalyze the reaction.
+        The elements within one element of the set are divided by an "&".
         '''
         conjunctions = []
         dnf = DisjunctiveNormalForm.compute(self.get_catalysts())
@@ -367,14 +373,17 @@ class Reaction(type):
             conjunctions.append(MoleculeType.value_of(part))
         return set(conjunctions)
 
-    def get_catalyst_elements(self) -> list[MoleculeType]:  # UNKLAR
+    def get_catalyst_elements(self) -> set[MoleculeType]:  # UNKLAR
         '''
-        wofür
+        returns all catalyst elements for this reaction as a set, not considering associations between catalysts.
         '''
-        conjunctions = self.get_catalyst_conjunctions()
-        for conjunction in conjunctions:
-            conjunction.value_of
-        return []
+        toplevel_conjuncitons = self.get_catalyst_conjunctions()
+        all_elements = []
+        for conjunction in toplevel_conjuncitons:
+            con_elements = conjunction.split("&")
+            for element in con_elements:
+                all_elements.append(MoleculeType.value_of(element))
+        return set(all_elements)
 
     def get_reactant_coefficient(self, reactant: MoleculeType) -> int:
         '''
