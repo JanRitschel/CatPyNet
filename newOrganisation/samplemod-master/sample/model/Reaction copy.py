@@ -19,6 +19,7 @@ from __future__ import annotations
  '''
 
 import re
+from DisjunctiveNormalForm import DisjunctiveNormalForm
 from MoleculeType import MoleculeType
 from copy import copy, deepcopy
 from io.ModelIO import FORMAL_FOOD
@@ -63,7 +64,8 @@ class Reaction(type):
         '''
         Construct a Reaction given all parameters.
         '''
-        self.DIRECTION = {"forward": 'forward', "reverse": 'reverse', "both": 'both'}
+        self.DIRECTION = {"forward": 'forward',
+                          "reverse": 'reverse', "both": 'both'}
 
         self.warned_about_suppressing_coefficients = warned_about_suppressing_coefficients
         self.name = name
@@ -79,7 +81,8 @@ class Reaction(type):
         '''
         Construct an empty Reaction with only a name.
         '''
-        self.DIRECTION = {"forward": 'forward', "reverse": 'reverse', "both": 'both'}
+        self.DIRECTION = {"forward": 'forward',
+                          "reverse": 'reverse', "both": 'both'}
 
         self.warned_about_suppressing_coefficients: bool = False
         self.name = name
@@ -172,10 +175,10 @@ class Reaction(type):
                 t = t.strip()
             if len(tokens) == 3 or len(tokens) == 4:
                 if tokens[1].find("<=") == -1:
-                    arrow_start = tokens[1].find("=>") 
+                    arrow_start = tokens[1].find("=>")
                 else:
                     arrow_start = tokens[1].index("<=")
-                
+
                 if arrow_start != -1:
                     if len(tokens) == 3:
                         line = (tokens[0] + ": " + tokens[1][0:arrow_start]
@@ -191,25 +194,25 @@ class Reaction(type):
         close_squarebracket = line.find(']')
         open_curlybracket = line.find('{')
         close_curlybracket = line.find('}')
-        
+
         if (colon_pos == -1
-            or (open_squarebracket != -1 
-                and (open_squarebracket < colon_pos 
-                     or close_squarebracket < open_squarebracket)) 
+            or (open_squarebracket != -1
+                and (open_squarebracket < colon_pos
+                     or close_squarebracket < open_squarebracket))
             or (open_squarebracket == -1
                 and close_squarebracket != -1)
-            or (open_curlybracket != -1 
-                and (open_curlybracket < colon_pos 
-                     or close_curlybracket < open_curlybracket)) 
+            or (open_curlybracket != -1
+                and (open_curlybracket < colon_pos
+                     or close_curlybracket < open_curlybracket))
             or (open_curlybracket == -1
                 and close_curlybracket != -1)):
-            
+
             print("Can't parse reaction: " + line)
-            raise ValueError    
-        
-        start_arrow:int
-        end_arrow:int
-        direction:int
+            raise ValueError
+
+        start_arrow: int
+        end_arrow: int
+        direction: int
 
         if "<=>" in line:
             self.direction = self.DIRECTION["both"]
@@ -225,11 +228,11 @@ class Reaction(type):
             end_arrow = start_arrow + 1
         else:
             print("Can't parse reaction: " + line)
-            raise ValueError    
-        
-        reaction_name = line[0,colon_pos].strip()
-        end_of_reactants:int
-        
+            raise ValueError
+
+        reaction_name = line[0, colon_pos].strip()
+        end_of_reactants: int
+
         if open_squarebracket != -1:
             end_of_reactants = open_squarebracket
         elif open_squarebracket == -1:
@@ -246,13 +249,14 @@ class Reaction(type):
                       Can't parse reaction: ''' + line)
             raise ValueError
         reactants = line[colon_pos+1:end_of_reactants].split()
-        for r in reactants: r = r.strip()
+        for r in reactants:
+            r = r.strip()
 
-        catalysts:str
+        catalysts: str
         if open_squarebracket == -1:
             catalysts = FORMAL_FOOD.getName()
         else:
-            catalysts=line[open_squarebracket+1, close_squarebracket].strip()
+            catalysts = line[open_squarebracket+1, close_squarebracket].strip()
             catalysts = re.sub("\\|", ",", catalysts)
             catalysts = re.sub("\\*", "&", catalysts)
             catalysts = re.sub("\\s*\\(\\s*", "(", catalysts)
@@ -261,8 +265,8 @@ class Reaction(type):
             catalysts = re.sub("\\s*,\\s*", ",", catalysts)
             catalysts = re.sub("\\s+", ",", catalysts)
 
-        inhibitors:list
-        #UNSCHÖN
+        inhibitors: list
+        # UNSCHÖN
         if open_curlybracket != -1 and close_curlybracket != -1:
             inhibitor_string = (line[open_curlybracket+1, close_curlybracket]
                                 .strip())
@@ -276,37 +280,100 @@ class Reaction(type):
             inhibitors = inhibitor_string.split(",")
         else:
             inhibitors = [0]
-        
-        products = line[end_arrow+1].split("+") #FEHLERANFÄLLIG/NEU
+
+        products = line[end_arrow+1].split("+")  # FEHLERANFÄLLIG/NEU
         reaction = Reaction(reaction_name)
         if all(r.isnumeric() for r in reactants):
             reactant_list = MoleculeType.values_of(names=reactants)
-            for r in reactant_list: reaction.get_reactants().append(r)
+            for r in reactant_list:
+                reaction.get_reactants().append(r)
         else:
             coefficient = -1
             for token in reactants:
-                if token.isdigit():
+                if token.isdigit():  # might be problematic, UNSCHÖN
                     if coefficient == -1:
                         coefficient = int(token)
                     else:
-                        print("Can't distinguish between coefficients and reactant names : ")
+                        print(
+                            "Can't distinguish between coefficients and reactant names : ")
                         print(reactants)
                         raise ValueError
                 else:
                     if coefficient == -1 or coefficient > 0:
-                        
-        return Reaction('res')
+                        reaction.get_reactants().append(MoleculeType.value_of(token))
+                    if coefficient > 0:
+                        reaction.set_reactant_coefficient(
+                            MoleculeType.value_of(token), coefficient)
+                        if (not (self.warned_about_suppressing_coefficients)):
+                            print("Coefficients found in reactions, ignored")
+                            self.warned_about_suppressing_coefficients = True
+                    coefficient = -1
+                if coefficient == -1 and token.isdigit():  # might be problematic, UNSCHÖN
+                    coefficient = int(token)
+            if coefficient != -1:
+                msg = "Can't distinguish between coefficients and reactant names : "
+                for r in reactants:
+                    msg = msg + str(r)
+                raise ValueError(msg)
 
-    def get_catalyst_conjunctions(self) -> list[MoleculeType]:  # UNKlAR
+        if all(p.isnumeric() for p in products):
+            product_list = MoleculeType.values_of(names=products)
+            for p in product_list:
+                reaction.get_products().append(r)
+        else:
+            coefficient = -1
+            for token in products:
+                if token.isdigit():  # might be problematic, UNSCHÖN
+                    if coefficient == -1:
+                        coefficient = int(token)
+                    else:
+                        msg = "Can't distinguish between coefficients and product names : "
+                    for r in products:
+                        msg = msg + str(r)
+                    raise ValueError(msg)
+                else:
+                    if coefficient == -1 or coefficient > 0:
+                        reaction.get_products().append(MoleculeType.value_of(token))
+                    if coefficient > 0:
+                        reaction.set_product_coefficient(
+                            MoleculeType.value_of(token), coefficient)
+                        if (not (self.warned_about_suppressing_coefficients)):
+                            # UNSCHÖN
+                            print("Coefficients found in reactions, ignored")
+                            self.warned_about_suppressing_coefficients = True
+                    coefficient = -1
+                if coefficient == -1 and token.isdigit():  # might be problematic, UNSCHÖN
+                    coefficient = int(token)
+            if coefficient != -1:
+                msg = "Can't distinguish between coefficients and product names : "
+                for r in products:
+                    msg = msg + str(r)
+                raise ValueError(msg)
+
+        reaction.set_catalysts(catalysts)
+        for inhibitor in inhibitors: #UNSCHÖN
+            reaction.get_inhibitions().append(MoleculeType.value_of(inhibitor))
+        reaction.set_direction(direction)
+
+        return reaction
+
+    def get_catalyst_conjunctions(self) -> set[MoleculeType]:  # UNKlAR
         '''
         wofür?
         '''
-        return []
+        conjunctions = []
+        dnf = DisjunctiveNormalForm.compute(self.get_catalysts())
+        for part in dnf.split(","):
+            conjunctions.append(MoleculeType.value_of(part))
+        return set(conjunctions)
 
     def get_catalyst_elements(self) -> list[MoleculeType]:  # UNKLAR
         '''
         wofür
         '''
+        conjunctions = self.get_catalyst_conjunctions()
+        for conjunction in conjunctions:
+            conjunction.value_of
         return []
 
     def get_reactant_coefficient(self, reactant: MoleculeType) -> int:
