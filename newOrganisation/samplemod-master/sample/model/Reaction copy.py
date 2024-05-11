@@ -57,7 +57,7 @@ class Reaction(type):
         '''
         Construct a Reaction given all parameters.
         '''
-        DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
+        self.DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
 
         self.warned_about_suppressing_coefficients = warned_about_suppressing_coefficients
         self.name = name
@@ -73,7 +73,7 @@ class Reaction(type):
         '''
         Construct an empty Reaction with only a name.
         '''
-        DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
+        self.DIRECTION = {1 : 'forward', 2 : 'reverse', 3 : 'both'}
 
         self.warned_about_suppressing_coefficients: bool = False
         self.name = name
@@ -83,17 +83,19 @@ class Reaction(type):
         self.inhibitions = []
         self.reactant_coefficients = {}
         self.product_coefficients = {}
-        self.direction = DIRECTION[1]
+        self.direction = self.DIRECTION[1]
 
     def is_catalyzed_uninhibited_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
         return False
     
     def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
                                             food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
-        return False
+        return self.has_all_reactants(food_for_reactants, direction) & \
+            (len(self.get_catalysts()) == 0 | 1)
     
-    def is_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
-        return False
+    def has_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
+        return (direction == self.DIRECTION[1] | direction == self.DIRECTION[3]) & all(f in food for f in self.get_reactants) | \
+            (direction == self.DIRECTION[2] | direction == self.DIRECTION[3]) & all(f in food for f in self.get_products)
     
     def get_direction(self) -> str:
         return self.direction
@@ -122,7 +124,6 @@ class Reaction(type):
     def __eq__(self, other: Reaction) -> bool:
         if self == other: return True           #FEHLERANFÄLLIG
         if not(isinstance(other, Reaction)): return False
-        return 
         return (self.name == other.name) & isinstance(other, Reaction)
     
     def __lt__(self, other: Reaction) -> bool:
