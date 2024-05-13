@@ -23,69 +23,52 @@ def compute(expression:str) -> str:
     Returns:
 
     """
-    return ""
+    """ bracket_cache:dict
+    pos = 0
+    last_position = len(expression)
+    while pos < last_position:
+     """    
+    return ",".join(recurse(expression))
 
-def recurse(inner_expression:str) -> list[str]:
-    print(inner_expression)
-    last_pos = len(inner_expression) #FEHLERANFÄLLIG, warum funktioniert das?
-    print(last_pos)
-    if inner_expression.startswith("("):
-        associated_closed_bracket = find_associated_closed_bracket(inner_expression, 0)
-        print(str(associated_closed_bracket+1),last_pos)
-        if associated_closed_bracket == last_pos:
-            return recurse(inner_expression[1:associated_closed_bracket])
+def recurse(expression:str) -> list[str]:
+    last_pos = len(expression) #FEHLERANFÄLLIG, warum funktioniert das?
+    if expression.startswith("("):
+        associated_closed_bracket = find_associated_closed_bracket(expression, 0)
+        if associated_closed_bracket+1 == last_pos:
+            return recurse(expression[1:associated_closed_bracket])
         else:
-            next_outside_operator = inner_expression[associated_closed_bracket + 1]
+            next_outside_operator = expression[associated_closed_bracket + 1]
             if next_outside_operator == ",":
-                print(str(associated_closed_bracket+1), next_outside_operator,last_pos)
-                return union(recurse(inner_expression[1:associated_closed_bracket]), recurse(inner_expression[associated_closed_bracket + 2:last_pos]))
+                return union(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
             if next_outside_operator == "&":
-                return product(recurse(inner_expression[1:associated_closed_bracket]), recurse(inner_expression[associated_closed_bracket + 2:last_pos]))
+                return product(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
     else:
-        next_inside_operator = next_or(inner_expression, 0)
-        print("or: ", next_inside_operator)
+        next_inside_operator = next_or(expression, 0)
         if next_inside_operator > 0:
-            return union(recurse(inner_expression[0:next_inside_operator]), recurse(inner_expression[next_inside_operator + 1:last_pos]))
-        next_inside_operator = next_and(inner_expression, 0)
-        print("and: ", next_inside_operator)
+            return union(recurse(expression[0:next_inside_operator]), recurse(expression[next_inside_operator + 1:last_pos]))
+        next_inside_operator = next_and(expression, 0)
         if next_inside_operator > 0:
-            second_expression = inner_expression[next_inside_operator + 1:last_pos]
-            end_of_brackets = find_associated_closed_bracket(second_expression, 0)
-            print(second_expression, end_of_brackets)
+            second_expression = expression[next_inside_operator + 1:last_pos]
+            end_of_brackets = find_associated_closed_bracket(expression, next_inside_operator+1)
             if end_of_brackets > 0:
-                print("reached endofBracketscheck")
-                print("nextAnd: ", next_and(second_expression, end_of_brackets))
-                print("nextOR: ", next_or(second_expression, end_of_brackets))
-                print("test of last statement: ", next_and(inner_expression[end_of_brackets:last_pos], 0))
-                position_after_brackets_and = next_and(second_expression, end_of_brackets)
-                position_after_brackets_or = next_or(second_expression, end_of_brackets)
-                if ((position_after_brackets_and >= 0 and position_after_brackets_or < 0) 
-                      or (position_after_brackets_and < position_after_brackets_or 
-                          and position_after_brackets_and >= 0 
-                          and position_after_brackets_or >= 0)):
-                    print("outer and")
-                    return product(product(recurse(inner_expression[0:next_inside_operator]), 
-                                        recurse(inner_expression[next_inside_operator + 1:end_of_brackets])),
-                                        recurse(inner_expression[end_of_brackets + 1:last_pos]))
-                elif ((position_after_brackets_or >= 0 and position_after_brackets_and < 0) 
-                      or (position_after_brackets_or < position_after_brackets_and 
-                          and position_after_brackets_or >= 0 
-                          and position_after_brackets_and >= 0)):
-                    print("outer or")
-                    return union(product(recurse(inner_expression[0:next_inside_operator]), 
-                                        recurse(inner_expression[next_inside_operator + 1:end_of_brackets])),
-                                        recurse(inner_expression[end_of_brackets + 1:last_pos]))
-            return product(recurse(inner_expression[0:next_inside_operator]), recurse(inner_expression[next_inside_operator + 1:last_pos]))
+                position = end_of_brackets + 1
+                while position < last_pos:
+                    if expression[position] == ",":
+                        return union(product(recurse(expression[0:next_inside_operator]), 
+                                             recurse(expression[next_inside_operator + 1:position])),
+                                    recurse(expression[position + 1:last_pos]))
+                    elif expression[position] == "(":
+                        position = find_associated_closed_bracket(expression, position)
+                    position += 1
+            return product(recurse(expression[0:next_inside_operator]), recurse(expression[next_inside_operator + 1:last_pos]))
 
-    return [inner_expression] #FEHLERANFÄLLIG
+    return [expression] #FEHLERANFÄLLIG
 
 def union(tree_a:list, tree_b:list) -> list:
-    print("union: ", tree_a, tree_b)
     tree_a.extend(tree_b)
     return tree_a
 
 def product(tree_a:list, tree_b:list) -> list:
-    print("product: ", tree_a, tree_b)
     res = []
     for content_a in tree_a:
         for content_b in tree_b:
@@ -93,7 +76,6 @@ def product(tree_a:list, tree_b:list) -> list:
                 res.append(content_a)
             else:
                 res.append(content_a + "&" + content_b)
-            print(res)
     return res
 
 def next_or(expression:str, start_pos:int) -> int:
