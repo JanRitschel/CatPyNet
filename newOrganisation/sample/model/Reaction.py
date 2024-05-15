@@ -19,7 +19,7 @@ from __future__ import annotations
  '''
 
 import re
-from DisjunctiveNormalForm import DisjunctiveNormalForm
+from DisjunctiveNormalForm import compute
 from MoleculeType import MoleculeType
 from copy import copy, deepcopy
 from io.ModelIO import FORMAL_FOOD
@@ -368,7 +368,7 @@ class Reaction(type):
         The elements within one element of the set are divided by an "&".
         '''
         conjunctions = []
-        dnf = DisjunctiveNormalForm.compute(self.get_catalysts())
+        dnf = compute(self.get_catalysts())
         for part in dnf.split(","):
             conjunctions.append(MoleculeType.value_of(part))
         return set(conjunctions)

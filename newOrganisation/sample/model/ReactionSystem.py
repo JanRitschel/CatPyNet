@@ -1,3 +1,4 @@
+from __future__ import annotations
 '''
  * ReactionSystem.java Copyright (C) 2022 Daniel H. Huson
  *
@@ -42,222 +43,139 @@ class ReactionSystem:
 
     def __init__(self, name:str = "Reactions"):
         '''
-        construct a reactions systems
+        construct a reactions system
         '''
         
         self.reactions:list[Reaction] = []
         self.foods:list[MoleculeType] = []
 
-        self.inhibitorsPresent:bool = False
+        self.inhibitors_present:bool = False
 
         self.size:int
-        self.foodSize:int
+        self.food_size:int
 
-        self.numberOfTwoWayReactions:int = 0
+        self.number_of_two_way_reactions:int = 0
 
         self.name:str = "Reactions"
 
-        # for interface?
+        # UNKLAR, for interface?
         '''
         self.size.bind(Bindings.size(reactions))
-        foodSize.bind(Bindings.size(foods))
+        food_size.bind(Bindings.size(foods))
         '''
-
-        reactions.addListener((ListChangeListener<Reaction>) e -> {
-            while (e.next()) {
-                for (Reaction reaction : e.getAddedSubList()) {
-                    if (reaction.getDirection() == Reaction.Direction.both)
-                        numberOfTwoWayReactions++
-                }
-                for (Reaction reaction : e.getRemoved()) {
-                    if (reaction.getDirection() == Reaction.Direction.both)
-                        numberOfTwoWayReactions--
-                }
-            }
-        })
-        updateIsInhibitorsPresent()
-    }
-
-    public ObservableList<Reaction> getReactions() {
-        return reactions
-    }
-
-    public ObservableList<MoleculeType> getFoods() {
-        return foods
-    }
-
-    '''*
-     * create a shallow copy that references reactions
-     *
-     * @return shallow copy of this model
-     '''
-    public ReactionSystem shallowCopy() {
-        final ReactionSystem result = new ReactionSystem()
-        result.shallowCopy(this)
-        return result
-    }
-
-    '''*
-     * sets this to a shallow copy of that
-     *
-	 '''
-    public void shallowCopy(ReactionSystem that) {
-        clear()
-        setName(that.getName())
-        foods.addAll(that.foods)
-        reactions.addAll(that.reactions)
-    }
-
-    public void clear() {
-        reactions.clear()
-        foods.clear()
-    }
-
-    '''*
-     * gets the size
-     *
-     * @return number of reactions
-     '''
-    public int size() {
-        return size.get()
-    }
-
-    '''*
-     * size property
-     *
-     * @return size
-     '''
-    public ReadOnlyIntegerProperty sizeProperty() {
-        return size
-    }
-
-    public int getFoodSize() {
-        return foodSize.get()
-    }
-
-    public IntegerProperty foodSizeProperty() {
-        return foodSize
-    }
-
-    public void setFoodSize(int foodSize) {
-        this.foodSize.set(foodSize)
-    }
-
-    public int getNumberOfTwoWayReactions() {
-        return numberOfTwoWayReactions
-    }
-
-    public int getNumberOfOneWayReactions() {
-        return size() - numberOfTwoWayReactions
-    }
-
-
-    public String getName() {
-        return name.get()
-    }
-
-    public String getHeaderLine() {
-        var buf = new StringBuilder(getName() + " has " + size())
-        if (getNumberOfOneWayReactions() == 0 && getNumberOfTwoWayReactions() > 0)
-            buf.append(" two-way reactions")
-        else if (getNumberOfOneWayReactions() > 0 && getNumberOfTwoWayReactions() == 0)
-            buf.append(" one-way reactions")
-        else if (getNumberOfOneWayReactions() > 0 && getNumberOfTwoWayReactions() > 0)
-            buf.append(" reactions (").append(getNumberOfTwoWayReactions()).append(" two-way and ").append(getNumberOfOneWayReactions()).append(" one-way)")
-        else buf.append(" reactions")
-        buf.append(" on ").append(getFoods().size()).append(" food items")
-        return buf.toString()
-
-    }
-
-    public StringProperty nameProperty() {
-        return name
-    }
-
-    public void setName(String name) {
-        this.name.set(name)
-    }
-
-    public boolean isInhibitorsPresent() {
-        return inhibitorsPresent.get()
-    }
-
-    public ReadOnlyBooleanProperty inhibitorsPresentProperty() {
-        return inhibitorsPresent
-    }
-
-    public void updateIsInhibitorsPresent() {
-        for (Reaction reaction : reactions) {
-            if (reaction.getInhibitions().size() > 0) {
-                inhibitorsPresent.set(true)
+        #ENTFERNT, Listener für Reaktionen, der bei hinzufügen/entfernen 
+        #von 2-way Reaktionen hoch/runter zählt
+        
+    def get_header_line(self) -> str:
+        res = [self.name, " has ", str(self.size)]
+        if (self.get_number_of_one_way_reactions == 0
+            and self.get_number_of_two_way_reactions > 0):
+            res.append(" two-way reactions")
+        elif (self.get_number_of_one_way_reactions > 0
+            and self.get_number_of_two_way_reactions == 0):
+            res.append(" one-way reactions")
+        elif (self.get_number_of_one_way_reactions > 0
+            and self.get_number_of_two_way_reactions > 0):
+            res.append(" reactions (")
+            res.append(self.get_number_of_two_way_reactions)
+            res.append(" two-way and ")
+            res.append(self.get_number_of_one_way_reactions)
+            res.append(" one-way)")
+        else: 
+            res.append(" reactions")
+        res.append(" on ")
+        res.append(len(self.get_foods))
+        res.append(" food items")
+        return "".join(res)
+    
+    def update_inhibitors_present(self) -> None:
+        """Sets inhibitors_present to True if any inhibitors are present.
+        
+        Checks all reactions and sets inhibitors_present to true if any
+        inhibitor for any reaction is present.
+        Otherwise sets inhibitors_present to False
+        """        
+        for reaction in self.reactions:
+            if len(reaction.get_inhibitions) > 0:
+                self.inhibitors_present = True
                 return
-            }
-        }
-        inhibitorsPresent.set(false)
-    }
-
-    '''*
-     * gets all mentioned molecule types
-     *
-	 '''
-    public Set<MoleculeType> getFoodAndReactantAndProductMolecules() {
-        final Set<MoleculeType> moleculeTypes = new TreeSet<>(getFoods())
-        for (Reaction reaction : getReactions()) {
-            moleculeTypes.addAll(reaction.getReactants())
-            moleculeTypes.addAll(reaction.getProducts())
-        }
-        return moleculeTypes
-    }
-
-    public Set<String> getReactionNames() {
-        final Set<String> names = new TreeSet<>()
-        for (Reaction reaction : getReactions()) {
-            names.add(reaction.getName())
-        }
+        self.inhibitors_present = False
+        
+    def get_food_and_reactant_and_product_molecules(self)->list[MoleculeType]: #UNSCHÖN, sollte Set geben
+        molecule_types = self.foods
+        for reaction in self.get_reactions:
+            molecule_types.extend(reaction.get_reactants)
+            molecule_types.extend(reaction.get_products)
+        return molecule_types
+    
+    def get_reaction_names(self) -> set[str]: #Unschön, sollte set geben
+        names = []
+        for reaction in self.get_reactions:
+            names.append(reaction.get_name)
         return names
-    }
+    
+    def compute_mentioned_foods(self, foods:list[MoleculeType]) -> set[MoleculeType]:
+        """Might need to return a dict?
 
-    public Collection<MoleculeType> computeMentionedFoods(Collection<MoleculeType> foods) {
-        final Set<MoleculeType> set = new HashSet<>()
-        reactions.forEach(r -> {
-            set.addAll(r.getReactants())
-            set.addAll(r.getInhibitions())
-            set.addAll(r.getProducts())
-            set.addAll(r.getCatalystConjunctions().stream().map(c -> MoleculeType.valuesOf(c.getName().split("&"))).flatMap(Collection::stream).collect(Collectors.toSet()))
-        })
-        return foods.parallelStream().filter(set::contains).collect(Collectors.toList())
-    }
+        Args:
+            foods (iter[MoleculeType]): foods to compare reactions against
 
+        Returns:
+            set[MoleculeType]: set of all MoleculeTypes mentioned in any reaction and foods
+        """
+        molecule_types = []
+        for reaction in self.get_reactions:
+            molecule_types.extend(reaction.get_reactants)
+            molecule_types.extend(reaction.get_inhibitions)
+            molecule_types.extend(reaction.get_products)
+            molecule_types.extend(reaction.get_catalyst_elements) #FEHLERANFÄLLIG, ursprünglich durch get_catalyst_conjunctions
+        all_molecules_mentioned = set(molecule_types)
+        return all_molecules_mentioned.intersection(foods)
+    
+    def replace_named_reaction(self, name:str, reaction:Reaction) -> None:
+        old_reaction = self.get_reaction(name)
+        if old_reaction == None:
+            raise TypeError("no such reaction: " + name)
+        self.reactions.remove(old_reaction)
+        self.reactions.append(reaction)
+        
+    def sorted_by_hashcode(self) -> ReactionSystem:
+        sorted_reaction_system = ReactionSystem(self.get_name)
+        sorted_reaction_system.foods = sorted(self.get_foods)
+        sorted_reaction_system.reactions = sorted(self.get_reactions)
+        return sorted_reaction_system
+    
+    def get_reaction(self, name:str) -> Reaction:
+        for reaction in self.get_reactions: #UNSCHÖN
+            if reaction.get_name == name: return reaction
+    
+    def get_reactions(self) -> list[Reaction]:
+        return self.reactions
+    
+    def get_foods(self) -> list[MoleculeType]:
+        return self.foods
+    
+    def get_size(self) -> int:
+        """Returns the number of reactions in the reactions system
 
-    public Reaction getReaction(String name) {
-        final Optional<Reaction> result = getReactions().stream().filter(r -> r.getName().equals(name)).findAny()
-        return result.orElse(null)
-    }
-
-    public void replaceNamedReaction(String name, Reaction reaction) {
-        final Reaction old = getReaction(name)
-        if (old == null)
-            throw new IllegalArgumentException("no such reaction: " + name)
-		getReactions().remove(old)
-		getReactions().add(reaction)
-	}
-
-	public ReactionSystem sorted() {
-		final ReactionSystem reactionSystem = new ReactionSystem(getName())
-		reactionSystem.getFoods().addAll(new TreeSet<>(getFoods()))
-		reactionSystem.getReactions().addAll(new TreeSet<>(getReactions()))
-		return reactionSystem
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true
-		if (!(o instanceof ReactionSystem that)) return false
-		return CollectionUtils.equalsAsSets(this.getFoods(), that.getFoods()) && CollectionUtils.equalsAsSets(this.getReactions(), that.getReactions())
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(reactions, foods)
-	}
-}
+        Returns:
+            int: size of the reactions system
+        """        
+        return self.size
+    
+    #ENTERNT, Properties selbst müssen via self.xx angesteuert werden
+    
+    def get_food_size(self) -> int:
+        return self.food_size
+    
+    def set_food_size(self, food_size:int):
+        self.food_size = food_size
+    
+    def get_number_of_two_way_reactions(self) -> int:
+        return self.number_of_two_way_reactions
+    
+    def get_number_of_one_way_reactions(self) -> int:
+        return self.size - self.number_of_two_way_reactions
+    
+    def get_name(self) -> str:
+        return self.name
