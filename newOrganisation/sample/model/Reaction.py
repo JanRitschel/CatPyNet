@@ -19,10 +19,10 @@ from __future__ import annotations
  '''
 
 import re
-from DisjunctiveNormalForm import compute
-from MoleculeType import MoleculeType
+from .DisjunctiveNormalForm import compute
+from .MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
 from copy import copy, deepcopy
-from io.ModelIO import FORMAL_FOOD
+from ..io.ModelIO import FORMAL_FOOD
 # Java modules to find replacements for
 '''
 import jloda.fx.window.NotificationManager 
@@ -40,7 +40,7 @@ import static catlynet.io.ModelIO.FORMAL_FOOD
 # class Reaction implements Comparable<Reaction>
 
 
-class Reaction(type):
+class Reaction:
     '''*
     * a reaction
     * Daniel Huson, 6.2019
@@ -152,7 +152,6 @@ class Reaction(type):
     def __hash__(self) -> int:
         return hash(self.name)
 
-    # ZU MACHEN
     def parse(self, line: str, aux_reations: list[Reaction], tabbed_format: bool) -> Reaction:
         '''
         parses a reaction

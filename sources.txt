@@ -4,3 +4,6 @@ https://github.com/navdeep-G/samplemod
 instructions for sample library
 https://python-docs.readthedocs.io/en/latest/writing/structure.html
 
+Stack Overflow:
+https://stackoverflow.com/questions/29435556/how-to-combine-hash-codes-in-in-python3
+

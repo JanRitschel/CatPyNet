@@ -18,8 +18,9 @@ from __future__ import annotations
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
-from Reaction import Reaction
-from MoleculeType import MoleculeType
+from .Reaction import Reaction #UNSCHÖN, potentiell überflüssig
+from .MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
+from copy import copy
 
 # Java modules to find replacements for
 '''
@@ -45,26 +46,46 @@ class ReactionSystem:
         '''
         construct a reactions system
         '''
-        
+        self.name:str = name
         self.reactions:list[Reaction] = []
         self.foods:list[MoleculeType] = []
-
         self.inhibitors_present:bool = False
-
         self.size:int
         self.food_size:int
-
         self.number_of_two_way_reactions:int = 0
-
-        self.name:str = "Reactions"
-
-        # UNKLAR, for interface?
-        '''
-        self.size.bind(Bindings.size(reactions))
-        food_size.bind(Bindings.size(foods))
-        '''
+        
+        self.update_inhibitors_present
+        #ENTFERNT, Binds für size und foodsize
         #ENTFERNT, Listener für Reaktionen, der bei hinzufügen/entfernen 
         #von 2-way Reaktionen hoch/runter zählt
+    
+    @property
+    def reactions(self):
+        return self._reactions
+    @reactions.setter
+    def reactions(self, value:list[Reaction]): #FEHLERANFÄLLIG, might cause issues when appending
+        self._reactions = value
+        buffer = 0
+        for reaction in value:
+            if reaction.direction == "both":
+                buffer += 1
+        self._number_of_two_way_reactions = buffer
+    
+    def __copy__(self) -> ReactionSystem:
+        res = ReactionSystem(self.name)
+        res.foods = self.foods
+        res.reactions = self.reactions
+        return res
+    
+    def make_this_shallow_copy_of(self, other:ReactionSystem) -> None: #UNSCHÖN, wahrscheinlich unnötig
+        self.clear
+        self.name = other.get_name
+        self.foods = other.get_foods
+        self.reactions = other.get_reactions
+       
+    def clear(self) -> None:
+        self.reactions.clear
+        self.foods.clear
         
     def get_header_line(self) -> str:
         res = [self.name, " has ", str(self.size)]
@@ -179,3 +200,15 @@ class ReactionSystem:
     
     def get_name(self) -> str:
         return self.name
+    
+    def __eq__(self, other:ReactionSystem) -> bool:
+        if hash(self) == hash(other): return True #FEHLERANFÄLLIG, temporäre Lösung
+        if not (isinstance(other, ReactionSystem)): return False
+        return (set(self.foods) == set(other.foods) 
+                and set(self.reactions) == set(other.reactions))
+        
+    def __lt__(self, other:Reaction) -> bool:
+        return hash(self) < hash(other)
+    
+    def __hash__(self) -> int:
+        return hash((tuple(self.foods), tuple(self.reactions)))
