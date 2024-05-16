@@ -99,7 +99,13 @@ class Reaction:
         self.direction = self.DIRECTION["forward"]
 
     def is_catalyzed_uninhibited_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
-        return False
+        food_set = set(food)
+        return ((self.direction in {"forward", "both"} and set(self.reactants).issubset(food_set)
+                    or self.direction in {"reverse", "both"} and set(self.products).issubset(food_set))
+                and (len(self.get_catalysts) == 0 
+                     or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions))
+                and (len(self.get_inhibitions) == 0
+                     or bool(food_set & set(self.get_inhibitions))))
 
     def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
                                                food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
