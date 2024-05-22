@@ -17,8 +17,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sample.model.ReactionSystem as ReactionSystem
-import IDescribed
+from ..model.ReactionSystem import ReactionSystem
+from .IDescribed import IDescribed
 # Java modules to find replacements for
 '''
 import jloda.util.CanceledException
@@ -35,9 +35,9 @@ class AlgorithmBase(IDescribed):
     computes a new reaction system
     Daniel Huson, 7.2019
     '''
-
+    """ 
     def __init__():
-        pass
+        pass """
     
     def get_name() -> str:
         '''returns name of class?'''    

@@ -44,7 +44,7 @@ class ReactionSystem:
 
     def __init__(self, name:str = "Reactions"):
         '''
-        construct a reactions system
+        construct a reaction system
         '''
         self.name:str = name
         self.reactions:list[Reaction] = []

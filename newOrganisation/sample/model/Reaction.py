@@ -98,21 +98,44 @@ class Reaction:
         self.product_coefficients = {}
         self.direction = self.DIRECTION["forward"]
 
-    def is_catalyzed_uninhibited_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
-        food_set = set(food)
-        return ((self.direction in {"forward", "both"} and set(self.reactants).issubset(food_set)
-                    or self.direction in {"reverse", "both"} and set(self.products).issubset(food_set))
-                and (len(self.get_catalysts) == 0 
-                     or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions))
-                and (len(self.get_inhibitions) == 0
-                     or bool(food_set & set(self.get_inhibitions))))
+    def is_catalyzed_uninhibited_all_reactants(self, direction: str, **kwargs) -> bool:
+        """Checks is reaction is uninhibited, catalyzed and has all reactants.
 
-    def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
+        Args:
+            direction (str): direction of the reaction
+            food (list[MoleculeType]): Molecules in food
+            
+            food_for_reactants(list[MoleculeType]): Molecules available as reactants
+            food_for_catalysts(list[MoleculeType]): Molecules available as catalysts
+            food_for_inhibitions(list[MoleculeType]): Molecules available as inhibitions
+            
+        Returns:
+            bool: True if uninhibited, catalyzed and all reactants present.
+                  If any of these are false returns false. 
+        """        
+        if "food" in kwargs:
+            food_set = set(kwargs["food"])
+            return ((direction in {"forward", "both"} and set(self.reactants).issubset(food_set)
+                        or direction in {"reverse", "both"} and set(self.products).issubset(food_set))
+                    and (len(self.get_catalysts) == 0 
+                        or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions))
+                    and (len(self.get_inhibitions) == 0
+                        or bool(food_set & set(self.get_inhibitions))))
+        else:
+            return ((direction in {"forward", "both"} and set(self.reactants).issubset(kwargs["food_for_reactants"])
+                        or direction in {"reverse", "both"} and set(self.products).issubset(kwargs["food_for_reactants"]))
+                    and (len(self.get_catalysts) == 0 
+                        or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(kwargs["food_for_catalysts"]) for conjunction in self.get_catalyst_conjunctions))
+                    and (len(self.get_inhibitions) == 0
+                        or bool(kwargs["food_for_inhibitions"] & set(self.get_inhibitions))))
+
+    """ def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
                                                food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
         return False
-
-    def is_all_reactants(self, food: list[MoleculeType], direction: str) -> bool:
-        return False
+ """
+    def is_all_reactants(self, food: set[MoleculeType], direction: str) -> bool:
+        return (direction in {"forward", "both"} and set(self.reactants).issubset(food)
+                    or direction in {"reverse", "both"} and set(self.products).issubset(food))
 
     def get_direction(self) -> str:
         return self.direction

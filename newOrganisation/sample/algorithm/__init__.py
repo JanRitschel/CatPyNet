@@ -1,1 +1,1 @@
-from IDescribed import IDescribed
+from .IDescribed import IDescribed
