@@ -23,5 +23,6 @@ class IDescribed:
 		*
 		* @return description
 	'''
-	def getDescription():
+	@property
+	def description(self):
 		pass

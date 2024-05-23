@@ -56,8 +56,6 @@ class ReactionSystem:
         
         self.update_inhibitors_present
         #ENTFERNT, Binds für size und foodsize
-        #ENTFERNT, Listener für Reaktionen, der bei hinzufügen/entfernen 
-        #von 2-way Reaktionen hoch/runter zählt
     
     @property
     def reactions(self):
@@ -70,6 +68,14 @@ class ReactionSystem:
             if reaction.direction == "both":
                 buffer += 1
         self._number_of_two_way_reactions = buffer
+
+    @property
+    def size(self):
+        return len(self.reactions)
+    
+    @property
+    def food_size(self):
+        return len(self.foods)
     
     def __copy__(self) -> ReactionSystem:
         res = ReactionSystem(self.name)

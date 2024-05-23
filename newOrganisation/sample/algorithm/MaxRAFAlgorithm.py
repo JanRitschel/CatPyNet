@@ -9,12 +9,16 @@ class MaxRAFAlgorithm (AlgorithmBase):
     
     NAME:str = "Max RAF"
     
-    def get_name(self) -> str:
-        
+    @property
+    def name(self):
         return self.NAME
     
-    def get_description() -> str:
-        
+    @name.setter
+    def name(self, value:str):
+        self.NAME = value
+    
+    @property
+    def description(self):
         return "computes the maximal RAF [HMS15] (see also [H23])"
     
     def apply(self, input:ReactionSystem) -> ReactionSystem:
@@ -36,9 +40,9 @@ class MaxRAFAlgorithm (AlgorithmBase):
             reactions.insert(i+1, Utilities.filter_reactions(molecules[i+1], reactions[i]))
             
             while len(reactions[i+1]) < len(reactions[i]):
+                i += 1
                 molecules.insert(i+1, Utilities.compute_closure(input_food, reactions[i]))
                 reactions.insert(i+1, Utilities.filter_reactions(molecules[i+1], reactions[i]))
-                i += 1
             
             if len(reactions[i]) > 0:
                 result.reactions = reactions[i]

@@ -11,10 +11,12 @@ class CoreRAFAlgorithm (AlgorithmBase):
     
     NAME:str = "Core RAF"
     
-    def get_name(self) -> str:
+    @property
+    def name(self) -> str:
         return self.NAME
     
-    def get_description() -> str:
+    @property
+    def description(self):
         return "computes the unique irreducible RAF, if it exists (Section 4.1 of [SXH20])"
     
     def apply(input:ReactionSystem) -> ReactionSystem:
@@ -25,6 +27,5 @@ class CoreRAFAlgorithm (AlgorithmBase):
         important_reactions.foods = important_reactions.compute_mentioned_foods(input.foods)
         
         core_raf = MaxRAFAlgorithm().apply(important_reactions)
-        
-        
-        
+        core_raf.name = "Core RAF"
+        return core_raf

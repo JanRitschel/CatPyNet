@@ -39,11 +39,12 @@ class AlgorithmBase(IDescribed):
     def __init__():
         pass """
     
-    def get_name() -> str:
-        '''returns name of class?'''    
+    @property
+    def name(self):
         pass
 
-    def get_description() -> str:
+    @property
+    def description(self):
         '''
         get the name of the reaction system computed by this algorithm
         
