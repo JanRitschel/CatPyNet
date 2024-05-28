@@ -1,2 +1,0 @@
-CatlyNet - Autocatalytic networks - https://github.com/husonlab/catlynet
-Daniel Huson and Mike Steel, since 2020

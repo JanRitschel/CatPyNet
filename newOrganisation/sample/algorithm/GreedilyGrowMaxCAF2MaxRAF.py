@@ -13,7 +13,6 @@ from .MaxCAFAlgorithm import MaxCAFAlgorithm
 class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
 
 
-    
     @property
     def description(self):
         return "greedily grow maxCAF to maxRAF by making reactions spontaneous"
@@ -64,4 +63,3 @@ class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
         
         working_max_caf:ReactionSystem = MaxCAFAlgorithm.apply(working_system)
         return (augmented_reaction, working_max_caf.size)
-    
