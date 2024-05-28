@@ -32,7 +32,7 @@ def main():
     algorithm:AlgorithmBase = AlgorithmBase.get_algorithm_by_name(arguments['compute'])
     if isinstance(algorithm, MinIRAFHeuristic):
         irr_raf_heuristic = MinIRAFHeuristic()
-        irr_raf_heuristic.set_number_of_random_insertion_orders(arguments['runs'])
+        irr_raf_heuristic.number_of_random_insertion_orders = arguments['runs']
         output_systems = irr_raf_heuristic.apply_all_smallest(input_system)
         if arguments['output'] != "stdout":  #ZU MACHEN, wieder std stuff
             print("Writing file: " + arguments['output'])
@@ -57,3 +57,6 @@ def parse_input_file(file_name:str):
 
     #ZU MACHEN, ImportWimsFormat, ReactionNotation.detectNotation, Abhängig davon readstyle
     return
+
+if __name__ == "__main__":
+    main()

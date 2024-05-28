@@ -50,7 +50,7 @@ class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
         if len(result[2]) == 0 and result[0] == result[1]:
             message = "Greedily grow MaxCAF to MaxRAF: no reactions required to be spontaneous, because MaxCAF=MaxRAF"
         else:
-            message = "Greedily grow MaxCAF (size " + result[0] +  ") to MaxRAF (size " + result[1] +  "): required %d reactions to be spontaneous: %s"
+            message = "Greedily grow MaxCAF (size " + result[0] +  ") to MaxRAF (size " + result[1] +  "): required %d reactions to be spontaneous: %s" #UNKLAR, was wird wieder gegeben
 
 
     def apply_best_finder_helper(reaction_name:str, max_raf:ReactionSystem, augmented_system:ReactionSystem) -> tuple[Reaction, int]:
