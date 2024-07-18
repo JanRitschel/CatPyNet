@@ -22,4 +22,5 @@ test_rs.reactions = [r("test_Reaction")]
 test_other_rs = copy.copy(test_rs)
 print(hash(test_rs) == hash(test_other_rs)) """
 """ print(dnf.compute(var)) """
-print(mraf())
+print(mt("A", {"A":mt("A")}).name2type)
+print(mt("A", {"A":mt("A")}).name == mt("A").name)

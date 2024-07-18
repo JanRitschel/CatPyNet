@@ -42,17 +42,17 @@ class Utilities:
             if len(to_add) > 0:
                 closure.extend(to_add)
                 for reaction in to_add:
-                    match reaction.get_direction:
+                    match reaction.direction:
                         case "forward":
-                            available_food.update(reaction.get_products)
+                            available_food.update(reaction.products)
                         case "reverse":
-                            available_food.update(reaction.get_reactants)
+                            available_food.update(reaction.reactants)
                         case "both":
                             res = []
-                            if set(reaction.get_reactants).issubset(available_food):
-                                res.extend(reaction.get_products)
-                            if set(reaction.get_products).issubset(available_food):
-                                res.extend(reaction.get_reactants)
+                            if set(reaction.reactants).issubset(available_food):
+                                res.extend(reaction.products)
+                            if set(reaction.products).issubset(available_food):
+                                res.extend(reaction.reactants)
                             available_food.update(res)
                 for reaction in to_add: available_reactions.remove(reaction)
             else:

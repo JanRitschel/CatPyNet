@@ -22,7 +22,7 @@ import re
 from .DisjunctiveNormalForm import compute
 from .MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
 from copy import copy, deepcopy
-from ..io.ModelIO import FORMAL_FOOD
+from ..io import ModelIO
 # Java modules to find replacements for
 '''
 import jloda.fx.window.NotificationManager 
@@ -50,53 +50,29 @@ class Reaction:
         id_self = id(self)
         _copy = memo.get(id_self)
         if _copy == None:
-            _copy = Reaction(deepcopy(self.name, memo), deepcopy(self.warned_about_suppressing_coefficients, memo),
-                             deepcopy(self.reactants, memo), deepcopy(
-                                 self.products, memo), deepcopy(self.catalysts, memo),
-                             deepcopy(self.inhibitions, memo), deepcopy(
+            _copy = Reaction(deepcopy(self.name, memo), warned_about_suppressing_coefficients = deepcopy(self.warned_about_suppressing_coefficients, memo),
+                             reactants = deepcopy(self.reactants, memo), products = deepcopy(
+                                 self.products, memo), catalysts = deepcopy(self.catalysts, memo),
+                             inhibitions = deepcopy(self.inhibitions, memo), reactant_coefficients = deepcopy(
                                  self.reactant_coefficients, memo),
-                             deepcopy(self.product_coefficients, memo), deepcopy(self.direction, memo))
+                             product_coefficients = deepcopy(self.product_coefficients, memo), direction = deepcopy(self.direction, memo))
             memo[id_self] = _copy
         return _copy
 
-    def __init__(self, warned_about_suppressing_coefficients: bool = None, 
-                 name: str = None, reactants: list = None, 
-                 products: list = None, catalysts: list = None, 
-                 inhibitions: list = None, reactant_coefficients: dict = None,
-                 product_coefficients: dict = None, direction: str = None):
-        '''
-        Construct a Reaction given all parameters.
-        Fills in None for any not given.
-        '''
+    def __init__(self, name: str = None, **kwargs) -> Reaction:        
+        
         self.DIRECTION = {"forward": 'forward',
                           "reverse": 'reverse', "both": 'both'}
 
-        self.warned_about_suppressing_coefficients = warned_about_suppressing_coefficients
+        self.warned_about_suppressing_coefficients = False if "warned_about_suppressing_coefficients" not in kwargs else kwargs["warned_about_suppressing_coefficients"]
         self.name = name
-        self.reactants = reactants
-        self.products = products
-        self.catalysts = catalysts
-        self.inhibitions = inhibitions
-        self.reactant_coefficients = reactant_coefficients
-        self.product_coefficients = product_coefficients
-        self.direction = direction
-
-    def __init__(self, name: str = None):
-        '''
-        Construct an empty Reaction with only a name.
-        '''
-        self.DIRECTION = {"forward": 'forward',
-                          "reverse": 'reverse', "both": 'both'}
-
-        self.warned_about_suppressing_coefficients: bool = False
-        self.name = name
-        self.reactants = []
-        self.products = []
-        self.catalysts = []
-        self.inhibitions = []
-        self.reactant_coefficients = {}
-        self.product_coefficients = {}
-        self.direction = self.DIRECTION["forward"]
+        self.reactants:list[MoleculeType] = [] if "reactants" not in kwargs else kwargs["reactants"]
+        self.products:list[MoleculeType] = [] if "products" not in kwargs else kwargs["products"]
+        self.catalysts:str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
+        self.inhibitions:list[MoleculeType] = [] if "inhibitions" not in kwargs else kwargs["inhibitions"]
+        self.reactant_coefficients = {} if "reactant_coefficients" not in kwargs else kwargs["reactant_coefficients"]
+        self.product_coefficients = {} if "product_coefficients" not in kwargs else kwargs["product_coefficients"]
+        self.direction:str = self.DIRECTION["forward"] if "direction" not in kwargs else kwargs["direction"]
 
     def is_catalyzed_uninhibited_all_reactants(self, direction: str, **kwargs) -> bool:
         """Checks is reaction is uninhibited, catalyzed and has all reactants.
@@ -117,17 +93,20 @@ class Reaction:
             food_set = set(kwargs["food"])
             return ((direction in {"forward", "both"} and set(self.reactants).issubset(food_set)
                         or direction in {"reverse", "both"} and set(self.products).issubset(food_set))
-                    and (len(self.get_catalysts) == 0 
-                        or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions))
-                    and (len(self.get_inhibitions) == 0
-                        or bool(food_set & set(self.get_inhibitions))))
+                    and (len(self.catalysts) == 0 
+                        or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions()))
+                    and (len(self.inhibitions) == 0
+                        or not bool(food_set & set(self.inhibitions))))
         else:
-            return ((direction in {"forward", "both"} and set(self.reactants).issubset(kwargs["food_for_reactants"])
-                        or direction in {"reverse", "both"} and set(self.products).issubset(kwargs["food_for_reactants"]))
-                    and (len(self.get_catalysts) == 0 
-                        or any(set(MoleculeType.values_of(conjunction.get_name.split("&"))).issubset(kwargs["food_for_catalysts"]) for conjunction in self.get_catalyst_conjunctions))
-                    and (len(self.get_inhibitions) == 0
-                        or bool(kwargs["food_for_inhibitions"] & set(self.get_inhibitions))))
+            reactant_set = set() if not "food_for_reactants" in kwargs else set(kwargs["food_for_reactants"])
+            catalyst_set = set() if not "food_for_catalysts" in kwargs else set(kwargs["food_for_catalysts"])
+            inhibition_set = set() if not "food_for_inhibitions" in kwargs else set(kwargs["food_for_inhibitions"])
+            return ((direction in {"forward", "both"} and set(self.reactants).issubset(reactant_set)
+                        or direction in {"reverse", "both"} and set(self.products).issubset(reactant_set))
+                    and (len(self.catalysts) == 0 
+                        or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(catalyst_set) for conjunction in self.get_catalyst_conjunctions()))
+                    and (len(self.inhibitions) == 0
+                        or not bool(inhibition_set & set(self.inhibitions))))
 
     """ def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
                                                food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
@@ -137,33 +116,7 @@ class Reaction:
         return (direction in {"forward", "both"} and set(self.reactants).issubset(food)
                     or direction in {"reverse", "both"} and set(self.products).issubset(food))
 
-    def get_direction(self) -> str:
-        return self.direction
-
-    def get_name(self) -> str:
-        return self.name
-
-    def get_inhibitions(self) -> list:
-        return self.inhibitions
-
-    def get_reactants(self) -> list:
-        return self.reactants
-
-    def get_products(self) -> list:
-        return self.products
-
-    def get_catalysts(self) -> list:
-        return self.catalysts
-
-    def set_direction(self, direction: str):
-        self.direction = direction
-
-    def set_catalysts(self, catalysts: list = None):
-        self.catalysts = catalysts
-
     def __eq__(self, other: Reaction) -> bool:
-        if self == other:
-            return True  # FEHLERANFÄLLIG
         if not (isinstance(other, Reaction)):
             return False
         return (self.name == other.name and isinstance(other, Reaction)
@@ -286,7 +239,7 @@ class Reaction:
 
         catalysts: str
         if open_squarebracket == -1:
-            catalysts = FORMAL_FOOD.getName()
+            catalysts = ModelIO.FORMAL_FOOD.getName()
         else:
             catalysts = line[open_squarebracket+1, close_squarebracket].strip()
             catalysts = re.sub("\\|", ",", catalysts)
@@ -318,7 +271,7 @@ class Reaction:
         if all(r.isnumeric() for r in reactants):
             reactant_list = MoleculeType.values_of(names=reactants)
             for r in reactant_list:
-                reaction.get_reactants().append(r)
+                reaction.reactants.append(r)
         else:
             coefficient = -1
             for token in reactants:
@@ -332,7 +285,7 @@ class Reaction:
                         raise ValueError
                 else:
                     if coefficient == -1 or coefficient > 0:
-                        reaction.get_reactants().append(MoleculeType.value_of(token))
+                        reaction.reactants.append(MoleculeType.value_of(token))
                     if coefficient > 0:
                         reaction.set_reactant_coefficient(
                             MoleculeType.value_of(token), coefficient)
@@ -351,7 +304,7 @@ class Reaction:
         if all(p.isnumeric() for p in products):
             product_list = MoleculeType.values_of(names=products)
             for p in product_list:
-                reaction.get_products().append(r)
+                reaction.products.append(r)
         else:
             coefficient = -1
             for token in products:
@@ -365,7 +318,7 @@ class Reaction:
                     raise ValueError(msg)
                 else:
                     if coefficient == -1 or coefficient > 0:
-                        reaction.get_products().append(MoleculeType.value_of(token))
+                        reaction.products.append(MoleculeType.value_of(token))
                     if coefficient > 0:
                         reaction.set_product_coefficient(
                             MoleculeType.value_of(token), coefficient)
@@ -382,26 +335,28 @@ class Reaction:
                     msg = msg + str(r)
                 raise ValueError(msg)
 
-        reaction.set_catalysts(catalysts)
+        reaction.catalysts = catalysts
         for inhibitor in inhibitors:  # UNSCHÖN
-            reaction.get_inhibitions().append(MoleculeType.value_of(inhibitor))
-        reaction.set_direction(direction)
+            reaction.inhibitions.append(MoleculeType.value_of(inhibitor))
+        reaction.direction = direction
 
         return reaction
 
-    def get_catalyst_conjunctions(self) -> set[MoleculeType]:  # UNKlAR
+    def get_catalyst_conjunctions(self) -> set[MoleculeType]:
         '''
         returns conjunctions of catalysts as a set.
         One element of this set is one permutation of elements that can catalyze the reaction.
         The elements within one element of the set are divided by an "&".
         '''
         conjunctions = []
-        dnf = compute(self.get_catalysts())
-        for part in dnf.split(","):
-            conjunctions.append(MoleculeType.value_of(part))
-        return set(conjunctions)
+        dnf = compute(self.catalysts)
+        parts = dnf.split(",")
+        return set(MoleculeType().values_of(parts))
+        """ for part in dnf.split(","):
+            conjunctions.append(MoleculeType().value_of(part))
+        return set(conjunctions) """
 
-    def get_catalyst_elements(self) -> set[MoleculeType]:  # UNKLAR
+    def get_catalyst_elements(self) -> set[MoleculeType]:
         '''
         returns all catalyst elements for this reaction as a set, not considering associations between catalysts.
         '''
@@ -443,7 +398,7 @@ class Reaction:
         '''
         turns this reaction into a list of reactions with the direction forward
         '''
-        match self.get_direction:
+        match self.direction:
             case "forward":
                 return [deepcopy(self)]
             case "reverse":

@@ -23,7 +23,7 @@ class CoreRAFAlgorithm (AlgorithmBase):
         max_raf = MaxRAFAlgorithm().apply(input)
         
         important_reactions = ReactionSystem("Important")
-        important_reactions.reactions = [p[0].get_name for p in Importance.compute_reaction_importance(input, max_raf, MaxRAFAlgorithm) if p[1] == 100]
+        important_reactions.reactions = [p[0].name for p in Importance.compute_reaction_importance(input, max_raf, MaxRAFAlgorithm) if p[1] == 100]
         important_reactions.foods = important_reactions.compute_mentioned_foods(input.foods)
         
         core_raf = MaxRAFAlgorithm().apply(important_reactions)

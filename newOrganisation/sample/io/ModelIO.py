@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-from ..Utilities import Utilities
-from ..model.ReactionSystem import ReactionSystem
-from ..model.Reaction import Reaction
 from ..model.Reaction import MoleculeType
-from ..algorithm.AlgorithmBase import AlgorithmBase
 
 import re
 

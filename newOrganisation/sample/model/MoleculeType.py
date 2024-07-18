@@ -43,9 +43,3 @@ class MoleculeType:
 
     def to_string(self) -> str:
         return self.name
-
-    def get_name(self) -> str:
-        return self.name
-
-    def set_name(self, name: str) -> None:
-        self.name = name

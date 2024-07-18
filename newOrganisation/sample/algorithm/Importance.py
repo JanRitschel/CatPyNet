@@ -57,7 +57,7 @@ class Importance (IDescribed):
                 first = False
             else:
                 buffer += ", "
-            buffer += pair[0].get_name + " " + str(pair[1])
+            buffer += pair[0].name + " " + str(pair[1])
         
         return buffer
     
@@ -70,6 +70,6 @@ class Importance (IDescribed):
                 first = False
             else:
                 buffer += ", "
-            buffer += pair[0].get_name + " " + str(pair[1])
+            buffer += pair[0].name + " " + str(pair[1])
         
         return buffer

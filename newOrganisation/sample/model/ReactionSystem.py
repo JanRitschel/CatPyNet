@@ -123,7 +123,7 @@ class ReactionSystem:
         Otherwise sets inhibitors_present to False
         """        
         for reaction in self.reactions:
-            if len(reaction.get_inhibitions) > 0:
+            if len(reaction.inhibitions) > 0:
                 self.inhibitors_present = True
                 return
         self.inhibitors_present = False
