@@ -23,7 +23,7 @@ class Importance (IDescribed):
             replicate_input.foods.remove(food)
             
             replicate_output = algorithm.apply(replicate_input)
-            importance = 100.0 * (original_result.get_size - replicate_output.get_size) / float(original_result.get_size)
+            importance = 100.0 * (original_result.size - replicate_output.get_size) / float(original_result.size)
             if importance > 0:
                 result.append((food, importance))
             result.sort(lambda x: x[1]) #UNKLAR, im original negativ?
@@ -32,7 +32,7 @@ class Importance (IDescribed):
     def compute_reaction_importance(input_system:ReactionSystem, original_result:ReactionSystem, algorithm:AlgorithmBase) -> list[tuple[Reaction, float]]:
         result = []
         if original_result.size == 1:
-            result.append((original_result.get_reactions[0], 100.0))
+            result.append((original_result.reactions[0], 100.0))
         elif original_result.size > 1:
             size_to_compare_against = original_result.size - 1
             for reaction in input_system.reactions:
@@ -42,7 +42,7 @@ class Importance (IDescribed):
                 
                 replicate_output = algorithm.apply(replicate_input)
                 if replicate_output.size < size_to_compare_against:
-                    importance = 100.0 * (original_result.get_size - replicate_output.get_size) / float(original_result.get_size)
+                    importance = 100.0 * (original_result.size - replicate_output.get_size) / float(original_result.size)
                     if importance > 0:
                         result.append((reaction, importance))
             result.sort(lambda x: x[1]) #UNKLAR, im original negativ?

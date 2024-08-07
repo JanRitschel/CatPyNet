@@ -2,14 +2,27 @@
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sample
+import sample.model.ReactionSystem
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
+
+import hypothesis
+from hypothesis import assume, example, given, settings, strategies as st
+import sample.model
 import unittest
 import copy
 
+
 import sample.model as model
 
+listsize = 5
+base_alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+def standard_list(strat):
+    return st.lists(strat, min_size=listsize, max_size=listsize)
+
+def standard_text():
+    return st.text(base_alphabet, min_size=1)
 
 class BasicTestSuite(unittest.TestCase):
     """Basic test cases."""
@@ -67,21 +80,44 @@ class ReactionTests(unittest.TestCase):
     
         super().__init__(methodName)
     
-    def test_basic_generation(self):
+    def basic_to_reaction(self,name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reaction_coefficients:list[int], product_coefficients:list[int],
+                              direction)->model.Reaction:
+        reactants_m = model.MoleculeType().values_of(reactants)
+        products_m = model.MoleculeType().values_of(products)
+        inhibitors_m = model.MoleculeType().values_of(inhibitors)
+        catalysts_str = catalysts[0]
+        for i, c in enumerate(catalysts):
+            if i == 0:
+                continue
+            catalysts_str += "," + c
+        reaction_coefficients_dict = {reactants_m[i]:reaction_coefficients[i] for i in range(len(reaction_coefficients))}
+        product_coefficients_dict = {products_m[i]:product_coefficients[i] for i in range(len(product_coefficients))}
+        match str(direction):
+            case "0":
+                direction_key = "forward"
+            case "1":
+                direction_key = "reverse"
+            case "2":
+                direction_key = "both"
+        test_reaction = model.Reaction(name, warned_about_suppressing_coefficients=warned, reactants = reactants_m,
+                                       products=products_m, catalysts = catalysts_str, inhibitions=inhibitors_m,
+                                       reactant_coefficients=reaction_coefficients_dict,
+                                       product_coefficients=product_coefficients_dict, direction=direction_key)
         
-        result = model.Reaction()
-        self.assertEqual(model.Reaction(), result)
+        return test_reaction
+    
+    @given(name=st.text(base_alphabet, min_size=1), warned = st.booleans(), reactants = standard_list(standard_text()), 
+           products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
+           reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
+           direction = st.integers(0, 2))
+    def test_basic_generation(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
+                              direction):
         
-    def test_full_generation(self):
-        
-        result = model.Reaction("Test_Reaction", warned_about_suppressing_coefficients = True,
-                                reactants = model.MoleculeType().values_of(["A", "B"]), products = model.MoleculeType().values_of(["Z", "Y"]),
-                                catalysts = "C,D", inhibitions =  model.MoleculeType().values_of(["E"]),
-                                reactant_coefficients = {"A":1, "B":2},
-                                product_coefficients = {"Z":1, "Y": 1},
-                                direction = "forward")
-        expected = self.BASIC_REACTION
-        self.assertEqual(result, expected)
+        result = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction)
+        same_result = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction)
+        self.assertEqual(same_result, result)
         
     def test_name_generation(self):
         
@@ -94,59 +130,242 @@ class ReactionTests(unittest.TestCase):
                                 direction = "forward")
         self.assertEqual(result, expected)
         
-    def test_copy(self):
-        expected = self.BASIC_REACTION
+    @given(name=st.text(base_alphabet, min_size=1), warned = st.booleans(), reactants = standard_list(standard_text()), 
+           products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
+           reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
+           direction = st.integers(0, 2))
+    def test_copy(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
+                              direction):
+        
+        expected = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction)
         result = copy.deepcopy(expected)
         self.assertEqual(expected, result)
-        
-    def test_inhibitions_catalization_food_catalyzed(self):
-        data_direction = "forward"
-        data_food_catalyzed = model.MoleculeType().values_of(["A", "B", "C", "D", "A"])
-        data_obj = self.BASIC_REACTION
-        result_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food=data_food_catalyzed)
-        self.assertTrue(result_catalyzed)
-        
-    def test_inhibitions_catalization_food_half_catalyzed(self):
-        data_direction = "forward"
-        data_food_half_catalyzed = model.MoleculeType().values_of(["A", "B", "C", "A"])
-        data_obj = self.BASIC_REACTION
-        result_half_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food=data_food_half_catalyzed)
-        self.assertTrue(result_half_catalyzed)
-        
-    def test_inhibitions_catalization_food_not_catalyzed(self):
-        data_direction = "forward"
-        data_food_not_catalyzed = model.MoleculeType().values_of(["A", "B", "A"])
-        data_obj = self.BASIC_REACTION
-        result_not_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food=data_food_not_catalyzed)
-        self.assertFalse(result_not_catalyzed)
     
-    def test_inhibitions_catalization_food_inhibited(self):
-        data_direction = "forward"
-        data_food = model.MoleculeType().values_of(["A", "B", "C", "E", "A"])
-        data_obj = self.BASIC_REACTION
-        result_not_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food=data_food)
-        self.assertFalse(result_not_catalyzed)
+    @given(name=st.text(base_alphabet, min_size=1), warned = st.booleans(), reactants = standard_list(standard_text()), 
+           products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
+           reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
+           direction_reaction = st.integers(0, 2), direction_test = st.integers(0, 2), food = st.lists(st.text(base_alphabet, min_size=1)))
+    def test_inhibitions_catalization_food_catalyzed(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
+                              direction_reaction, direction_test, food:list[str]):
+        
+        data_obj:model.Reaction = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction_reaction)
+        data_food_catalyzed = model.MoleculeType().values_of(food)
+        data_catalysts = model.MoleculeType().values_of(data_obj.catalysts.split(","))
+        match str(direction_test):
+            case "0":
+                direction_key = "forward"
+            case "1":
+                direction_key = "reverse"
+            case "2":
+                direction_key = "both"
+        result_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(direction_key, food=data_food_catalyzed)
+        
+        if (direction_key in {"forward" or "both"}
+            and data_food_catalyzed 
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_catalysts).issubset(data_food_catalyzed)
+            and set(data_obj.inhibitions).isdisjoint(data_food_catalyzed)):
+            self.assertTrue(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+              and data_food_catalyzed 
+            and set(data_obj.products).issubset(set(data_food_catalyzed)) 
+            and set(data_catalysts).issubset(data_food_catalyzed)
+            and set(data_obj.inhibitions).isdisjoint(data_food_catalyzed)):
+            self.assertTrue(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+              and data_food_catalyzed 
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_catalysts).issubset(data_food_catalyzed)
+            and set(data_obj.inhibitions).issubset(data_food_catalyzed)
+            and data_obj.inhibitions):
+            self.assertFalse(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+              and data_food_catalyzed 
+            and set(data_obj.products).issubset(set(data_food_catalyzed)) 
+            and set(data_catalysts).issubset(data_food_catalyzed)
+            and set(data_obj.inhibitions).issubset(data_food_catalyzed)
+            and data_obj.inhibitions):
+            self.assertFalse(result_catalyzed)
+            
+    @given(name=st.text(base_alphabet, min_size=1), warned = st.booleans(), reactants = standard_list(standard_text()), 
+           products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
+           reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
+           direction_reaction = st.integers(0, 2), direction_test = st.integers(0, 2), food_reactants = st.lists(st.text(base_alphabet, min_size=1)),food_catalyst = st.lists(st.text(base_alphabet, min_size=1)), food_inhibition = st.lists(st.text(base_alphabet, min_size=1)))
+    def test_inhibitions_catalization_food_specific(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
+                              direction_reaction, direction_test, food_reactants:list[str], food_catalyst:list[str], food_inhibition:list[str]):
+        
+        data_obj:model.Reaction = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction_reaction)
+        data_food_catalyzed = model.MoleculeType().values_of(food_reactants)
+        data_food_catalysts = model.MoleculeType().values_of(food_catalyst)
+        data_food_inhibitors = model.MoleculeType().values_of(food_inhibition)
+        
+        data_obj_catalysts = model.MoleculeType().values_of(data_obj.catalysts.split(","))
+        
+        match str(direction_test):
+            case "0":
+                direction_key = "forward"
+            case "1":
+                direction_key = "reverse"
+            case "2":
+                direction_key = "both"
+        result_catalyzed = data_obj.is_catalyzed_uninhibited_all_reactants(direction_key, food_for_reactants = data_food_catalyzed,
+                                                                           food_for_catalysts = data_food_catalysts,
+                                                                           food_for_inhibitions = data_food_inhibitors)
+        
+        if (direction_key in {"forward" or "both"}
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and set(data_obj.inhibitions).isdisjoint(data_food_inhibitors)):
+            self.assertTrue(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and set(data_obj.inhibitions).isdisjoint(data_food_inhibitors)):
+            self.assertTrue(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and set(data_obj.inhibitions).issubset(data_food_inhibitors)
+            and data_obj.inhibitions):
+            self.assertFalse(result_catalyzed)
+        elif (direction_key in {"forward" or "both"}
+            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and set(data_obj.inhibitions).issubset(data_food_inhibitors)
+            and data_obj.inhibitions):
+            self.assertFalse(result_catalyzed)
      
-    def test_inhibitions_catalization_food_specific_inhibited(self):
-        data_direction = "forward"
-        data_food_for_reactants = model.MoleculeType().values_of(["A", "B", "A"])
-        data_food_for_catalysts = model.MoleculeType().values_of(["C", "D", "C"])
-        data_food_for_inhibitions = model.MoleculeType().values_of(["E", "F", "E"])
-        data_obj = self.BASIC_REACTION
-        result = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food_for_reactants = data_food_for_reactants,
-                                                                 food_for_catalysts = data_food_for_catalysts,
-                                                                 food_for_inhibitions = data_food_for_inhibitions)
-        self.assertFalse(result)
+    @given(name=st.text(base_alphabet, min_size=1), warned = st.booleans(), reactants = standard_list(standard_text()), 
+           products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
+           reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
+           direction = st.integers(0, 2), tabbed = st.booleans())
+    def test_parser(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+                              , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
+                              direction:int, tabbed:bool):
+        """doesnt test for and in catalysts"""
+        """ assume(all([react.isalpha() for react in reactants]))
+        assume(all([product.isalpha() for product in products]))
+        assume(all([catalyst.isalpha() for catalyst in catalysts]))
+        assume(all([inhibitor.isalpha() for inhibitor in inhibitors])) """
+        result = self.basic_to_reaction(name, warned, reactants, products, catalysts, inhibitors, reactant_coefficients, product_coefficients, direction)
+        if not tabbed:
+            test_text = name + "\t:"
+            for react in reactants:
+                test_text += " " + str(result.reactant_coefficients[model.MoleculeType().value_of(react)]) + " " + react
+            test_text += " ["
+            for i, c in enumerate(catalysts):
+                if i == 0:
+                    test_text += c
+                else: test_text += "," + c
+            test_text += "] {"
+            for i, inh in enumerate(inhibitors):
+                if i == 0:
+                    test_text += inh
+                else: test_text += "," + inh
+            test_text += "}"
+            match str(direction):
+                case "0":
+                    test_text += " -> "
+                case "1":
+                    test_text += " <- "
+                case "2":
+                    test_text += " <-> "
+            for product in products:
+                test_text += " " + str(result.product_coefficients[model.MoleculeType().value_of(product)]) + " " + product
+        elif tabbed:
+            test_text = name + " \t "
+            for react in reactants:
+                test_text += " " + str(result.reactant_coefficients[model.MoleculeType().value_of(react)]) + " " + react
+            match str(direction):
+                case "0":
+                    test_text += " -> "
+                case "1":
+                    test_text += " <- "
+                case "2":
+                    test_text += " <-> "
+            for product in products:
+                test_text += " " + str(result.product_coefficients[model.MoleculeType().value_of(product)]) + " " + product
+            test_text += " \t ["
+            for i, c in enumerate(catalysts):
+                if i == 0:
+                    test_text += c
+                else: test_text += "," + c
+            test_text += "] \t {"
+            for i, inh in enumerate(inhibitors):
+                if i == 0:
+                    test_text += inh
+                else: test_text += "," + inh
+            test_text += "}"
         
-    def test_inhibitions_catalization_food_specific_catalyzed(self):
-        data_direction = "forward"
-        data_food_for_reactants = model.MoleculeType().values_of(["A", "B", "A"])
-        data_food_for_catalysts = model.MoleculeType().values_of(["C", "D", "C"])
-        data_obj = self.BASIC_REACTION
-        result = data_obj.is_catalyzed_uninhibited_all_reactants(data_direction, food_for_reactants = data_food_for_reactants,
-                                                                 food_for_catalysts = data_food_for_catalysts)
-        self.assertTrue(result)
+        test_obj = model.Reaction().parse(test_text, tabbed_format=tabbed)
         
+        self.assertEqual(test_obj,result)
+            
+    def test_dnf(self):
+        
+        data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
+        dummy_res_str = [{"AB","CD&EF&GH","IJ"}, {"AB","CD&EF&GH","IJ"}, {"AB","CD&GH","EF&GH","IJ"}, {"AB&EF","AB&GH","CD&EF","CD&GH","IJ"}]
+        res_str = [set(model.MoleculeType().values_of(list(dummy_res_str[i]))) for i in range(0,len(dummy_res_str))]
+        test_str = [model.Reaction("", catalysts=data).get_catalyst_conjunctions() for data in data_str]
+        print([mol.name for mol in test_str])
+        self.assertEqual(test_str, res_str)
+        
+    def test_dnf_elements(self):
+        data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
+        dummy_res_str = [{"A","B","C","D","E","F","G","H","I","J"}, {"A","B","C","D","E","F","G","H","I","J"}, {"A","B","C","D","E","F","G","H","I","J"}, {"A","B","C","D","E","F","G","H","I","J"}]
+        res_str = [set(model.MoleculeType().values_of(list(dummy_res_str[i]))) for i in range(0,len(dummy_res_str))]
+        test_str = [model.Reaction("", catalysts=data).get_catalyst_elements() for data in data_str]
+        print([mol.name for mol in test_str])
+        self.assertEqual(test_str, res_str)
+                
+
+class ReactionSystemTests(unittest.TestCase):
+    
+    def basic_to_Reactionsystem(self,reaction_names:list[str], warned:list[bool], reactants:list[list[str]], products:list[list[str]], catalysts:list[list[str]]
+                              , inhibitors:list[list[str]], reaction_coefficients:list[list[int]], product_coefficients:list[list[int]],
+                              direction:list[int], foods:list[str], rs_name:str)->sample.model.ReactionSystem.ReactionSystem:
+        sys_reactions = []
+        for i, name in enumerate(reaction_names):
+            sys_reactions.append(ReactionTests.basic_to_reaction(reaction_names[i], warned[i], reactants[i], 
+                                                             products[i], catalysts[i], inhibitors[i], 
+                                                             reaction_coefficients[i], product_coefficients[i], direction[i]))
+        sys_foods = model.MoleculeType().values_of(foods)
+        return sample.model.ReactionSystem(rs_name, reactions=sys_reactions, foods=sys_foods)
+    
+    @given(reaction_names=standard_list(standard_text()), 
+           warned = st.lists(st.booleans(), min_size=listsize, max_size=listsize),
+           reactants = standard_list(standard_list(standard_text())), 
+           products = standard_list(standard_list(standard_text())), 
+           catalysts = standard_list(standard_list(standard_text())), 
+           inhibitors = standard_list(standard_list(standard_text())),
+           reaction_coefficients = standard_list(standard_list(st.integers(min_value=1))), 
+           product_coefficients = standard_list(standard_list(st.integers(min_value=1))),
+           direction = standard_list(st.integers(0, 2)), direction_test = standard_list(st.integers(0, 2)), 
+           foods = standard_list(standard_text()),
+           rs_name=standard_text())  
+    def copy_test(self,reaction_names:list[str], warned:list[bool], reactants:list[list[str]], products:list[list[str]], catalysts:list[list[str]]
+                              , inhibitors:list[list[str]], reaction_coefficients:list[list[int]], product_coefficients:list[list[int]],
+                              direction:list[int], foods:list[str], rs_name:str):
+        test_obj = self.basic_to_Reactionsystem(reaction_names, warned, reactants, products, catalysts, inhibitors, reaction_coefficients, product_coefficients, direction, foods, rs_name)
+        res_obj = copy.copy(test_obj)
+        self.assertEqual(test_obj, res_obj)
+    
+    def header_line():
+        pass
+    
+    def inhibitors_present():
+        pass
+    
+    def mentioned_foods():
+        pass
+    
+    def replace_reaction():
+        pass
+
         
 if __name__ == '__main__':
     unittest.main()
+    print(sys.path)

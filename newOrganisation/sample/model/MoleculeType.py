@@ -33,7 +33,8 @@ class MoleculeType:
         return res
 
     def __eq__(self, other: MoleculeType) -> bool:
-        return (self.name == other.name) & isinstance(other, MoleculeType)
+        if isinstance(other, MoleculeType):
+            return (self.name == other.name)
 
     def __lt__(self, other: MoleculeType) -> bool:
         return hash(self) < hash(other)

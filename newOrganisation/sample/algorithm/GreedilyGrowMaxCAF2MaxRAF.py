@@ -21,7 +21,7 @@ class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
         max_caf = MaxCAFAlgorithm().apply(input_reaction_system)
         max_raf = MaxRAFAlgorithm().apply(input_reaction_system)
 
-        remaining_reactions = [r for r in max_raf.reactions if not (r.name in max_caf.get_reaction_names)]
+        remaining_reactions = [r for r in max_raf.reactions if not (r.name in max_caf.get_reaction_names())]
         
         augmented_reactions = []
         augmented_system = copy.copy(max_raf)
