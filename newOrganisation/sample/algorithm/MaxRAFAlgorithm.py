@@ -1,8 +1,9 @@
 from __future__ import annotations
-
-from ..Utilities import Utilities
-from ..model.ReactionSystem import ReactionSystem
-from .AlgorithmBase import AlgorithmBase
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.Utilities import Utilities
+from sample.model.ReactionSystem import ReactionSystem
+from sample.algorithm.AlgorithmBase import AlgorithmBase
 
 class MaxRAFAlgorithm (AlgorithmBase):
     
@@ -25,8 +26,8 @@ class MaxRAFAlgorithm (AlgorithmBase):
         
         result = ReactionSystem(self.NAME)
         
-        input_reactions = set(input.reactions)
-        input_food = set(input.foods)
+        input_reactions = input.reactions
+        input_food = input.foods
         
         if len(input_reactions) > 0:
             reactions = []

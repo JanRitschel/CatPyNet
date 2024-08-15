@@ -28,7 +28,7 @@ class Utilities:
                     if set(reaction.products).issubset(all_molecules):
                         all_molecules.update(reaction.reactants)
         
-        return all_molecules
+        return list(all_molecules)
     
     def filter_reactions(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
         return [r for r in reactions if r.is_catalyzed_uninhibited_all_reactants(food=food, direction=r.direction)]

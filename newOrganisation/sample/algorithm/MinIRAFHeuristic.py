@@ -36,7 +36,7 @@ class MinIRAFHeuristic(AlgorithmBase):
     
     def apply(input: ReactionSystem) -> ReactionSystem|None:
         
-        list = MinIRAFHeuristic.apply_all_smallest(input)
+        list = MinIRAFHeuristic().apply_all_smallest(input)
         if list != [] and list != None:
             return list[0]
         else: return None

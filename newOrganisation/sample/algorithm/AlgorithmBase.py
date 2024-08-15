@@ -16,28 +16,21 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.model.ReactionSystem import ReactionSystem
+from sample.algorithm.IDescribed import IDescribed
 
-from ..model.ReactionSystem import ReactionSystem
-from .IDescribed import IDescribed
-# Java modules to find replacements for
-'''
-import jloda.util.CanceledException
-import jloda.util.PluginClassLoader
-import jloda.util.StringUtils
-import jloda.util.progress.ProgressListener
-
-import java.util.ArrayList
-import java.util.Collection
-'''
 
 class AlgorithmBase(IDescribed):
     '''
     computes a new reaction system
     Daniel Huson, 7.2019
     '''
-    """ 
-    def __init__():
+    """ def __init__(self):
         pass """
+    
+    NAME:str = ""
     
     @property
     def name(self):
@@ -73,7 +66,7 @@ class AlgorithmBase(IDescribed):
         '''
         list = []
         for algorithm in AlgorithmBase.__subclasses__():
-            list.append(algorithm.getName().title())
+            list.append(algorithm.NAME)
 
         return list
     
@@ -86,7 +79,7 @@ class AlgorithmBase(IDescribed):
         returns algorithm
         '''
         for algorithm in AlgorithmBase.__subclasses__():
-            if name.casefold() == algorithm.getName().casefold():
+            if name.casefold() == algorithm.NAME.casefold():
                 return algorithm
             
         return None

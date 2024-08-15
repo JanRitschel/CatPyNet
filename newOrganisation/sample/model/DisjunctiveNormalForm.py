@@ -41,7 +41,13 @@ def recurse(expression:str) -> list[str]:
             if next_outside_operator == ",":
                 return union(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
             if next_outside_operator == "&":
-                return product(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
+                next_rel_or = next_outside_or(expression, associated_closed_bracket+1)
+                if next_rel_or == -1:
+                    return product(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
+                else:
+                    return union(product(recurse(expression[1:associated_closed_bracket]),
+                                         recurse(expression[associated_closed_bracket + 2:next_rel_or])),
+                                 recurse(expression[next_rel_or+1:]))
     else:
         next_inside_operator = next_or(expression, 0)
         if next_inside_operator > 0:
@@ -77,6 +83,19 @@ def product(tree_a:list, tree_b:list) -> list:
             else:
                 res.append(content_a + "&" + content_b)
     return res
+
+def next_outside_or(expression:str, start_pos:int) -> int:
+    end_pos = len(expression)-1
+    inside_brackets_depth = 0
+    while start_pos <= end_pos:
+        if inside_brackets_depth == 0:
+            if start_pos==end_pos: return -1
+            elif expression[start_pos] == ",": return start_pos
+        if expression[start_pos] == "(": inside_brackets_depth += 1
+        elif expression[start_pos] == ")": inside_brackets_depth -= 1
+        start_pos += 1
+        
+    return -1
 
 def next_or(expression:str, start_pos:int) -> int:
     """

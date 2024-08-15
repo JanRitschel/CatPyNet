@@ -1,4 +1,6 @@
 from __future__ import annotations
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 '''
  * ReactionSystem.java Copyright (C) 2022 Daniel H. Huson
  *
@@ -18,22 +20,8 @@ from __future__ import annotations
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
-from .Reaction import Reaction #UNSCHÖN, potentiell überflüssig
-from .MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
-from copy import copy
-
-# Java modules to find replacements for
-'''
-import javafx.beans.binding.Bindings
-import javafx.beans.property.*
-import javafx.collections.FXCollections
-import javafx.collections.ListChangeListener
-import javafx.collections.ObservableList
-import jloda.util.CollectionUtils
-
-import java.util.*
-import java.util.stream.Collectors
-'''
+from sample.model.Reaction import Reaction #UNSCHÖN, potentiell überflüssig
+from sample.model.MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
 
 
 class ReactionSystem:
@@ -56,7 +44,7 @@ class ReactionSystem:
         for reaction in self.reactions:
             if reaction.direction == "both":
                 buffer += 1
-        self._number_of_two_way_reactions:int = buffer
+        self.number_of_two_way_reactions:int = buffer
         
         self.update_inhibitors_present()
         #ENTFERNT, Binds für size und foodsize
@@ -139,7 +127,7 @@ class ReactionSystem:
             molecule_types.extend(reaction.products)
         return molecule_types
     
-    def get_reaction_names(self) -> set[str]: #Unschön, sollte set geben
+    def get_reaction_names(self) -> list[str]: #Unschön, sollte set geben
         names = []
         for reaction in self.reactions:
             names.append(reaction.name)

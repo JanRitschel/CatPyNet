@@ -19,26 +19,14 @@ from __future__ import annotations
  '''
 
 import re
-from .DisjunctiveNormalForm import compute
-from .MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.model.DisjunctiveNormalForm import compute
+from sample.model.MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
 from copy import copy, deepcopy
-from ..io import ModelIO
-# Java modules to find replacements for
-'''
-import jloda.fx.window.NotificationManager 
-import jloda.util.NumberUtils 
-import jloda.util.StringUtils 
 
-import java.io.IOException 
-import java.util.* 
-import java.util.stream.Collectors 
 
-import static catlynet.io.ModelIO.FORMAL_FOOD 
-'''
-
-# inintial definition. What is Comparable?
-# class Reaction implements Comparable<Reaction>
-
+FORMAL_FOOD = MoleculeType().value_of(name="$")
 
 class Reaction:
     '''*
@@ -120,14 +108,15 @@ class Reaction:
         if not (isinstance(other, Reaction)):
             return False
         res = True
-        if not self.name == other.name and isinstance(other, Reaction): res = False; print("failed at name")
-        if not self.reactants == other.reactants: res = False; print("failed at reactants")
-        if not self.products == other.products: res = False; print("failed at products")
-        if not self.catalysts == other.catalysts: res = False; print("failed at catalysts")
-        if not self.inhibitions == other.inhibitions: res = False; print("failed at inhibitions")
-        if not self.reactant_coefficients == other.reactant_coefficients: res = False; print("failed at reactant_coefficients")
-        if not self.product_coefficients == other.product_coefficients: res = False; print("failed at product_coefficients")
-        if not self.direction == other.direction: res = False; print("failed at product_coefficients")
+        print("self: " + self.name + "; other: " + other.name)
+        if not self.name == other.name and isinstance(other, Reaction): res = False; #print("failed at name")
+        if not self.reactants == other.reactants: res = False; #print("failed at reactants")
+        if not self.products == other.products: res = False; #print("failed at products")
+        if not self.catalysts == other.catalysts: res = False; #print("failed at catalysts")
+        if not self.inhibitions == other.inhibitions: res = False; #print("failed at inhibitions")
+        if not self.reactant_coefficients == other.reactant_coefficients: res = False; #print("failed at reactant_coefficients")
+        if not self.product_coefficients == other.product_coefficients: res = False; #print("failed at product_coefficients")
+        if not self.direction == other.direction: res = False; #print("failed at product_coefficients")
 
         return res
         """ return (self.name == other.name and isinstance(other, Reaction)
@@ -255,13 +244,16 @@ class Reaction:
             print('''open_squarebracket has no int value.
                       Can't parse reaction: ''' + line)
             raise ValueError
-        reactants = line[colon_pos+1:end_of_reactants].split()
-        for r in reactants:
-            r = r.strip()
+        if "+" in line[colon_pos+1:end_of_reactants]:
+            reactants = line[colon_pos+1:end_of_reactants].strip().split("+")
+        else: reactants = line[colon_pos+1:end_of_reactants].strip().split()
+        """ for r in reactants:
+            r = r.strip() """
 
         catalysts: str
         if open_squarebracket == -1:
-            catalysts = ModelIO.FORMAL_FOOD.getName()
+            global FORMAL_FOOD
+            catalysts = FORMAL_FOOD.name
         else:
             catalysts = line[open_squarebracket+1:close_squarebracket].strip().strip("[").strip("]")
             catalysts = re.sub("\\|", ",", catalysts)
@@ -286,14 +278,15 @@ class Reaction:
             inhibitor_string = re.sub("\\s+", ",", inhibitor_string)
             inhibitors = inhibitor_string.split(",")
         else:
-            inhibitors = [0]
+            inhibitors = []
 
-        products = line[end_arrow+1:].strip().split("+")  # FEHLERANFÄLLIG/NEU
-        cache = []
+        if "+" in line[end_arrow+1:]:
+            products = line[end_arrow+1:].strip().split("+")  # FEHLERANFÄLLIG/NEU
+        else: products = line[end_arrow+1:].strip().split()
+        """ cache = []
         for p in products:
             cache.extend(p.split(" "))
-        products = cache
-        #print(products)
+        products = cache """
         reaction = Reaction(reaction_name)
         if all(r.isnumeric() for r in reactants):
             reactant_list = MoleculeType().values_of(names=reactants)

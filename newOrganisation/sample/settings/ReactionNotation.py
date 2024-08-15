@@ -12,7 +12,7 @@ class ReactionNotation(Enum):
 
     #ENTFERNT, valueOfIgnoreCase
 
-    def detect_notation(lines:list[str]) -> tuple(ReactionNotation, ArrowNotation)|None:
+    def detect_notation(lines:list[str]) -> tuple[ReactionNotation, ArrowNotation]|None:
         
         arrows_use_equals = False
         arrows_use_minus = False
@@ -24,14 +24,15 @@ class ReactionNotation(Enum):
             if not line.startswith(("#", "Food:", "F:")):
                 if "\t" in line:
                     contains_tabs = True
-                if "," in line:
-                    contains_commas = True
                 if "[" in line or "]" in line:
                     contains_square_brackets = True
                 if "=>" in line or "<=" in line:
                     arrows_use_equals = True
                 if "->" in line or "<-" in line:
                     arrows_use_minus = True
+            else:
+                if "," in line:
+                    contains_commas = True
         if arrows_use_minus or arrows_use_equals:
             if contains_square_brackets:
                 if contains_commas:
