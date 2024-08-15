@@ -13,8 +13,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-c", "Max RAF",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\prokaryotic-network.crs",
+                "-c", "Core RAF",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-0.crs",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result2.crs"
             ]
         }

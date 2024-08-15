@@ -108,7 +108,7 @@ class Reaction:
         if not (isinstance(other, Reaction)):
             return False
         res = True
-        print("self: " + self.name + "; other: " + other.name)
+        #print("self: " + self.name + "; other: " + other.name)
         if not self.name == other.name and isinstance(other, Reaction): res = False; #print("failed at name")
         if not self.reactants == other.reactants: res = False; #print("failed at reactants")
         if not self.products == other.products: res = False; #print("failed at products")

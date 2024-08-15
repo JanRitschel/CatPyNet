@@ -65,6 +65,12 @@ class AlgorithmBase(IDescribed):
         return names of all known algorithms
         '''
         list = []
+        try:
+            from sample.algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
+            from sample.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
+            from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+            from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+        except: pass
         for algorithm in AlgorithmBase.__subclasses__():
             list.append(algorithm.NAME)
 

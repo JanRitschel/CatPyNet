@@ -2,9 +2,7 @@ import argparse
 import zipfile
 
 import os, sys
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-application_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
@@ -35,7 +33,6 @@ def main():
 
     #ZU MACHEN, comment argument (?) mit OTHER variable aus ArgsOptions
     arguments = vars(parser.parse_args())
-    print(arguments)
     #ZU MACHEN, Files auf verschiedenheit, schreibbarkeit und existenz prüfen
     input_system = parse_input_file(arguments['i']) 
     algorithm:AlgorithmBase = AlgorithmBase.get_algorithm_by_name(arguments['c'])

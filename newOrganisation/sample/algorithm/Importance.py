@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import IDescribed
 import copy
-
-from ..Utilities import Utilities
-from ..model.ReactionSystem import ReactionSystem
-from ..model.Reaction import Reaction
-from ..model.MoleculeType import MoleculeType
-from .AlgorithmBase import AlgorithmBase
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.model.ReactionSystem import ReactionSystem
+from sample.model.Reaction import Reaction
+from sample.model.MoleculeType import MoleculeType
+from sample.algorithm.AlgorithmBase import AlgorithmBase
+from sample.algorithm.IDescribed import IDescribed
 
 class Importance (IDescribed):
     
@@ -40,12 +40,13 @@ class Importance (IDescribed):
                 replicate_input.name = "Reaction importance"
                 replicate_input.reactions.remove(reaction)
                 
-                replicate_output = algorithm.apply(replicate_input)
+                replicate_output:ReactionSystem = algorithm().apply(replicate_input)
                 if replicate_output.size < size_to_compare_against:
-                    importance = 100.0 * (original_result.size - replicate_output.get_size) / float(original_result.size)
+                    importance = 100.0 * (original_result.size - replicate_output.size) / float(original_result.size)
+                    print(str(importance))
                     if importance > 0:
                         result.append((reaction, importance))
-            result.sort(lambda x: x[1]) #UNKLAR, im original negativ?
+            result.sort(key=lambda x: x[1]) #UNKLAR, im original negativ?
         return result
     
     def to_string_food_importance(food_imortance:list[tuple[MoleculeType, float]]) -> str:

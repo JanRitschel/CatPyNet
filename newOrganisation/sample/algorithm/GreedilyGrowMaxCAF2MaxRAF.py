@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import copy
-
-from ..Utilities import Utilities
-from ..model.ReactionSystem import ReactionSystem
-from ..model.Reaction import Reaction
-from .AlgorithmBase import AlgorithmBase
-from .IDescribed import IDescribed
-from .MaxRAFAlgorithm import MaxRAFAlgorithm
-from .MaxCAFAlgorithm import MaxCAFAlgorithm
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.model.ReactionSystem import ReactionSystem
+from sample.model.Reaction import Reaction
+from sample.algorithm.IDescribed import IDescribed
+from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from sample.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
 
 class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
 
