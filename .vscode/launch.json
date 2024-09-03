@@ -7,15 +7,46 @@
 
 
         {
-            "name": "Python Debugger: Current File with Arguments",
+            "name": "Max Caf Debugger: Current File with Arguments",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-c", "Core RAF",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-0.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result2.crs"
+                "-c", "max caf",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-3.crs",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result3.crs",
+                "-rn", "SPARSE"
+            ]
+        },
+        {
+            "name": "Max Raf Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-c", "core raf",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-7.crs",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
+                "-rn", "SPARSE"
+            ]
+        },
+        {
+            "name": "Polymer Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-a", "6",
+                "-k", "1,2, 3",
+                "-n", "10",
+                "-m", "1.0,2.0, 3.0",
+                "-r", "1",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\poly_test",
+                "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
+                "-rn", "FULL"
             ]
         }
     ]

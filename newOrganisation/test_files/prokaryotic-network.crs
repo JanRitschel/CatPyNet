@@ -1,3 +1,9 @@
+# Prokaryotic network from:
+# Xavier, J.C., Hordijk, W., Kauffman, S., Steel M. and Martin, W.F. (2020).
+# Autocatalytic chemical networks at the origin of metabolism. Proc. Roy. Soc. B. 287: 20192377
+#
+# Biochemical names of compounds can be found here: https://rest.kegg.jp/list/compound
+
 Food: C00282 C00011 C00001 IronSulfurClusters Other_clusters Ni-Fe-S_cluster C00009 C00059 Pooling Spontaneous C00305 C19610 C00038 C00175 C00076 C19609 C14818 C00070 C13884 C01413 C06696 C14819 C00238 C01330 C00698 C00697 C01342 C00014 C06267 C00288 C00080 C00013 C00023 C00028 C00030 C00050 C00087 C00283 C00033 C00058 C00022 C00132 C00061 C00018 C00068 C00003 C05924 C00541 C00113 C16241 C00002 C00120 C00051 C15494 C00019 Other_quinones C00101 dipyrromethane TTQ C04054 C00020 C06021 C01134 C00828 C00010 C00138 C00139 C00237
 
 R02124 : C00003 + C00473 [(Flavins,Hemes,C00038,C14818,C14819)&NADs] <=> C00004 + C00080 + C00376

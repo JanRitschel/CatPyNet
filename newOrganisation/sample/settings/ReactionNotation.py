@@ -1,14 +1,14 @@
 from __future__ import annotations
-from enum import Enum
+from enum import StrEnum
 
 from .ArrowNotation import ArrowNotation
 
-class ReactionNotation(Enum):
+class ReactionNotation(StrEnum):
     
     
-    FULL = 1
-    SPARSE = 2
-    TABBED = 3
+    FULL = "FULL"
+    SPARSE = "SPARSE"
+    TABBED = "TABBED"
 
     #ENTFERNT, valueOfIgnoreCase
 

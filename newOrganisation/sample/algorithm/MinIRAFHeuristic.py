@@ -20,7 +20,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         return self.NUMBER_OF_RANDOM_INSERTION_ORDERS
     
     @number_of_random_insertion_orders.setter
-    def name(self, value:int):
+    def number_of_random_insertion_orders(self, value:int):
         self.NUMBER_OF_RANDOM_INSERTION_ORDERS = value
 
     @property
@@ -35,7 +35,7 @@ class MinIRAFHeuristic(AlgorithmBase):
     def description(self):
         return "searches for irreducible RAFs in a heuristic fashion [HS23]"
     
-    def apply(input: ReactionSystem) -> ReactionSystem|None:
+    def apply(self, input: ReactionSystem) -> ReactionSystem|None:
         
         list = MinIRAFHeuristic().apply_all_smallest(input)
         if list != [] and list != None:
@@ -46,6 +46,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         
         max_raf = MaxRAFAlgorithm().apply(input)
         reactions = max_raf.reactions
+        if self.number_of_random_insertion_orders == None: self.number_of_random_insertion_orders = 10
         seeds = [i*123 for i in range(0,self.number_of_random_insertion_orders)]
 
         best:list[ReactionSystem] = []

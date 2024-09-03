@@ -31,7 +31,11 @@ class Utilities:
         return list(all_molecules)
     
     def filter_reactions(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
-        return [r for r in reactions if r.is_catalyzed_uninhibited_all_reactants(food=food, direction=r.direction)]
+        res_reactions = []
+        for r in reactions:
+            if r.is_catalyzed_uninhibited_all_reactants(food=food, direction=r.direction):
+                res_reactions.append(r)
+        return res_reactions
     
     def compute_food_generated(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
         available_food = set(food)
@@ -62,3 +66,6 @@ class Utilities:
     def contains_all(set:iter, subset:iter) -> bool:
         '''check if iteralble "set" contains all elements of another iterable "subset"'''
         return all(element in set for element in subset)
+    
+    def is_float(s:str)-> bool:
+        return s.replace(".", "", 1).replace(",", "", 1).isdigit()

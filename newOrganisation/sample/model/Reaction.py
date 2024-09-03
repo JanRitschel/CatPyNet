@@ -295,7 +295,7 @@ class Reaction:
         else:
             coefficient = -1
             for token in reactants:
-                if token.isdigit():  # might be problematic, UNSCHÖN
+                if token.isnumeric():  # might be problematic, UNSCHÖN
                     if coefficient == -1:
                         coefficient = int(token)
                     else:
@@ -313,7 +313,7 @@ class Reaction:
                             print("Coefficients found in reactions, ignored")
                             self.warned_about_suppressing_coefficients = True
                     coefficient = -1
-                if coefficient == -1 and token.isdigit():  # might be problematic, UNSCHÖN
+                if coefficient == -1 and token.isnumeric():  # might be problematic, UNSCHÖN
                     coefficient = int(token)
             if coefficient != -1:
                 msg = "Can't distinguish between coefficients and reactant names : "
@@ -328,7 +328,7 @@ class Reaction:
         else:
             coefficient = -1
             for token in products:
-                if token.isdigit():  # might be problematic, UNSCHÖN
+                if token.isnumeric():  # might be problematic, UNSCHÖN
                     if coefficient == -1:
                         coefficient = int(token)
                     else:

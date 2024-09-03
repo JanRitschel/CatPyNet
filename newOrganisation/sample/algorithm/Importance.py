@@ -3,6 +3,9 @@ from __future__ import annotations
 import copy
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
+from tqdm import tqdm
+import time
 from sample.model.ReactionSystem import ReactionSystem
 from sample.model.Reaction import Reaction
 from sample.model.MoleculeType import MoleculeType
@@ -29,7 +32,7 @@ class Importance (IDescribed):
             result.sort(lambda x: x[1]) #UNKLAR, im original negativ?
         return result
     
-    def compute_reaction_importance(input_system:ReactionSystem, original_result:ReactionSystem, algorithm:AlgorithmBase) -> list[tuple[Reaction, float]]:
+    def compute_reaction_importance(input_system:ReactionSystem, original_result:ReactionSystem, algorithm:AlgorithmBase, pbar:tqdm, times:list) -> list[tuple[Reaction, float]]:
         result = []
         if original_result.size == 1:
             result.append((original_result.reactions[0], 100.0))
@@ -42,10 +45,12 @@ class Importance (IDescribed):
                 
                 replicate_output:ReactionSystem = algorithm().apply(replicate_input)
                 if replicate_output.size < size_to_compare_against:
-                    importance = 100.0 * (original_result.size - replicate_output.size) / float(original_result.size)
-                    print(str(importance))
+                    importance = 100.0 * (size_to_compare_against - replicate_output.size) / float(size_to_compare_against)
+                    tqdm.write(str(importance))
                     if importance > 0:
                         result.append((reaction, importance))
+                pbar.update(1)
+                times.append(time.time())
             result.sort(key=lambda x: x[1]) #UNKLAR, im original negativ?
         return result
     

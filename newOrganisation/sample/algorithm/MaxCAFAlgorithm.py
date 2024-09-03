@@ -32,8 +32,8 @@ class MaxCAFAlgorithm(AlgorithmBase):
         reactions = []
         molecules = []
         
-        reactions.append(input_reactions)
         molecules.append(input_food)
+        reactions.append(Utilities.filter_reactions(input_food, input_reactions))
         
         i = 1
         molecules.insert(i, Utilities.add_all_mentioned_products(molecules[i-1], reactions[i-1]))

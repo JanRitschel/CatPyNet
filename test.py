@@ -25,22 +25,16 @@ print(hash(test_rs) == hash(test_other_rs)) """
 
 from os import walk
 from os.path import join
+import math
 
+def main():
+    total = [math.comb(10,i)
+    for i in range(8)]
+    print(sum(total))
+    prefix = set(["a0"])
+    i = 1
+    print(set([frozenset(prefix.union(['a' + str(i)]))]))
+    
 
-f = []
-fs = []
-for (dirpath, dirnames, filenames) in walk("G:/Github/BA-Jan/catlynet java/catlynet-master/examples"):
-    for filename in filenames:
-        f.append(join("G:/Github/BA-Jan/catlynet java/catlynet-master/examples", filename))
-    fs.extend(filenames)
-test_path = "G:/Github/BA-Jan/newOrganisation/test_files"
-for i, file in enumerate(f):
-    file_lines = []
-    with open(file, "r") as one_file:
-        lines = one_file.readlines()
-        for line in lines:
-            if not line.startswith("#"):
-                file_lines.append(line)
-        
-    with open(join(test_path, fs[i]), "w") as new_file:
-        new_file.writelines(file_lines)
+if __name__ == "__main__":
+    main()

@@ -95,7 +95,9 @@ class ModelIO:
         except IOError as e:
             return ""
         
-    def write(self, reaction_system:ReactionSystem, include_food:bool, reaction_notation:ReactionNotation, arrow_notation:ArrowNotation, food_first:bool = True) -> str:
+    def write(self, reaction_system:ReactionSystem|None, include_food:bool, reaction_notation:ReactionNotation, arrow_notation:ArrowNotation, food_first:bool = True) -> str:
+        
+        if not reaction_system: return ""
         res = ""
         if food_first and include_food:
                 res += "Food: " + ModelIO().get_food_str(reaction_system, reaction_notation) + "\n\n"

@@ -1,13 +1,13 @@
 from __future__ import annotations
-from enum import Enum
+from enum import StrEnum
 
 
 
-class ArrowNotation(Enum):
+class ArrowNotation(StrEnum):
     
 
-    USES_EQUALS = 1
-    USES_MINUS = 2
+    USES_EQUALS = "USES_EQUALS"
+    USES_MINUS = "USES_MINUS"
     
     def __init__(self, label:str = "=>") -> None:
         super().__init__()

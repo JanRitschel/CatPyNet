@@ -14,6 +14,7 @@ from sample.model.ReactionSystem import ReactionSystem
 def main():
 
     all_algorithms = AlgorithmBase.list_all_algorithms()
+    all_algorithms.extend([algo.lower() for algo in AlgorithmBase.list_all_algorithms()])
     
     parser = argparse.ArgumentParser(description=
                                      "Performs Max RAF and other computations")
@@ -26,8 +27,8 @@ def main():
     parser.add_argument("-c", metavar="compute", required=True, help="The computation to perform", choices= all_algorithms)
     parser.add_argument("-i", metavar="input", help="Input file (stdin ok)", default="stdin") #UNKLAR, soll der file so heißen oder wird etwas spezifisches aufgerufen
     parser.add_argument("-o", metavar='o', help="Output file (stdout ok)", default="stdout")
-    parser.add_argument("-rn", metavar="reaction_notation", help="Output reaction notation")
-    parser.add_argument("-an", metavar="arrow_notation", help="Output arrow notation")
+    parser.add_argument("-rn", metavar="reaction_notation", help="Output reaction notation", default="FULL")
+    parser.add_argument("-an", metavar="arrow_notation", help="Output arrow notation", default="USES_EQUALS")
     parser.add_argument("-r", metavar="runs", help= "Number of randomized runs for " + MinIRAFHeuristic().name + " heuristic")
     parser.add_argument("-p", metavar="properties_file", default="") #ZU MACHEN, Default File muss erstellt werden
 
@@ -36,7 +37,8 @@ def main():
     #ZU MACHEN, Files auf verschiedenheit, schreibbarkeit und existenz prüfen
     input_system = parse_input_file(arguments['i']) 
     algorithm:AlgorithmBase = AlgorithmBase.get_algorithm_by_name(arguments['c'])
-    if isinstance(algorithm, MinIRAFHeuristic):
+    print(algorithm.description)
+    if algorithm == MinIRAFHeuristic:
         irr_raf_heuristic = MinIRAFHeuristic()
         irr_raf_heuristic.number_of_random_insertion_orders = arguments['r']
         output_systems = irr_raf_heuristic.apply_all_smallest(input_system)
@@ -61,9 +63,9 @@ def main():
                                                    True, 
                                                    arguments['rn'],
                                                    arguments['an']) 
-                        + "\n"
+                        res_str += "\n"
                     f.write(res_str)
-        except: #UNKLAR, braucht es überhaupt ein try statement?
+        except KeyError: #UNKLAR, braucht es überhaupt ein try statement?
             pass
     else:
         output_system = algorithm().apply(input_system)
