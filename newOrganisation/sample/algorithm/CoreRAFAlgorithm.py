@@ -27,20 +27,14 @@ class CoreRAFAlgorithm (AlgorithmBase):
     
     def apply(self, input:ReactionSystem) -> ReactionSystem:
 
-        with tqdm(total= 2 + input.size) as craf_pbar:
-            max_raf = MaxRAFAlgorithm().apply(input)
-            craf_pbar.update(1)
-            times = [time.time()]
+        max_raf = MaxRAFAlgorithm().apply(input)
+        with tqdm(total= max_raf.size, desc="CoreRAFAlgorithm") as craf_pbar:
             
             important_reactions = ReactionSystem("Important")
-            important_reactions.reactions = [p[0] for p in Importance.compute_reaction_importance(input, max_raf, MaxRAFAlgorithm, craf_pbar, times) if p[1] == 100]
-            tqdm.write(str(important_reactions.reactions))
+            important_reactions.reactions = [p[0] for p in Importance.compute_reaction_importance(input, max_raf, MaxRAFAlgorithm, craf_pbar) if p[1] == 100.0]
             important_reactions.foods = list(important_reactions.compute_mentioned_foods(input.foods))
-            tqdm.write(str(important_reactions.foods))
             
             core_raf = MaxRAFAlgorithm().apply(important_reactions)
             core_raf.name = "Core RAF"
             craf_pbar.update(1)
-            times.append(time.time())
-            tqdm.write(str(times))
         return core_raf

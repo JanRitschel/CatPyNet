@@ -21,6 +21,8 @@ from __future__ import annotations
 import re
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from tqdm import tqdm
+
 from sample.model.DisjunctiveNormalForm import compute
 from sample.model.MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
 from copy import copy, deepcopy
@@ -97,7 +99,7 @@ class Reaction:
                         or not bool(inhibition_set & set(self.inhibitions))))
 
     """ def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
-                                               food_for_inhibitors: list[MoleculeType], direction: str) -> bool:
+                                               food_for_inhibitions: list[MoleculeType], direction: str) -> bool:
         return False
  """
     def is_all_reactants(self, food: set[MoleculeType], direction: str) -> bool:
@@ -109,24 +111,16 @@ class Reaction:
             return False
         res = True
         #print("self: " + self.name + "; other: " + other.name)
-        if not self.name == other.name and isinstance(other, Reaction): res = False; #print("failed at name")
-        if not self.reactants == other.reactants: res = False; #print("failed at reactants")
-        if not self.products == other.products: res = False; #print("failed at products")
-        if not self.catalysts == other.catalysts: res = False; #print("failed at catalysts")
-        if not self.inhibitions == other.inhibitions: res = False; #print("failed at inhibitions")
-        if not self.reactant_coefficients == other.reactant_coefficients: res = False; #print("failed at reactant_coefficients")
-        if not self.product_coefficients == other.product_coefficients: res = False; #print("failed at product_coefficients")
-        if not self.direction == other.direction: res = False; #print("failed at product_coefficients")
+        if self.name != other.name: return False; #print("failed at name")
+        if self.reactants != other.reactants: return False; #print("failed at reactants")
+        if self.products != other.products: return False; #print("failed at products")
+        if self.catalysts != other.catalysts: return False; #print("failed at catalysts")
+        if self.inhibitions != other.inhibitions: return False; #print("failed at inhibitions")
+        if self.reactant_coefficients != other.reactant_coefficients: return False; #print("failed at reactant_coefficients")
+        if self.product_coefficients != other.product_coefficients: return False; #print("failed at product_coefficients")
+        if self.direction != other.direction: return False; #print("failed at product_coefficients")
 
         return res
-        """ return (self.name == other.name and isinstance(other, Reaction)
-                and self.reactants == other.reactants
-                and self.products == other.products
-                and self.catalysts == other.catalysts
-                and self.inhibitions == other.inhibitions
-                and self.reactant_coefficients == other.reactant_coefficients
-                and self.product_coefficients == other.product_coefficients
-                and self.direction == other.direction) """
 
     def __lt__(self, other: Reaction) -> bool:
         return hash(self) < hash(other)
@@ -134,26 +128,142 @@ class Reaction:
     def __hash__(self) -> int:
         return hash(self.name)
 
+    def parse_new(self, line: str, tabbed_format: bool) -> Reaction:
+        
+        if line.strip() == "":
+            return None
+        
+        coefficient_bool = False
+        line = line.replace("->", "=>")
+        line = line.replace("<-", "<=")
+        arrow = "=>"
+        direction = self.DIRECTION["forward"]
+        if "=>" in line: direction = self.DIRECTION["forward"]; arrow="=>"
+        elif "<=" in line: direction = self.DIRECTION["reverse"]; arrow="<="
+        if "<=>" in line: direction = self.DIRECTION["both"]; arrow="<=>"
+        
+        tabs = line.count("\t")
+        tabbed_format = tabs > 1
+        if tabbed_format:
+            tokens:list[str] = line.split("\t")
+            if len(tokens) == 2: tokens.append("")
+            if len(tokens) == 3: tokens.append("")
+            re_pro = tokens[1].split(arrow)
+            tokens[1] = re_pro[0]
+            tokens.append(re_pro[1])
+        elif len(line.split("\t")) < 2:
+            skipped:list[bool] = []
+            for sep in [":", "[", "{", arrow]:
+                if sep not in line: skipped.append(True)
+                else:               skipped.append(False)
+                line = line.replace(sep, "\t")
+            tokens:list[str] = line.split("\t")
+            for i, sep in enumerate(skipped):
+                if sep: tokens.insert(i+1,"")
+        else:
+            tqdm.write("Line " + line + " could not be parsed as the " + 
+                           "parser was unable to recognize the used format.")
+            return Reaction()
+        for i, token in enumerate(tokens):
+            if tabbed_format:
+                token = token.replace("[", "")
+                token = token.replace("{", "")
+            token = token.replace("]", "")
+            token = token.replace("}", "")
+            tokens[i] = token.strip()
+            
+        token_dict:dict[list|str] = {"r_name":tokens[0],
+                                     "reactants":tokens[1],
+                                     "reactant_coefficients":[],
+                                     "catalysts":tokens[2],
+                                     "inhibitions":tokens[3],
+                                     "products":tokens[4],
+                                     "product_coefficients":[]}
+        is_all_numeric = True
+        for side in ["reactants", "products"]:
+            if "+" in token_dict[side]:
+                token_dict[side] = token_dict[side].split("+")
+            else:
+                token_dict[side] = [token_dict[side]]
+            if is_all_numeric:
+                is_all_numeric = all([r.replace(".", "").replace(",","")
+                                    .replace(" ", "").isdigit()
+                                    for r in token_dict[side]])
+        for side in ["reactants", "products"]:
+            for i, r in enumerate(token_dict[side]):
+                r = r.strip()
+                if not is_all_numeric:
+                    if " " in r:
+                        cache = r.split()
+                        if (cache[0].isnumeric() or 
+                            cache[0].replace(".", "", 1)
+                            .replace(",", "", 1).isdigit()):
+                            token_dict[side[:-1] + "_coefficients"].append(cache[0])
+                            r = cache[1]
+                        elif(cache[1].isnumeric() or 
+                            cache[1].replace(".", "", 1)
+                            .replace(",", "", 1).isdigit()):
+                            token_dict[side[:-1] + "_coefficients"].append(cache[1])
+                            r = cache[0]
+                        else:
+                            tqdm.write("There was an unexpected whitespace in reaction: " +
+                                    token_dict["r_name"] + " in reactant " +
+                                    r)
+                    else:
+                        token_dict[side[:-1] + "_coefficients"].append("")
+                else:
+                    if " " in r:
+                        if not coefficient_bool:
+                            tqdm.write("Coefficients are illegal if all" +
+                                       " molecules are numeric. Coeff is " +
+                                       "assumed to be first number." +
+                                        +"\nThe first issue occured at reaction: \n"
+                                        + token_dict["r_name"] + " in molecule " + r)
+                        r = r.split()[1]
+                token_dict[side][i] = r
+        
+        token_dict["inhibitions"] = (token_dict["inhibitions"]
+                                     .replace(",", " ").split(" ") 
+                                     if token_dict["inhibitions"]!="" else [])
+        
+        catalysts = token_dict["catalysts"]
+        if catalysts == "": #FEHLERANFÄLLIG, y tho?
+            global FORMAL_FOOD
+            catalysts = FORMAL_FOOD.name
+        else:
+            catalysts = self.uniform_logic_notation(catalysts)
+        token_dict["catalysts"] = catalysts
+        
+        res_reaction = Reaction(token_dict["r_name"], 
+                                inhibitions=MoleculeType().values_of(token_dict["inhibitions"]),
+                                reactants=MoleculeType().values_of(token_dict["reactants"]), 
+                                products=MoleculeType().values_of(token_dict["products"]), 
+                                catalysts=token_dict["catalysts"], 
+                                reactant_coefficients=token_dict["reactant_coefficients"], 
+                                product_coefficients=token_dict["product_coefficients"], 
+                                direction=direction)
+        return res_reaction
+            
     def parse(self, line: str, tabbed_format: bool) -> Reaction: #aux_reations: list[Reaction],
         '''
         parses a reaction
-        ReactionNotation:
-        name <tab>: [coefficient] reactant ... '[' catalyst ...']'  ['{' inhibitor ... '}'] -> [coefficient] product ...
-        or
-        name <tab>: [coefficient] reactant ... '[' catalyst ... ']'  ['{' inhibitor ... '}'] <- [coefficient] product ...
-        or
-        name <tab>: [coefficient] reactant ... '[' catalyst ... ']' ['{' inhibitor ... '}'] <-> [coefficient] product ...
-        <p>
-        Reactants can be separated by white space or +
-        Products can be separated by white space or +
+        ReactionNotation:\n
+            name <tab>: [coefficient] reactant ... '[' catalyst ...']'  ['{' inhibitor ... '}'] -> [coefficient] product ...\n
+            or
+            name <tab>: [coefficient] reactant ... '[' catalyst ... ']'  ['{' inhibitor ... '}'] <- [coefficient] product ...\n
+            or
+            name <tab>: [coefficient] reactant ... '[' catalyst ... ']' ['{' inhibitor ... '}'] <-> [coefficient] product ...\n
+            <p>
+        Reactants can be separated by white space or +\n
+        Products can be separated by white space or +\n
         Catalysts can be separated by white space or , (for or), or all can be separated by & (for 'and')
 
-        The tabbed format is:
-        name <tab> [coefficient] reactant ... -> [coefficient] product ... <tab> '[' catalyst ...']'  <tab> ['{' inhibitor ... '}']
+        The tabbed format is:\n
+        name <tab> [coefficient] reactant ... -> [coefficient] product ... <tab> '[' catalyst ...']'  <tab> ['{' inhibitor ... '}']\n
         '''
         line = line.replace("->", "=>")
         line = line.replace("<-", "<=")
-
+        
         if tabbed_format:
             tokens = line.split('\t')
             for t in tokens:
@@ -264,7 +374,7 @@ class Reaction:
             catalysts = re.sub("\\s*,\\s*", ",", catalysts)
             catalysts = re.sub("\\s+", ",", catalysts)
 
-        inhibitors: list
+        inhibitions: list
         # UNSCHÖN
         if open_curlybracket != -1 and close_curlybracket != -1:
             inhibitor_string = (line[open_curlybracket+1:close_curlybracket]
@@ -276,9 +386,9 @@ class Reaction:
             inhibitor_string = re.sub("\\s*&\\s*", "&", inhibitor_string)
             inhibitor_string = re.sub("\\s*,\\s*", ",", inhibitor_string)
             inhibitor_string = re.sub("\\s+", ",", inhibitor_string)
-            inhibitors = inhibitor_string.split(",")
+            inhibitions = inhibitor_string.split(",")
         else:
-            inhibitors = []
+            inhibitions = []
 
         if "+" in line[end_arrow+1:]:
             products = line[end_arrow+1:].strip().split("+")  # FEHLERANFÄLLIG/NEU
@@ -356,7 +466,7 @@ class Reaction:
                 raise ValueError(msg)
 
         reaction.catalysts = catalysts
-        for inhibitor in inhibitors:  # UNSCHÖN
+        for inhibitor in inhibitions:  # UNSCHÖN
             reaction.inhibitions.append(MoleculeType().value_of(inhibitor))
         reaction.direction = direction
 
@@ -434,3 +544,13 @@ class Reaction:
 
     def swap_reactants_and_products(self):
         self.products, self.reactants = self.reactants, self.products
+
+    def uniform_logic_notation(self, input:str)->str:
+        input = re.sub("\\|", ",", input)
+        input = re.sub("\\*", "&", input)
+        input = re.sub("\\s*\\(\\s*", "(", input)
+        input = re.sub("\\s*\\)\\s*", ")", input)
+        input = re.sub("\\s*&\\s*", "&", input)
+        input = re.sub("\\s*,\\s*", ",", input)
+        input = re.sub("\\s+", ",", input)
+        return input

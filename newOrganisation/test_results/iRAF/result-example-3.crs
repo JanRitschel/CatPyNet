@@ -12,6 +12,6 @@ r#2 : x_2 [theta_2] => theta_2
 r#1 : x_1 [theta_1] => theta_1
 r_x : f [theta] => x
 r3 : x [x_3] => x_3
-r_theta : theta_1+theta_2+theta_3 [theta] => theta
+r_theta : theta_1 + theta_2 + theta_3 [theta] => theta
 r#'1 : x'_1 [theta_1] => theta_1
 

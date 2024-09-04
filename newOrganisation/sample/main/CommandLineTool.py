@@ -1,5 +1,6 @@
 import argparse
 import zipfile
+from tqdm import tqdm
 
 import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -37,13 +38,12 @@ def main():
     #ZU MACHEN, Files auf verschiedenheit, schreibbarkeit und existenz prüfen
     input_system = parse_input_file(arguments['i']) 
     algorithm:AlgorithmBase = AlgorithmBase.get_algorithm_by_name(arguments['c'])
-    print(algorithm.description)
     if algorithm == MinIRAFHeuristic:
         irr_raf_heuristic = MinIRAFHeuristic()
         irr_raf_heuristic.number_of_random_insertion_orders = arguments['r']
         output_systems = irr_raf_heuristic.apply_all_smallest(input_system)
         if arguments['o'] != "stdout":  #ZU MACHEN, wieder std stuff
-            print("Writing file: " + arguments['o'])
+            tqdm.write("Writing file: " + arguments['o'])
         try:
             if ".zip" in arguments['o']:
                 with zipfile.ZipFile(arguments['o'], "w") as zip_arch:
@@ -70,7 +70,7 @@ def main():
     else:
         output_system = algorithm().apply(input_system)
         if arguments['o'] != "stdout":  #ZU MACHEN, wieder std stuff
-            print("Writing file: " + arguments['o'])
+            tqdm.write("Writing file: " + arguments['o'])
         try:
             if ".zip" in arguments['o']:
                 with zipfile.ZipFile(arguments['o'], "w") as zip_arch:
@@ -114,7 +114,7 @@ def parse_input_file(file_name:str) -> ReactionSystem:
         if res_reactiosystem.inhibitors_present:
             output_str += "Input catalytic reaction system contains inhibitions. These are ignored in the computation of maxCAF, maxRAF and maxPseudoRAF"
             
-        print(output_str)
+        tqdm.write(output_str)
 
     return res_reactiosystem
 

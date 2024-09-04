@@ -8,6 +8,7 @@ from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 
 import copy
 import random
+from tqdm import tqdm
 
 class MinIRAFHeuristic(AlgorithmBase):
     
@@ -38,7 +39,7 @@ class MinIRAFHeuristic(AlgorithmBase):
     def apply(self, input: ReactionSystem) -> ReactionSystem|None:
         
         list = MinIRAFHeuristic().apply_all_smallest(input)
-        if list != [] and list != None:
+        if list:
             return list[0]
         else: return None
 
@@ -52,7 +53,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         best:list[ReactionSystem] = []
         best_size = max_raf.size
 
-        for seed in seeds:
+        for seed in tqdm(seeds, desc="MinIRafHeuristic: "):
             ordering = reactions
             random.Random(seed).shuffle(ordering)
             work_system = copy.copy(max_raf)
@@ -76,7 +77,7 @@ class MinIRAFHeuristic(AlgorithmBase):
                         work_system.reactions.append(reaction)
                 except: #UNKLAR, nur wegen Progress?
                     pass
-        if best==[] or best == None:
+        if best:
             result = copy.copy(max_raf)
             result.name = self.name
             best.append(result)

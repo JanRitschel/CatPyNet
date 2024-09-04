@@ -44,11 +44,11 @@ def main():
     polymer_max_lengths = parse_integer_input(arguments["n"])
     means = parse_float_input(arguments["m"])
     number_of_replicates = parse_integer_input(arguments["r"])
-    print("writing files to: " + arguments["o"])
+    tqdm.write("writing files to: " + arguments["o"])
     
     files_count = 0
     total_files_expected = len(alphabet_sizes) * len(food_max_legths) * len(polymer_max_lengths) * len(means) * len(number_of_replicates)
-    with tqdm(total=total_files_expected) as pbar:
+    with tqdm(total=total_files_expected, desc="Files: ") as pbar:
         for a in alphabet_sizes:
             for k in food_max_legths:
                 for n in polymer_max_lengths:
@@ -87,49 +87,53 @@ def main():
                                     f.write("\n#EOF\n")
                             pbar.update(1)
                             files_count += 1
-    print("Number of files created: " + str(files_count))
+    tqdm.write("Number of files created: " + str(files_count))
 
 def apply(parameters:dict[str:int, str:int, str:int, str:float, str:int], tot_f:int) -> ReactionSystem:
     
     res_reaction_system = ReactionSystem(replace_parameters("# Polymer model a=#a k=#k n=#n m=#m r=#r", parameters))
     basic_elements = ["a" + str(i) for i in range(int(parameters["a"]))]
-    food_names_lists = list(combinations_with_replacement(basic_elements,int(parameters["k"])))
+    food_names_lists = []
+    for k in tqdm(range(1, int(parameters["k"]) + 1), desc=res_reaction_system.name + " Foods Generation: "):
+        food_names_lists.extend(list(combinations_with_replacement(basic_elements, k)))
     food_names:list[str] = ["".join(fl) for fl in food_names_lists]
-    food_names.extend(basic_elements)
     res_reaction_system.foods = MoleculeType().values_of(food_names)
     
-    polymer_names_lists = list(combinations_with_replacement(basic_elements,int(parameters["n"])))
-    polymers:list[str] = ["".join(fl) for fl in polymer_names_lists]
-    polymers.extend(basic_elements)
+    polymer_names_lists = []
+    for n in tqdm(range(1, int(parameters["n"]) + 1), desc=res_reaction_system.name + " Polymer Generation: "):
+        polymer_names_lists.extend(list(combinations_with_replacement(basic_elements, n)))
+    polymers:list[str] = ["".join(pl) for pl in polymer_names_lists]
+    estimate_n_reactions = 0
+    for polymer in polymers: estimate_n_reactions += len(polymer) / 2
+    digits_estimate = len(str(int(estimate_n_reactions)))
     
     reactions = []
     count = 0
-    for polymer in polymers:
-        for i in range(0,len(polymer),2):
-            if len(polymer) == 2: continue
-            count += 1
-            reaction = Reaction("r" + str(count).zfill(len(str(tot_f))))
-            if i != 0:
+    with tqdm(desc=res_reaction_system.name + " Reaction Generation ", total=estimate_n_reactions) as r_pbar:
+        for polymer in polymers:
+            for i in range(0,len(polymer),2):
+                r_pbar.update(1)
+                count += 1
+                reaction = Reaction("r" + str(count).zfill(digits_estimate))
+                if i == 0: continue
                 prefix = polymer[0:i]
                 suffix = polymer[i:]
                 reaction.reactants = MoleculeType().values_of([prefix, suffix])
-            else:
-                reaction.reactants = MoleculeType().values_of([polymer])
-            reaction.products = MoleculeType().values_of([polymer])
-            reaction.direction = Reaction().DIRECTION["both"]
-            reactions.append(reaction)
+                reaction.products = MoleculeType().values_of([polymer])
+                reaction.direction = Reaction().DIRECTION["both"]
+                reactions.append(reaction)
     
     reaction_length = len(reactions)
     p = parameters["m"]/reaction_length
     if p > 1:
-        print("This mean: " + parameters["m"] + "\nis impossible to achieve since there are fewer possible reactions than the mean.")
+        tqdm.write("This mean: " + parameters["m"] + "\nis impossible to achieve since there are fewer possible reactions than the mean.")
         p = 1.0
     elif p < 0:
-        print("This mean: " + parameters["m"] + "\nis impossible to achieve since it is negative.") 
+        tqdm.write("This mean: " + parameters["m"] + "\nis impossible to achieve since it is negative.") 
     dist = binom_dist(reaction_length,  parameters["m"]/reaction_length)
     random.seed = parameters["r"]
     for polymer in polymers:
-        successes = bisect.bisect_right(dist,random.uniform(0,0.9999999999964784012605094821))
+        successes = bisect.bisect_right(dist,random.uniform(0,0.999999999999))
         i = 0
         while i < successes:
             reaction:Reaction = reactions[random.randint(0,reaction_length - 1)]

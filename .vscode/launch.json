@@ -27,7 +27,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "core raf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-7.crs",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
                 "-rn", "SPARSE"
             ]
@@ -39,14 +39,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-a", "6",
-                "-k", "1,2, 3",
-                "-n", "10",
-                "-m", "1.0,2.0, 3.0",
+                "-a", "8",
+                "-k", "1,2,3",
+                "-n", "8",
+                "-m", "1.0,2.0",
                 "-r", "1",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\poly_test",
                 "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
-                "-rn", "FULL"
+                "-rn", "TABBED"
             ]
         }
     ]

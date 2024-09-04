@@ -54,7 +54,6 @@ class ModelIO:
             str: leading comments of the file
         """        
         reaction_names:set[str] = set()
-        #aux_reactions:set[Reaction] = set()
         in_leading_comments:bool = True
         leading_comments:list[str] = []
         global FORMAL_FOOD
@@ -73,10 +72,9 @@ class ModelIO:
                                     and arrow_bool)):
                                 reaction_system.foods.extend(ModelIO.parse_food(line))
                             else:
-                                print(line)
-                                reaction = Reaction().parse(line, reaction_notation)
+                                reaction = Reaction().parse_new(line, reaction_notation)
                                 if reaction.name in reaction_names:
-                                    raise IOError("Multiple reactions have the same name:\t" + reaction.name)
+                                    raise IOError("Multiple reactions have the same name:\t" + str(reaction.name))
                                 reaction_system.reactions.append(reaction)
                                 reaction_names.add(reaction.name)
                                 if FORMAL_FOOD.name in reaction.catalysts and not FORMAL_FOOD in reaction_system.foods:
@@ -142,14 +140,14 @@ class ModelIO:
                 try:
                     reactants_and_coefficients.append(str(reaction.reactant_coefficients[reactant.name]) + " " + reactant.name)
                 except: reactants_and_coefficients.append(reactant.name)
-            res += "+".join(reactants_and_coefficients)
+            res += " + ".join(reactants_and_coefficients)
             res += arrow
             products_and_coefficients = []
             for product in reaction.products:
                 try:
                     products_and_coefficients.append(str(reaction.product_coefficients[product.name]) + " " + product.name)
                 except: products_and_coefficients.append(product.name)
-            res += "+".join(products_and_coefficients)    
+            res += " + ".join(products_and_coefficients)    
             res += "\t"
             if reaction.catalysts != "":
                 res += "[" + reaction.catalysts + "]"
@@ -168,10 +166,9 @@ class ModelIO:
                 try:
                     reactants_and_coefficients.append(str(reaction.reactant_coefficients[reactant.name]) + " " + reactant.name)
                 except: reactants_and_coefficients.append(reactant.name)
-            res += "+".join(reactants_and_coefficients)
+            res += " + ".join(reactants_and_coefficients)
             res += " "
             if reaction.catalysts != "":
-                cata = reaction.catalysts.replace(",", sep)
                 res += "[" + reaction.catalysts + "]"
             if reaction.inhibitions:
                 res += " {"
@@ -186,5 +183,5 @@ class ModelIO:
                 try:
                     products_and_coefficients.append(str(reaction.product_coefficients[product.name]) + " " + product.name)
                 except: products_and_coefficients.append(product.name)
-            res += "+".join(products_and_coefficients)
+            res += " + ".join(products_and_coefficients)
             return res

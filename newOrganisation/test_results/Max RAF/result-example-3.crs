@@ -1,7 +1,7 @@
 Food: f
 
 r_x : f [theta] => x
-r_theta : theta_1+theta_2+theta_3 [theta] => theta
+r_theta : theta_1 + theta_2 + theta_3 [theta] => theta
 r1 : x [x_1] => x_1
 r'1 : x [x'_1] => x'_1
 r2 : x [x_2] => x_2

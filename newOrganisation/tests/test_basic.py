@@ -305,7 +305,7 @@ class ReactionTests(unittest.TestCase):
                 else: test_text += "," + inh
             test_text += "}"
         
-        test_obj = Reaction().parse(test_text, tabbed_format=tabbed)
+        test_obj = Reaction().parse_new(test_text, tabbed_format=tabbed)
         
         self.assertEqual(test_obj,result)
             

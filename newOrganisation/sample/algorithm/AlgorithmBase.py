@@ -1,3 +1,4 @@
+from __future__ import annotations
 '''
   AlgorithmBase.java Copyright (C) 2022 Daniel H. Huson
  
@@ -76,8 +77,7 @@ class AlgorithmBase(IDescribed):
 
         return list
     
-    # def getAlgorithmByName(name:str) -> AlgorithmBase:
-    def get_algorithm_by_name(name:str):
+    def get_algorithm_by_name(name:str) -> AlgorithmBase|None:
         '''
         get algorithm by name
         
