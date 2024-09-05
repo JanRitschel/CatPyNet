@@ -120,12 +120,17 @@ class ReactionSystem:
                 return
         self.inhibitors_present = False
         
-    def get_food_and_reactant_and_product_molecules(self)->list[MoleculeType]: #UNSCHÖN, sollte Set geben
+    def get_mentioned_molecules(self)->set[MoleculeType]:
         molecule_types = self.foods
         for reaction in self.reactions:
             molecule_types.extend(reaction.reactants)
             molecule_types.extend(reaction.products)
-        return molecule_types
+            molecule_types.extend(reaction.inhibitions)
+            catalysts = MoleculeType().values_of(reaction.catalysts.replace(",","\t")
+                                                 .replace("|","\t").replace("*", "\t")
+                                                 .replace("&", "\t").split("\t"))
+            molecule_types.extend(catalysts)
+        return set(molecule_types)
     
     def get_reaction_names(self) -> list[str]: #Unschön, sollte set geben
         names = []

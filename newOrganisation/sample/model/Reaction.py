@@ -98,19 +98,15 @@ class Reaction:
                     and (len(self.inhibitions) == 0
                         or not bool(inhibition_set & set(self.inhibitions))))
 
-    """ def is_catalyzed_uninhibited_all_reactants(self, food_for_reactants: list[MoleculeType], food_for_catalysts: list[MoleculeType],
-                                               food_for_inhibitions: list[MoleculeType], direction: str) -> bool:
-        return False
- """
     def is_all_reactants(self, food: set[MoleculeType], direction: str) -> bool:
-        return (direction in {"forward", "both"} and set(self.reactants).issubset(food)
-                    or direction in {"reverse", "both"} and set(self.products).issubset(food))
+        return (direction in {"forward", "both"} 
+                and (set(self.reactants).issubset(food) 
+                     or direction in {"reverse", "both"}) 
+                and set(self.products).issubset(food))
 
-    def __eq__(self, other: Reaction) -> bool:
+    def __eq__(self, other: Reaction|None) -> bool:
         if not (isinstance(other, Reaction)):
             return False
-        res = True
-        #print("self: " + self.name + "; other: " + other.name)
         if self.name != other.name: return False; #print("failed at name")
         if self.reactants != other.reactants: return False; #print("failed at reactants")
         if self.products != other.products: return False; #print("failed at products")
@@ -120,7 +116,7 @@ class Reaction:
         if self.product_coefficients != other.product_coefficients: return False; #print("failed at product_coefficients")
         if self.direction != other.direction: return False; #print("failed at product_coefficients")
 
-        return res
+        return True
 
     def __lt__(self, other: Reaction) -> bool:
         return hash(self) < hash(other)
@@ -214,9 +210,9 @@ class Reaction:
                 else:
                     if " " in r:
                         if not coefficient_bool:
-                            tqdm.write("Coefficients are illegal if all" +
-                                       " molecules are numeric. Coeff is " +
-                                       "assumed to be first number." +
+                            tqdm.write("Coefficients are illegal if all"
+                                       + " molecules are numeric. Coeff is "
+                                       + "assumed to be first number."
                                         +"\nThe first issue occured at reaction: \n"
                                         + token_dict["r_name"] + " in molecule " + r)
                         r = r.split()[1]
@@ -246,6 +242,7 @@ class Reaction:
             
     def parse(self, line: str, tabbed_format: bool) -> Reaction: #aux_reations: list[Reaction],
         '''
+        DEPRECATED, DOESN'T WORK PROPERLY
         parses a reaction
         ReactionNotation:\n
             name <tab>: [coefficient] reactant ... '[' catalyst ...']'  ['{' inhibitor ... '}'] -> [coefficient] product ...\n
@@ -482,21 +479,17 @@ class Reaction:
         dnf = compute(self.catalysts)
         parts = dnf.split(",")
         return set(MoleculeType().values_of(parts))
-        """ for part in dnf.split(","):
-            conjunctions.append(MoleculeType().value_of(part))
-        return set(conjunctions) """
 
     def get_catalyst_elements(self) -> set[MoleculeType]:
         '''
         returns all catalyst elements for this reaction as a set, not considering associations between catalysts.
         '''
         toplevel_conjuncitons = self.get_catalyst_conjunctions()
-        all_elements = []
+        all_elements = set()
         for conjunction in toplevel_conjuncitons:
             con_elements = conjunction.name.split("&")
-            for element in con_elements:
-                all_elements.append(MoleculeType().value_of(element))
-        return set(all_elements)
+            all_elements.update(MoleculeType().values_of(con_elements))
+        return all_elements
 
     def get_reactant_coefficient(self, reactant: MoleculeType) -> int:
         '''

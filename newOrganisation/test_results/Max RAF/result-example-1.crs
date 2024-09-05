@@ -1,4 +1,4 @@
-Food: b3, a3, a2, b2, a1, b'2, b'3, a'1, b1, a'2, b'1, a'3
+Food: b'1, a'1, a'2, b1, b'2, a1, a3, a2, a'3, b'3, b3, b2
 
 r1 : a1 + b1 [c3] => c1
 r2 : a2 + b2 [c1] => c2

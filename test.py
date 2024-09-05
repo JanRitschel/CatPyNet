@@ -27,9 +27,34 @@ from os import walk
 from os.path import join
 import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from sample.model.Reaction import Reaction
+from sample.model.Reaction import Reaction, MoleculeType
+from sample.model.ReactionSystem import ReactionSystem
 import math
 import itertools
+import networkx  as nx
+
+def read_graph():
+    test = nx.MultiDiGraph(name="Test")
+    test.add_nodes_from(["a", "s", "d"])
+    test.add_edges_from([["a", "s"], ["s", "d"], ["d", "a"]])
+    names = ["r"+str(i) for i in range(3)]
+    molecules_1 = ["02"]
+    molecules_2 = ["01"]
+    coefficients = ["0", "1.1", ""]
+    arrows = ["<->", "<-", "->"]
+    tests = itertools.product(names, [":"], coefficients, [" "], molecules_1, ["+"], coefficients,[" "], molecules_2
+                              , ["["], molecules_1, ["]"], ["{"], molecules_2, ["}"], arrows, coefficients,[" "], molecules_1)
+    cache = "".join(test)
+    reaction = Reaction().parse_new(cache, False)
+    reaction_system = ReactionSystem("Test", reactions=[reaction], foods=MoleculeType().values_of(["01"]))
+    graph = nx.MultiDiGraph(name=reaction_system.name)
+    molecule_nodes = reaction_system.get_mentioned_molecules()
+    molecule_nodes = [(node.name, {"ReactionType":False}) for node in molecule_nodes]
+    graph.add_nodes_from(molecule_nodes)
+    reaction_nodes = [(reaction.name, {"reaction":True}) for reaction in reaction_system.reactions]
+    graph.add_nodes_from(reaction_nodes)
+    #test = nx.read_gml("G:\\Github\\BA-Jan\\newOrganisation\\test_results\\graph_test\\test.gml")
+    nx.write_gml(graph, "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\graph_test\\test1.gml")
 
 def main():
     names = ["r"+str(i) for i in range(3)]
@@ -69,4 +94,5 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    #main()
+    read_graph()

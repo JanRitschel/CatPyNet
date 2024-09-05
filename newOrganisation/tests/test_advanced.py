@@ -21,7 +21,7 @@ if __name__ == '__main__':
     for algo in algos:
         algo_respath = respath + "\\" + algo
         for j, file in enumerate(test_files):
-            if j == 13: continue
+            if j == 12: continue
             sys.argv.append("-c")
             sys.argv.append(algo)
             sys.argv.append("-i")
