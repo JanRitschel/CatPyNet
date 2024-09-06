@@ -11,6 +11,7 @@ from sample.settings.ArrowNotation import ArrowNotation
 import re
 
 FORMAL_FOOD = MoleculeType().value_of(name="$")
+SUPPORTED_FILE_FORMATS = [".crs"]
 
 class ModelIO:
     

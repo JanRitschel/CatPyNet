@@ -14,8 +14,23 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max caf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-3.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result3.crs",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\inhibitions-1.crs",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\inhibitions-1.crs",
+                "-of", ".crs",
+                "-an", "USES_MINUS",
+                "-rn", "SPARSE"
+            ]
+        },
+        {
+            "name": "Core Raf Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-c", "core raf",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
                 "-rn", "SPARSE"
             ]
         },
@@ -26,10 +41,12 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-c", "core raf",
+                "-c", "max raf",
                 "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
-                "-rn", "SPARSE"
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.gml",
+                "-of", ".gml",
+                "-rn", "SPARSE",
+                "-an", "USES_EQUALS"
             ]
         },
         {

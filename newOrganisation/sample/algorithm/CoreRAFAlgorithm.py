@@ -4,7 +4,6 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
 from tqdm import tqdm
-import time
 
 from sample.model.ReactionSystem import ReactionSystem
 

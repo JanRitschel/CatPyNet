@@ -1,5 +1,6 @@
-Food: c, b, a
+Food: b, c, a
 
 r1 : a + b [e,f] => d
 r2 : b + c [f] => e
 r3 : e + c [d] => b + f
+

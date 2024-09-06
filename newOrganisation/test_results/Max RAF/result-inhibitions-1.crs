@@ -1,3 +1,4 @@
-Food: b, a, x
+Food: x, b, a
 
 r1 : a + b [x] => y
+

@@ -67,6 +67,7 @@ class AlgorithmBase(IDescribed):
         '''
         list = []
         try:
+            from sample.algorithm.MaxPseudoRAFAlgorithm import MaxPseudoRAFAlgorithm
             from sample.algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
             from sample.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
             from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm

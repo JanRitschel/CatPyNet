@@ -28,23 +28,20 @@ class MaxCAFAlgorithm(AlgorithmBase):
         
         input_reactions = set(input.reactions)
         input_food = set(input.foods)
-
-        reactions = []
-        molecules = []
         
-        molecules.append(input_food)
-        reactions.append(Utilities.filter_reactions(input_food, input_reactions))
+        molecules = [input_food]
+        reactions = [Utilities.filter_reactions(input_food, input_reactions)]
         
-        i = 1
-        molecules.insert(i, Utilities.add_all_mentioned_products(molecules[i-1], reactions[i-1]))
-        reactions.insert(i, Utilities.filter_reactions(molecules[i], input_reactions))
+        i = 0
+        molecules.insert(i+1, Utilities.add_all_mentioned_products(molecules[i], reactions[i]))
+        reactions.insert(i+1, Utilities.filter_reactions(molecules[i+1], input_reactions))
         
-        while len(reactions[i]) > len(reactions[i-1]):
-            molecules.insert(i+1, Utilities.compute_closure(input_food, reactions[i]))
-            reactions.insert(i+1, Utilities.filter_reactions(molecules[i+1], reactions[i]))
+        while len(reactions[i+1]) > len(reactions[i]):
             i += 1
+            molecules.insert(i+1, Utilities.add_all_mentioned_products(molecules[i], reactions[i]))
+            reactions.insert(i+1, Utilities.filter_reactions(molecules[i+1], input_reactions))
         
-        if len(reactions[i]) > 0:
-            result.reactions = reactions[i]
+        if len(reactions[i+1]) > 0:
+            result.reactions = reactions[i+1]
             result.foods = list(result.compute_mentioned_foods(input.foods))
         return result
