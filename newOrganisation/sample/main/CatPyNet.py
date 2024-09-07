@@ -84,8 +84,9 @@ def run_on_file(algorithm:str|AlgorithmBase,
     
     output_systems = apply_algorithm(input_system, algorithm, heuristic_runs)
     
-    redirect_to_writer(output_systems, output_format,
-                       zipped, output_path,
-                       reaction_notation, arrow_notation)    
+    redirect_to_writer(output_systems, output_path, 
+                       output_format, zipped, 
+                       reaction_notation, arrow_notation,
+                       algorithm)    
     
     tqdm.write("algo done")

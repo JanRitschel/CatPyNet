@@ -1,5 +1,6 @@
 from __future__ import annotations
 from sample.model.ReactionSystem import ReactionSystem
+from sample.algorithm.AlgorithmBase import AlgorithmBase
 from enum import StrEnum
 from tqdm import tqdm
 import networkx as nx
@@ -28,7 +29,7 @@ class node_types(StrEnum):
 SUPPORTED_GRAPH_FILE_FORMATS = [".gml"]
 
 
-def write(reaction_systems: list[ReactionSystem], filename: str) -> None:
+def write(reaction_systems: list[ReactionSystem], filename: str, algorithm:AlgorithmBase=None) -> None:
 
     if isinstance(reaction_systems, list):
         if len(reaction_systems) > 1:
@@ -40,7 +41,8 @@ def write(reaction_systems: list[ReactionSystem], filename: str) -> None:
 
     for i, rs in enumerate(reaction_systems):
         if not rs.reactions:
-            tqdm.write("The resulting reaction system has no reactions")
+            tqdm.write("The resulting reaction system has no reactions.\n"
+                       + "No " + algorithm.NAME)
         graph = parse_rs_to_graph(rs)
         if len(reaction_systems) > 1:
             output_file = ".".join(

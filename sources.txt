@@ -7,3 +7,5 @@ https://python-docs.readthedocs.io/en/latest/writing/structure.html
 Stack Overflow:
 https://stackoverflow.com/questions/29435556/how-to-combine-hash-codes-in-in-python3
 
+Latex Template:
+https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/integrative-transkriptomik/abschlussarbeiten/

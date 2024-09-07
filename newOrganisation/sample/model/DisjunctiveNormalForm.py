@@ -1,11 +1,9 @@
-
-
 def compute(expression: str) -> str:
     """
-    Return a Disjunctive Normal Form of the expression as a String.
+    Return a Disjunctive Normal Form of the expression as a str.
 
-    The resulting String uses "," as "or"/Disjunction and "&" as 
-    "and"/Conjunction and does not contain any brackets.
+    The resulting str uses "," as "or"/disjunction and "&" as 
+    "and"/conjunction and does not contain any brackets.
     The input-expression can contain the logical operators:
         "or" as ","
         "and" as "&"
@@ -20,11 +18,7 @@ def compute(expression: str) -> str:
     Returns:
 
     """
-    """ bracket_cache:dict
-    pos = 0
-    last_position = len(expression)
-    while pos < last_position:
-     """
+
     return ",".join(recurse(expression))
 
 
@@ -38,13 +32,13 @@ def recurse(expression: str) -> list[str]:
         else:
             next_outside_operator = expression[associated_closed_bracket + 1]
             if next_outside_operator == ",":
-                return union(recurse(expression[1:associated_closed_bracket]), 
+                return union(recurse(expression[1:associated_closed_bracket]),
                              recurse(expression[associated_closed_bracket + 2:last_pos]))
             if next_outside_operator == "&":
                 next_rel_or = next_outside_or(
                     expression, associated_closed_bracket+1)
                 if next_rel_or == -1:
-                    return product(recurse(expression[1:associated_closed_bracket]), 
+                    return product(recurse(expression[1:associated_closed_bracket]),
                                    recurse(expression[associated_closed_bracket + 2:last_pos]))
                 else:
                     return union(product(recurse(expression[1:associated_closed_bracket]),
@@ -53,7 +47,7 @@ def recurse(expression: str) -> list[str]:
     else:
         next_inside_operator = next_or(expression, 0)
         if next_inside_operator > 0:
-            return union(recurse(expression[0:next_inside_operator]), 
+            return union(recurse(expression[0:next_inside_operator]),
                          recurse(expression[next_inside_operator + 1:last_pos]))
         next_inside_operator = next_and(expression, 0)
         if next_inside_operator > 0:
@@ -71,7 +65,7 @@ def recurse(expression: str) -> list[str]:
                         position = find_associated_closed_bracket(
                             expression, position)
                     position += 1
-            return product(recurse(expression[0:next_inside_operator]), 
+            return product(recurse(expression[0:next_inside_operator]),
                            recurse(expression[next_inside_operator + 1:last_pos]))
 
     return [expression]
@@ -94,6 +88,16 @@ def product(tree_a: list, tree_b: list) -> list:
 
 
 def next_outside_or(expression: str, start_pos: int) -> int:
+    """Finds the next or on the bracket-level of startpos.
+
+    Args:
+        expression (str): expression to be searched through
+        start_pos (int): position at start of search in expression
+
+    Returns:
+        start_pos (int): position of next ','
+        -1 (int): if ',' is not found at bracket-level
+    """    
     end_pos = len(expression)-1
     inside_brackets_depth = 0
     while start_pos <= end_pos:
@@ -119,7 +123,7 @@ def next_or(expression: str, start_pos: int) -> int:
     If no "," is found before the next open bracket "(" returns -1 as well.
 
     Parameters:
-        expression  (str): The string to be searched
+        expression  (str): The string to be searched through
         start_pos   (int): The position at which searching starts.
 
     Returns:

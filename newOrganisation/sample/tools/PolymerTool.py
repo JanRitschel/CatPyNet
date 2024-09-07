@@ -94,8 +94,8 @@ def main():
                                     arguments["f"], parameters)
                                 filename = os.path.join(arguments["o"], file)
                             
-                            redirect_to_writer([res_reaction_system], arguments['of'],
-                                               arguments['z'], filename,
+                            redirect_to_writer([res_reaction_system], filename, 
+                                               arguments['of'], arguments['z'], 
                                                arguments['an'], arguments["rn"])
                             
                             pbar.update(1)

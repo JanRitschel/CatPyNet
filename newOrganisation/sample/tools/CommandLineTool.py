@@ -1,18 +1,12 @@
 from sample.io.IOManager import ALL_FILE_FORMATS
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from sample.algorithm.AlgorithmBase import AlgorithmBase
 import sample.main.CatPyNet as cpn
 import argparse
-from tqdm import tqdm
 
 import os
 import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
-
-all_algorithms = AlgorithmBase.list_all_algorithms()
-all_algorithms.extend([algo.lower()
-                      for algo in AlgorithmBase.list_all_algorithms()])
 
 
 def main():
@@ -27,7 +21,7 @@ def main():
     parser.add_argument("--authors", action="store_const",
                         const="Jan Ritschel")
     parser.add_argument("-c", metavar="compute", required=True,
-                        help="The computation to perform", choices=all_algorithms)
+                        help="The computation to perform", choices=cpn.ALL_ALGORITHMS)
     # UNKLAR, soll der file so heißen oder wird etwas spezifisches aufgerufen
     parser.add_argument("-i", metavar="input",
                         help="Input file (stdin ok)", default="stdin")

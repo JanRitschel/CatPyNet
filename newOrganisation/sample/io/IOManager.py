@@ -1,4 +1,7 @@
 from sample.model.ReactionSystem import ReactionSystem
+from sample.settings.ReactionNotation import ReactionNotation
+from sample.settings.ArrowNotation import ArrowNotation
+from sample.algorithm.AlgorithmBase import AlgorithmBase
 from sample.io.GraphIO import write, SUPPORTED_GRAPH_FILE_FORMATS
 from sample.io.ModelIO import ModelIO, SUPPORTED_FILE_FORMATS
 import shutil
@@ -17,11 +20,12 @@ ALL_FILE_FORMATS.append(None)
 
 
 def redirect_to_writer(output_systems:list[ReactionSystem],
-                       output_format:str|None, 
-                       zipped:bool, 
-                       output_path:str,
-                       reaction_notation:str,
-                       arrow_notation:str):
+                       output_path:str ="stdout",
+                       output_format:str|None = None,
+                       zipped:bool = False, 
+                       reaction_notation:str = ReactionNotation.FULL,
+                       arrow_notation:str = ArrowNotation.USES_EQUALS,
+                       algorithm:AlgorithmBase|None = None):
     
     if not output_format and output_path != "stdout":
         output_format = os.path.splitext(output_path)[1]
@@ -38,25 +42,39 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
     if output_path != "stdout":
         tqdm.write("Writing file: " + output_path)
 
+    any_not_empty_bool = any([rs.reactions for rs in output_systems])
+    
+    if not any_not_empty_bool:
+        tqdm.write("The resulting reaction systems have no reactions.\n"
+                       + "No " + algorithm.NAME)
+    
     if output_format in SUPPORTED_GRAPH_FILE_FORMATS:
-        write(output_systems, output_path)
+        write(output_systems, output_path, algorithm)
     elif output_format == ".crs":
         with open(output_path, "w") as f:
             res_str = ""
             for output_system in output_systems:
-                res_str += ModelIO().write(output_system,
-                                           True,
-                                           reaction_notation,
-                                           arrow_notation)
+                if not output_system.reactions:
+                    res_str += ("The resulting reaction system has no reactions.\n"
+                        + "No " + algorithm.NAME)
+                else:
+                    res_str += ModelIO().write(output_system,
+                                            True,
+                                            reaction_notation,
+                                            arrow_notation)
                 res_str += "\n"
             f.write(res_str)
     elif output_path == "stdout":
         res_str = ""
         for output_system in output_systems:
-            res_str += ModelIO().write(output_system,
-                                       True,
-                                       reaction_notation,
-                                       arrow_notation)
+            if not output_system.reactions:
+                res_str += ("The resulting reaction system has no reactions.\n"
+                       + "No " + algorithm.NAME)
+            else:
+                res_str += ModelIO().write(output_system,
+                                        True,
+                                        reaction_notation,
+                                        arrow_notation)
             res_str += "\n"
         print(res_str)
     else:
@@ -65,12 +83,15 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
         output_path = output_path.split(".")[0] + ".crs"
         with open(output_path, "w") as f:
             res_str = ""
-            for output_system in output_systems:
+            if not output_system.reactions:
+                    res_str += ("The resulting reaction system has no reactions.\n"
+                        + "No " + algorithm.NAME)
+            else:
                 res_str += ModelIO().write(output_system,
-                                           True,
-                                           reaction_notation,
-                                           arrow_notation)
-                res_str += "\n"
+                                        True,
+                                        reaction_notation,
+                                        arrow_notation)
+            res_str += "\n"
             f.write(res_str)
 
     tqdm.write("wrote file")

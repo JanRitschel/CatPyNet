@@ -1,6 +1,10 @@
 from __future__ import annotations
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from sample.model.MoleculeType import MoleculeType
+from sample.model.Reaction import Reaction
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '.')))
 '''
  * ReactionSystem.java Copyright (C) 2022 Daniel H. Huson
  *
@@ -20,39 +24,44 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.'))
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
-from sample.model.Reaction import Reaction
-from sample.model.MoleculeType import MoleculeType
-
 
 class ReactionSystem:
-    '''*
-    * a catalytic reaction system
-    * Daniel Huson, 6.2019
+    '''
+    A catalytic reaction system
     '''
 
-    def __init__(self, name:str = "Reactions", **kwargs):
-        '''
-        construct a reaction system
-        '''
-        self.name:str = name        
-        self.reactions:list[Reaction] = [] if "reactions" not in kwargs else kwargs["reactions"]
-        self.foods:list[MoleculeType] = [] if "foods" not in kwargs else kwargs["foods"]
-        self.inhibitors_present:bool = False
-        self.size:int
-        self.food_size:int
+    def __init__(self, name: str = "Reactions", **kwargs):
+        """Create a reaction system.
+
+        Args:
+            name (str, optional): Name of the reaction system. Defaults to "Reactions".
+
+        KwArgs:
+            reactions (list[Reaction]): reactions in reaction system. Defaults to [].
+            foods (list[MoleculeType]): food in reaction system. Defaults to [].
+        """
+        self.name: str = name
+        self.reactions: list[Reaction] = [
+        ] if "reactions" not in kwargs else kwargs["reactions"]
+        self.foods: list[MoleculeType] = [
+        ] if "foods" not in kwargs else kwargs["foods"]
+        self.inhibitors_present: bool = False
+        self.size: int
+        self.food_size: int
         buffer = 0
         for reaction in self.reactions:
             if reaction.direction == "both":
                 buffer += 1
-        self.number_of_two_way_reactions:int = buffer
-        
+        self.number_of_two_way_reactions: int = buffer
+
         self.update_inhibitors_present()
-    
+
     @property
     def reactions(self):
         return self._reactions
+
     @reactions.setter
-    def reactions(self, value:list[Reaction]):
+    def reactions(self, value: list[Reaction]):
         self._reactions = value
         buffer = 0
         for reaction in value:
@@ -63,75 +72,80 @@ class ReactionSystem:
     @property
     def size(self):
         return len(self.reactions)
-    
+
     @property
     def food_size(self):
         return len(self.foods)
-    
+
     def __copy__(self) -> ReactionSystem:
         res = ReactionSystem(self.name)
         res.foods = self.foods
         res.reactions = self.reactions
         return res
-       
+
     def clear(self) -> None:
         self.reactions.clear()
         self.foods.clear()
-        
+
     def get_header_line(self) -> str:
         res = [self.name, " has ", str(self.size)]
         if (self.get_number_of_one_way_reactions() == 0
-            and self.number_of_two_way_reactions > 0):
+                and self.number_of_two_way_reactions > 0):
             res.append(" two-way reactions")
         elif (self.get_number_of_one_way_reactions() > 0
-            and self.number_of_two_way_reactions == 0):
+              and self.number_of_two_way_reactions == 0):
             res.append(" one-way reactions")
         elif (self.get_number_of_one_way_reactions() > 0
-            and self.number_of_two_way_reactions > 0):
+              and self.number_of_two_way_reactions > 0):
             res.append(" reactions (")
             res.append(self.number_of_two_way_reactions)
             res.append(" two-way and ")
             res.append(self.get_number_of_one_way_reactions())
             res.append(" one-way)")
-        else: 
+        else:
             res.append(" reactions")
         res.append(" on ")
         res.append(len(self.foods))
         res.append(" food items")
         return "".join(res)
-    
+
     def update_inhibitors_present(self) -> None:
         """Sets inhibitors_present to True if any inhibitors are present.
-        
+
         Checks all reactions and sets inhibitors_present to true if any
         inhibitor for any reaction is present.
         Otherwise sets inhibitors_present to False
-        """        
+        """
         for reaction in self.reactions:
             if len(reaction.inhibitions) > 0:
                 self.inhibitors_present = True
                 return
         self.inhibitors_present = False
-        
-    def get_mentioned_molecules(self)->set[MoleculeType]:
+
+    def get_mentioned_molecules(self) -> set[MoleculeType]:
+        """gets all molecules mentioned in self
+
+        Returns:
+            set[MoleculeType]: reactants, products, inhibitions, catalysts
+        """
         molecule_types = self.foods
         for reaction in self.reactions:
             molecule_types.extend(reaction.reactants)
             molecule_types.extend(reaction.products)
             molecule_types.extend(reaction.inhibitions)
-            catalysts = MoleculeType().values_of(reaction.catalysts.replace(",","\t")
-                                                 .replace("|","\t").replace("*", "\t")
+            catalysts = MoleculeType().values_of(reaction.catalysts.replace(",", "\t")
+                                                 .replace("|", "\t").replace("*", "\t")
                                                  .replace("&", "\t").split("\t"))
             molecule_types.extend(catalysts)
         return set(molecule_types)
-    
+
     def get_reaction_names(self) -> set[str]:
         names = []
         for reaction in self.reactions:
             names.append(reaction.name)
         return names
-    
-    def compute_mentioned_foods(self, foods:list[MoleculeType]) -> set[MoleculeType]:
+
+    def compute_mentioned_foods(self, foods: list[MoleculeType]) -> set[MoleculeType]:
         """Might need to return a dict?
 
         Args:
@@ -148,37 +162,38 @@ class ReactionSystem:
             molecule_types.extend(reaction.get_catalyst_elements())
         all_molecules_mentioned = set(molecule_types)
         return all_molecules_mentioned.intersection(foods)
-    
-    def replace_named_reaction(self, name:str, reaction:Reaction) -> None:
+
+    def replace_named_reaction(self, name: str, reaction: Reaction) -> None:
         old_reaction = self.get_reaction_by_name(name)
         if old_reaction == None:
             raise TypeError("no such reaction: " + name)
         self.reactions.remove(old_reaction)
         self.reactions.append(reaction)
-        
+
     def sorted_by_hashcode(self) -> ReactionSystem:
         sorted_reaction_system = ReactionSystem(self.name)
         sorted_reaction_system.foods = sorted(self.foods)
         sorted_reaction_system.reactions = sorted(self.reactions)
         return sorted_reaction_system
-    
-    def get_reaction_by_name(self, name:str) -> Reaction:
-        for reaction in self.reactions: #UNSCHÖN
-            if reaction.name == name: return reaction
-    
-    #ENTERNT, Properties selbst müssen via self.xx angesteuert werden
-    
+
+    def get_reaction_by_name(self, name: str) -> Reaction:
+        for reaction in self.reactions:  # UNSCHÖN
+            if reaction.name == name:
+                return reaction
+
     def get_number_of_one_way_reactions(self) -> int:
         return self.size - self.number_of_two_way_reactions
-    
-    def __eq__(self, other:ReactionSystem) -> bool:
-        if hash(self) == hash(other): return True #FEHLERANFÄLLIG, temporäre Lösung
-        if not (isinstance(other, ReactionSystem)): return False
-        return (set(self.foods) == set(other.foods) 
+
+    def __eq__(self, other: ReactionSystem) -> bool:
+        if hash(self) == hash(other):
+            return True  # FEHLERANFÄLLIG, temporäre Lösung
+        if not (isinstance(other, ReactionSystem)):
+            return False
+        return (set(self.foods) == set(other.foods)
                 and set(self.reactions) == set(other.reactions))
-        
-    def __lt__(self, other:Reaction) -> bool:
+
+    def __lt__(self, other: Reaction) -> bool:
         return hash(self) < hash(other)
-    
+
     def __hash__(self) -> int:
         return hash((tuple(self.foods), tuple(self.reactions)))
