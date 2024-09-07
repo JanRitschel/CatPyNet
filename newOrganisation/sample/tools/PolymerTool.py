@@ -1,12 +1,12 @@
 from sample.Utilities import Utilities
 from sample.model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
 from sample.io.ModelIO import ModelIO
+from sample.io.IOManager import redirect_to_writer, ALL_FILE_FORMATS
 import argparse
 import zipfile
 import random
 import math
 import bisect
-import time
 import decimal
 from tqdm import tqdm
 from itertools import combinations_with_replacement
@@ -31,19 +31,30 @@ def main():
     parser.add_argument("--authors", action="store_const",
                         const="Daniel H. Huson and Mike Steel.")  # ZU MACHEN, Autoren müssen richtige sein
     parser.add_argument("-a", metavar="alphabet_size",
-                        help="alphabet size (list (x,y,z,...) or range (x-z or x-z/step) ok)", default="2")
+                        help="alphabet size (list (x,y,z,...) or range (x-z or x-z/step) ok)", 
+                        default="2")
     parser.add_argument("-k", metavar="food_max_length",
                         help="food molecule max length  (list or range ok)", default="2")
     parser.add_argument("-n", metavar='polymer_max_length',
                         help="polymer max length  (list or range ok)", default="4")
     parser.add_argument("-m", metavar="mean_catalyzed",
-                        help="mean number of catalyzed reactions per molecule  (list or range ok)", default="2.0")
+                        help="mean number of catalyzed reactions per molecule  (list or range ok)", 
+                        default="2.0")
     parser.add_argument("-r", metavar="replicate",
                         help="The replicate number/seed (list or range ok)", default="1")
     parser.add_argument("-o", metavar="output", help="Output directory (or stdout)",
-                        default="stdout")  # ZU MACHEN, stdout
+                        default="stdout")
     parser.add_argument("-f", metavar="file_name_template",
-                        help="file name template (use #a,#k,#n,#m,#r for parameters)", default="polymer_model_a#a_k#k_n#n_m#m_r#r.crs")
+                        help="file name template (use #a,#k,#n,#m,#r for parameters)", 
+                        default="polymer_model_a#a_k#k_n#n_m#m_r#r.crs")
+    parser.add_argument("-z", metavar='output_zipped',
+                        help="Should the output be a zipped directory. (True or False)", 
+                        choices=["True", "False"], 
+                        default="False")
+    parser.add_argument("-of", metavar="output_format",
+                        help="file format to be written. e.g. '.crs'", 
+                        choices=ALL_FILE_FORMATS, 
+                        default=None)
     parser.add_argument("-rn", metavar="reaction_notation",
                         help="Output reaction notation", default="FULL")
     parser.add_argument("-an", metavar="arrow_notation",
@@ -72,8 +83,7 @@ def main():
                                           "n": n, "m": m, "r": r}
 
                             if all([x != None for x in parameters.values()]):
-                                res_reaction_system = apply(
-                                    parameters, total_files_expected)
+                                res_reaction_system = apply(parameters)
                             else:
                                 res_reaction_system = None
 
@@ -83,26 +93,11 @@ def main():
                                 file = replace_parameters(
                                     arguments["f"], parameters)
                                 filename = os.path.join(arguments["o"], file)
-                                os.makedirs(os.path.dirname(
-                                    filename), exist_ok=True)
-
-                            if ".zip" in filename:
-                                with zipfile.ZipFile(filename, "w") as zip_arch:
-                                    res_str = ""
-                                    res_str += ModelIO().write(res_reaction_system,
-                                                               True,
-                                                               arguments['rn'],
-                                                               arguments['an'])
-                                    zip_arch.writestr(arguments['o'], res_str)
-                            else:
-                                with open(filename, "w") as f:
-                                    f.write(replace_parameters(
-                                        "# Polymer model a=#a k=#k n=#n m=#m r=#r:\n\n", parameters))
-                                    f.write(ModelIO().write(res_reaction_system,
-                                                            True,
-                                                            arguments['rn'],
-                                                            arguments['an']))
-                                    f.write("\n#EOF\n")
+                            
+                            redirect_to_writer([res_reaction_system], arguments['of'],
+                                               arguments['z'], filename,
+                                               arguments['an'], arguments["rn"])
+                            
                             pbar.update(1)
                             files_count += 1
     tqdm.write("Number of files created: " + str(files_count))

@@ -1,6 +1,6 @@
-Food: b, d, c, a
+Food: b, c, a, d
 
-r3 : c + a [a] <=> b
 r2 : c + d [a] => a
 r1 : a + b [c,d,e&f] => d
+r3 : c + a [a] <=> b
 

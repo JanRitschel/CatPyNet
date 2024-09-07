@@ -1,20 +1,20 @@
-Food: aa, bb, b, a
+Food: b, a, aa, bb
 
-r05 : a + aaba [baa] <=> aabaa
-r13 : a + b [a] <=> ab
-r16 : ab [aabaabbb] <=> abab
-r06 : baa + bab [aabaa,ba] <=> baabab
-r17 : aabaab + bb [baab] <=> aabaabbb
 r10 : b + bab [baabbbab] <=> babb
-r15 : ab + ba [abb] <=> baab
-r03 : aa + ba [a] <=> aaba
-r14 : a + bb [ab,b] <=> abb
-r08 : baa + bb [b] <=> baabb
-r12 : a + b [ab] <=> ba
-r01 : a + baa [aa,aabaabbb] <=> baaa
-r04 : aa + aabaa [aaba] <=> aaaabaa
-r11 : b + ba [bb] <=> bab
+r17 : aabaab + bb [baab] <=> aabaabbb
 r07 : a + ba [baab] <=> baa
 r02 : aaba + ab [baaa] <=> aabaab
+r11 : b + ba [bb] <=> bab
+r16 : ab [aabaabbb] <=> abab
+r04 : aa + aabaa [aaba] <=> aaaabaa
+r03 : aa + ba [a] <=> aaba
+r13 : a + b [a] <=> ab
+r12 : a + b [ab] <=> ba
+r08 : baa + bb [b] <=> baabb
+r14 : a + bb [ab,b] <=> abb
+r15 : ab + ba [abb] <=> baab
 r09 : baabb + bab [abb] <=> baabbbab
+r05 : a + aaba [baa] <=> aabaa
+r01 : a + baa [aa,aabaabbb] <=> baaa
+r06 : baa + bab [aabaa,ba] <=> baabab
 

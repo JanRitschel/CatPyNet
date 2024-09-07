@@ -1,11 +1,6 @@
 from sample.model.ReactionSystem import ReactionSystem
-from sample.settings.ReactionNotation import ReactionNotation
-from sample.settings.ArrowNotation import ArrowNotation
 from sample.io.GraphIO import write, SUPPORTED_GRAPH_FILE_FORMATS
 from sample.io.ModelIO import ModelIO, SUPPORTED_FILE_FORMATS
-from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from sample.algorithm.AlgorithmBase import AlgorithmBase
-import argparse
 import shutil
 from tqdm import tqdm
 
@@ -15,24 +10,25 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 
-all_file_formats = SUPPORTED_FILE_FORMATS
-all_file_formats.extend(SUPPORTED_GRAPH_FILE_FORMATS)
-all_file_formats.extend([format.casefold() for format in all_file_formats])
-all_file_formats.append(None)
+ALL_FILE_FORMATS = SUPPORTED_FILE_FORMATS
+ALL_FILE_FORMATS.extend(SUPPORTED_GRAPH_FILE_FORMATS)
+ALL_FILE_FORMATS.extend([format.casefold() for format in ALL_FILE_FORMATS])
+ALL_FILE_FORMATS.append(None)
+
 
 def redirect_to_writer(output_systems:list[ReactionSystem],
                        output_format:str|None, 
-                       zipped:str, 
+                       zipped:bool, 
                        output_path:str,
-                       arrow_notation:str,
-                       reaction_notation:str):
+                       reaction_notation:str,
+                       arrow_notation:str):
     
     if not output_format and output_path != "stdout":
         output_format = os.path.splitext(output_path)[1]
     else:
         output_path = os.path.splitext(output_path)[0] + output_format
 
-    if zipped == "True":
+    if zipped:
         output = os.path.split(os.path.abspath(output_path))
         output_directory = os.path.join(output[0], output[1].split(".")[0])
         output_file = output[1]

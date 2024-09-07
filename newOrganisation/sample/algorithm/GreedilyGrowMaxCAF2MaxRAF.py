@@ -1,7 +1,6 @@
 from __future__ import annotations
 from sample.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
 from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-from sample.algorithm.IDescribed import IDescribed
 from sample.model.Reaction import Reaction
 from sample.model.ReactionSystem import ReactionSystem
 
@@ -12,7 +11,7 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
 
-class GreedilyGrowMaxCAF2MaxRAF(IDescribed):
+class GreedilyGrowMaxCAF2MaxRAF():
 
     @property
     def description(self):

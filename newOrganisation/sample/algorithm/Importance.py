@@ -1,5 +1,4 @@
 from __future__ import annotations
-from sample.algorithm.IDescribed import IDescribed
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 from sample.model.MoleculeType import MoleculeType
 from sample.model.Reaction import Reaction
@@ -14,7 +13,7 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
 
-class Importance (IDescribed):
+class Importance ():
 
     def get_description() -> str:
         return "computes the percent difference between model size and model size without given food item [HS23]"

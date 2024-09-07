@@ -1,5 +1,4 @@
 from __future__ import annotations
-from sample.algorithm.IDescribed import IDescribed
 from sample.model.ReactionSystem import ReactionSystem
 '''
   AlgorithmBase.java Copyright (C) 2022 Daniel H. Huson
@@ -25,7 +24,7 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
 
-class AlgorithmBase(IDescribed):
+class AlgorithmBase():
     '''
     computes a new reaction system
     Daniel Huson, 7.2019

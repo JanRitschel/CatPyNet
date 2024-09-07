@@ -5,6 +5,7 @@ from sample.settings.ReactionNotation import ReactionNotation
 from sample.model.ReactionSystem import ReactionSystem
 from sample.model.Reaction import Reaction
 from sample.model.MoleculeType import MoleculeType
+from tqdm import tqdm
 import sys
 import os
 sys.path.insert(0, os.path.abspath(
@@ -90,9 +91,9 @@ class ModelIO:
                             msg = e.args[0]
                             raise IOError(msg, i)
                 elif in_leading_comments:
-                    leading_comments.append(line + "\n")
+                    leading_comments.append(line)
 
-        return leading_comments
+        return "\n".join(leading_comments)
 
     def get_rs_as_str(reaction_system: ReactionSystem, 
                       include_food: bool, 
@@ -104,14 +105,15 @@ class ModelIO:
             return ""
 
     def write(self, 
-              reaction_system: ReactionSystem | None, 
+              reaction_system: ReactionSystem, 
               include_food: bool, 
               reaction_notation: ReactionNotation, 
               arrow_notation: ArrowNotation, 
               food_first: bool = True) -> str:
 
-        if not reaction_system:
-            return ""
+        if not reaction_system.reactions:
+            tqdm.write("The resulting reaction system has no reactions")
+            return "The resulting reaction system has no reactions"
         res = ""
         if food_first and include_food:
             res += "Food: " + ModelIO().get_food_str(reaction_system, reaction_notation) + "\n\n"
