@@ -10,8 +10,6 @@ class ReactionNotation(StrEnum):
     SPARSE = "SPARSE"
     TABBED = "TABBED"
 
-    #ENTFERNT, valueOfIgnoreCase
-
     def detect_notation(lines:list[str]) -> tuple[ReactionNotation, ArrowNotation]|None:
         
         arrows_use_equals = False

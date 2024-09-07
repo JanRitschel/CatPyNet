@@ -1,0 +1,7 @@
+Read 6 reactions and 12 food items from file: example-1.crs
+
+
+iRAF has 3 one-way reactions on 6 food items
+
+
+No Core RAF

@@ -1,0 +1,6 @@
+Read 3 reactions (1 two-way) and 4 food items from file: example-7.crs
+
+
+There are 2 catalysts that are never provided or produced: 'e', 'f'.
+
+No Core RAF

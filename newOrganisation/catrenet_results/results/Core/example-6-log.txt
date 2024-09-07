@@ -1,0 +1,4 @@
+Read 7 reactions and 1 food items from file: example-6.crs
+
+
+No Core RAF

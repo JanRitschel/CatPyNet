@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .model.Reaction import Reaction #UNSCHÖN, potentiell überflüssig
-from .model.MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
+from .model.Reaction import Reaction
+from .model.MoleculeType import MoleculeType
 
 class Utilities:
     

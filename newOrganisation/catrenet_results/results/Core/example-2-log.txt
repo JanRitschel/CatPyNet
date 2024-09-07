@@ -1,0 +1,12 @@
+Read 5 reactions and 6 food items from file: example-2.crs
+
+
+There is one food item that is never used: '00'.
+
+iRAF has 1 one-way reactions on 3 food items
+
+
+No Core RAF
+
+
+No Core RAF

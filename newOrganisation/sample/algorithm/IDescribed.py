@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
+
 class IDescribed:
-	'''*
-		* get a description for use with a tool tip
-		*
-		* @return description
-	'''
-	@property
-	def description(self):
-		pass
+    '''*
+            * get a description for use with a tool tip
+            *
+            * @return description
+    '''
+    @property
+    def description(self):
+        pass

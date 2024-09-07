@@ -1,0 +1,3 @@
+Food: a b bb
+
+r14 : a + bb [ab,b] <=> abb

@@ -1,4 +1,6 @@
 from __future__ import annotations
+from sample.algorithm.IDescribed import IDescribed
+from sample.model.ReactionSystem import ReactionSystem
 '''
   AlgorithmBase.java Copyright (C) 2022 Daniel H. Huson
  
@@ -17,10 +19,10 @@ from __future__ import annotations
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-from sample.model.ReactionSystem import ReactionSystem
-from sample.algorithm.IDescribed import IDescribed
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '.')))
 
 
 class AlgorithmBase(IDescribed):
@@ -30,9 +32,9 @@ class AlgorithmBase(IDescribed):
     '''
     """ def __init__(self):
         pass """
-    
-    NAME:str = ""
-    
+
+    NAME: str = ""
+
     @property
     def name(self):
         pass
@@ -41,28 +43,24 @@ class AlgorithmBase(IDescribed):
     def description(self):
         '''
         get the name of the reaction system computed by this algorithm
-        
+
         returns name
         '''
         pass
-    
-    # Version with all vars
-    # def apply(input:ReactionSystem, progress:ProgressListener) -> ReactionSystem: # throws CanceledException
-    def apply(input:ReactionSystem) -> ReactionSystem: # throws CanceledException
+
+    def apply(input: ReactionSystem) -> ReactionSystem:
         '''
         run the algorithm
-        
+
         return output
         '''
-        
+
         pass
-    
-    # Version with all vars
-    # def listAllAlgorithms() -> Collection<String> :
-    def list_all_algorithms() -> list[str] :
+
+    def list_all_algorithms() -> list[str]:
         '''
         list all known algorithms
-        
+
         return names of all known algorithms
         '''
         list = []
@@ -72,21 +70,22 @@ class AlgorithmBase(IDescribed):
             from sample.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
             from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
             from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-        except: pass
+        except:
+            pass
         for algorithm in AlgorithmBase.__subclasses__():
             list.append(algorithm.NAME)
 
         return list
-    
-    def get_algorithm_by_name(name:str) -> AlgorithmBase|None:
+
+    def get_algorithm_by_name(name: str) -> AlgorithmBase | None:
         '''
         get algorithm by name
-        
+
         param name
         returns algorithm
         '''
         for algorithm in AlgorithmBase.__subclasses__():
             if name.casefold() == algorithm.NAME.casefold():
                 return algorithm
-            
+
         return None

@@ -1,0 +1,6 @@
+Read 6039 reactions (3192 two-way) and 68 food items from file: prokaryotic-network.crs
+
+
+There are 2 catalysts that are never provided or produced: 'C00748', 'Enzyme'.
+
+No Core RAF

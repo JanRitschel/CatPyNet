@@ -1,9 +1,6 @@
-"""
-UNKLAR: Warum ist das eine Klasse, welche Vorteile hat das? Es sollte auch als File funktionieren.
-"""
 
 
-def compute(expression:str) -> str:
+def compute(expression: str) -> str:
     """
     Return a Disjunctive Normal Form of the expression as a String.
 
@@ -27,23 +24,28 @@ def compute(expression:str) -> str:
     pos = 0
     last_position = len(expression)
     while pos < last_position:
-     """    
+     """
     return ",".join(recurse(expression))
 
-def recurse(expression:str) -> list[str]:
-    last_pos = len(expression) #FEHLERANFÄLLIG, warum funktioniert das?
+
+def recurse(expression: str) -> list[str]:
+    last_pos = len(expression)
     if expression.startswith("("):
-        associated_closed_bracket = find_associated_closed_bracket(expression, 0)
+        associated_closed_bracket = find_associated_closed_bracket(
+            expression, 0)
         if associated_closed_bracket+1 == last_pos:
             return recurse(expression[1:associated_closed_bracket])
         else:
             next_outside_operator = expression[associated_closed_bracket + 1]
             if next_outside_operator == ",":
-                return union(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
+                return union(recurse(expression[1:associated_closed_bracket]), 
+                             recurse(expression[associated_closed_bracket + 2:last_pos]))
             if next_outside_operator == "&":
-                next_rel_or = next_outside_or(expression, associated_closed_bracket+1)
+                next_rel_or = next_outside_or(
+                    expression, associated_closed_bracket+1)
                 if next_rel_or == -1:
-                    return product(recurse(expression[1:associated_closed_bracket]), recurse(expression[associated_closed_bracket + 2:last_pos]))
+                    return product(recurse(expression[1:associated_closed_bracket]), 
+                                   recurse(expression[associated_closed_bracket + 2:last_pos]))
                 else:
                     return union(product(recurse(expression[1:associated_closed_bracket]),
                                          recurse(expression[associated_closed_bracket + 2:next_rel_or])),
@@ -51,30 +53,36 @@ def recurse(expression:str) -> list[str]:
     else:
         next_inside_operator = next_or(expression, 0)
         if next_inside_operator > 0:
-            return union(recurse(expression[0:next_inside_operator]), recurse(expression[next_inside_operator + 1:last_pos]))
+            return union(recurse(expression[0:next_inside_operator]), 
+                         recurse(expression[next_inside_operator + 1:last_pos]))
         next_inside_operator = next_and(expression, 0)
         if next_inside_operator > 0:
             second_expression = expression[next_inside_operator + 1:last_pos]
-            end_of_brackets = find_associated_closed_bracket(expression, next_inside_operator+1)
+            end_of_brackets = find_associated_closed_bracket(
+                expression, next_inside_operator+1)
             if end_of_brackets > 0:
                 position = end_of_brackets + 1
                 while position < last_pos:
                     if expression[position] == ",":
-                        return union(product(recurse(expression[0:next_inside_operator]), 
+                        return union(product(recurse(expression[0:next_inside_operator]),
                                              recurse(expression[next_inside_operator + 1:position])),
-                                    recurse(expression[position + 1:last_pos]))
+                                     recurse(expression[position + 1:last_pos]))
                     elif expression[position] == "(":
-                        position = find_associated_closed_bracket(expression, position)
+                        position = find_associated_closed_bracket(
+                            expression, position)
                     position += 1
-            return product(recurse(expression[0:next_inside_operator]), recurse(expression[next_inside_operator + 1:last_pos]))
+            return product(recurse(expression[0:next_inside_operator]), 
+                           recurse(expression[next_inside_operator + 1:last_pos]))
 
-    return [expression] #FEHLERANFÄLLIG
+    return [expression]
 
-def union(tree_a:list, tree_b:list) -> list:
+
+def union(tree_a: list, tree_b: list) -> list:
     tree_a.extend(tree_b)
     return tree_a
 
-def product(tree_a:list, tree_b:list) -> list:
+
+def product(tree_a: list, tree_b: list) -> list:
     res = []
     for content_a in tree_a:
         for content_b in tree_b:
@@ -84,23 +92,29 @@ def product(tree_a:list, tree_b:list) -> list:
                 res.append(content_a + "&" + content_b)
     return res
 
-def next_outside_or(expression:str, start_pos:int) -> int:
+
+def next_outside_or(expression: str, start_pos: int) -> int:
     end_pos = len(expression)-1
     inside_brackets_depth = 0
     while start_pos <= end_pos:
         if inside_brackets_depth == 0:
-            if start_pos==end_pos: return -1
-            elif expression[start_pos] == ",": return start_pos
-        if expression[start_pos] == "(": inside_brackets_depth += 1
-        elif expression[start_pos] == ")": inside_brackets_depth -= 1
+            if start_pos == end_pos:
+                return -1
+            elif expression[start_pos] == ",":
+                return start_pos
+        if expression[start_pos] == "(":
+            inside_brackets_depth += 1
+        elif expression[start_pos] == ")":
+            inside_brackets_depth -= 1
         start_pos += 1
-        
+
     return -1
 
-def next_or(expression:str, start_pos:int) -> int:
+
+def next_or(expression: str, start_pos: int) -> int:
     """
     Return the postion of the next "," after "start_pos" in "expression".
-    
+
     If no "," is found returns -1 instead.
     If no "," is found before the next open bracket "(" returns -1 as well.
 
@@ -114,16 +128,19 @@ def next_or(expression:str, start_pos:int) -> int:
     """
     end_pos = len(expression) - 1
     while start_pos <= end_pos:
-        if expression[start_pos] == ",": return start_pos
-        elif expression[start_pos] == "(": return -1
+        if expression[start_pos] == ",":
+            return start_pos
+        elif expression[start_pos] == "(":
+            return -1
         start_pos += 1
-    
+
     return -1
 
-def next_and(expression:str, start_pos:int) -> int:
+
+def next_and(expression: str, start_pos: int) -> int:
     """
     Return the postion of the next "&" after "start_pos" in "expression".
-    
+
     If no "&" is found returns -1 instead.
     If no "&" is found before the next open bracket "(" returns -1 as well.
 
@@ -137,13 +154,16 @@ def next_and(expression:str, start_pos:int) -> int:
     """
     end_pos = len(expression) - 1
     while start_pos <= end_pos:
-        if expression[start_pos] == "&": return start_pos
-        elif expression[start_pos] == "(": return -1
+        if expression[start_pos] == "&":
+            return start_pos
+        elif expression[start_pos] == "(":
+            return -1
         start_pos += 1
-    
+
     return -1
 
-def find_associated_closed_bracket(expression:str, start_pos:int) -> int:
+
+def find_associated_closed_bracket(expression: str, start_pos: int) -> int:
     """
     Return position of associated bracket of the open bracket at "start_pos".
 
@@ -163,8 +183,11 @@ def find_associated_closed_bracket(expression:str, start_pos:int) -> int:
     end_pos = len(expression) - 1
     depth = 0
     while start_pos <= end_pos:
-        if expression[start_pos] == "(": depth += 1
-        elif expression[start_pos] == ")": depth -= 1
-        if depth == 0: return start_pos
+        if expression[start_pos] == "(":
+            depth += 1
+        elif expression[start_pos] == ")":
+            depth -= 1
+        if depth == 0:
+            return start_pos
         start_pos += 1
     return -1

@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.'))
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  '''
 
-from sample.model.Reaction import Reaction #UNSCHÖN, potentiell überflüssig
-from sample.model.MoleculeType import MoleculeType #UNSCHÖN, potentiell überflüssig
+from sample.model.Reaction import Reaction
+from sample.model.MoleculeType import MoleculeType
 
 
 class ReactionSystem:
@@ -47,13 +47,12 @@ class ReactionSystem:
         self.number_of_two_way_reactions:int = buffer
         
         self.update_inhibitors_present()
-        #ENTFERNT, Binds für size und foodsize
     
     @property
     def reactions(self):
         return self._reactions
     @reactions.setter
-    def reactions(self, value:list[Reaction]): #FEHLERANFÄLLIG, might cause issues when appending
+    def reactions(self, value:list[Reaction]):
         self._reactions = value
         buffer = 0
         for reaction in value:
@@ -74,16 +73,10 @@ class ReactionSystem:
         res.foods = self.foods
         res.reactions = self.reactions
         return res
-    
-    def make_this_shallow_copy_of(self, other:ReactionSystem) -> None: #UNSCHÖN, wahrscheinlich unnötig
-        self.clear
-        self.name = other.name
-        self.foods = other.foods
-        self.reactions = other.reactions
        
     def clear(self) -> None:
-        self.reactions.clear
-        self.foods.clear
+        self.reactions.clear()
+        self.foods.clear()
         
     def get_header_line(self) -> str:
         res = [self.name, " has ", str(self.size)]
@@ -132,7 +125,7 @@ class ReactionSystem:
             molecule_types.extend(catalysts)
         return set(molecule_types)
     
-    def get_reaction_names(self) -> list[str]: #Unschön, sollte set geben
+    def get_reaction_names(self) -> set[str]:
         names = []
         for reaction in self.reactions:
             names.append(reaction.name)
@@ -152,12 +145,12 @@ class ReactionSystem:
             molecule_types.extend(reaction.reactants)
             molecule_types.extend(reaction.inhibitions)
             molecule_types.extend(reaction.products)
-            molecule_types.extend(reaction.get_catalyst_elements()) #FEHLERANFÄLLIG, ursprünglich durch get_catalyst_conjunctions
+            molecule_types.extend(reaction.get_catalyst_elements())
         all_molecules_mentioned = set(molecule_types)
         return all_molecules_mentioned.intersection(foods)
     
     def replace_named_reaction(self, name:str, reaction:Reaction) -> None:
-        old_reaction = self.get_reaction(name)
+        old_reaction = self.get_reaction_by_name(name)
         if old_reaction == None:
             raise TypeError("no such reaction: " + name)
         self.reactions.remove(old_reaction)
@@ -169,7 +162,7 @@ class ReactionSystem:
         sorted_reaction_system.reactions = sorted(self.reactions)
         return sorted_reaction_system
     
-    def get_reaction(self, name:str) -> Reaction:
+    def get_reaction_by_name(self, name:str) -> Reaction:
         for reaction in self.reactions: #UNSCHÖN
             if reaction.name == name: return reaction
     
