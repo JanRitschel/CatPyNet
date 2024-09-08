@@ -98,14 +98,14 @@ class ReactionSystem:
         elif (self.get_number_of_one_way_reactions() > 0
               and self.number_of_two_way_reactions > 0):
             res.append(" reactions (")
-            res.append(self.number_of_two_way_reactions)
+            res.append(str(self.number_of_two_way_reactions))
             res.append(" two-way and ")
-            res.append(self.get_number_of_one_way_reactions())
+            res.append(str(self.get_number_of_one_way_reactions()))
             res.append(" one-way)")
         else:
             res.append(" reactions")
         res.append(" on ")
-        res.append(len(self.foods))
+        res.append(str(len(self.foods)))
         res.append(" food items")
         return "".join(res)
 

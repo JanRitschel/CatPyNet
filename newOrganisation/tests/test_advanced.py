@@ -20,6 +20,7 @@ if __name__ == '__main__':
     test_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     
     for algo in algos:
+        if algo=="iRAF":continue
         algo_respath = respath + "\\" + algo
         for j, file in enumerate(test_files):
             if j == 14: continue

@@ -1,4 +1,4 @@
-Food: b, c, a
+Food: c, a, b
 
 r1 : a + b [e,f] => d
 r2 : b + c [f] => e

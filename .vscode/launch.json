@@ -43,27 +43,58 @@
             "args": [
                 "-c", "max raf",
                 "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.gml",
-                "-of", ".gml",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
+                "-of", ".graphml",
                 "-rn", "SPARSE",
                 "-an", "USES_EQUALS"
             ]
         },
         {
-            "name": "Polymer Debugger: Current File with Arguments",
+            "name": "Polymer Debugger Ranges: Current File with Arguments",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-a", "8",
-                "-k", "1,2,3",
-                "-n", "8",
+                "-a", "7-8",
+                "-k", "1-3",
+                "-n", "6-8/2",
                 "-m", "1.0,2.0",
                 "-r", "1",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\poly_test",
                 "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
                 "-rn", "TABBED"
+            ]
+        },
+        {
+            "name": "version: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--version",
+            ]
+        },
+        {
+            "name": "license: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--license"
+            ]
+        },
+        {
+            "name": "author: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+
+                "--authors"
             ]
         }
     ]

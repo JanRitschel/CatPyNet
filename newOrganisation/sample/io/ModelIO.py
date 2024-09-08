@@ -2,9 +2,7 @@ from __future__ import annotations
 import re
 from sample.settings.ArrowNotation import ArrowNotation
 from sample.settings.ReactionNotation import ReactionNotation
-from sample.model.ReactionSystem import ReactionSystem
-from sample.model.Reaction import Reaction
-from sample.model.MoleculeType import MoleculeType
+from sample.model.ReactionSystem import ReactionSystem, Reaction, MoleculeType
 from tqdm import tqdm
 import sys
 import os
@@ -12,14 +10,20 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 
-FORMAL_FOOD = MoleculeType().value_of(name="$")
 SUPPORTED_FILE_FORMATS = [".crs"]
 
 
 class ModelIO:
 
     def parse_food(a_line: str) -> list[MoleculeType]:
+        """Determines if a line is a food line and parses to a list of molecules.
 
+        Args:
+            a_line (str): line of text
+
+        Returns:
+            list[MoleculeType]: list of food molecules or empty list
+        """
         a_line = re.sub(" +", " ", a_line.replace(",", " "))
         if a_line.startswith("Food:"):
             if len(a_line) > len("Food:"):
@@ -37,13 +41,10 @@ class ModelIO:
             else:
                 a_line = ""
 
-        result = []
-        for name in a_line.split():
-            result.append(MoleculeType().value_of(name))
-        return result
+        return MoleculeType().values_of(a_line.split())
 
     def read(reaction_system: ReactionSystem, filename: str, reaction_notation: ReactionNotation) -> str:
-        """Reads File into a Reactionsystem
+        """Prases file into a reaction system
 
         Args:
             reaction_system (ReactionSystem): ReactionSystem to be filled
@@ -59,7 +60,6 @@ class ModelIO:
         reaction_names: set[str] = set()
         in_leading_comments: bool = True
         leading_comments: list[str] = []
-        global FORMAL_FOOD
 
         with open(filename, "r") as f:
             lines = f.readlines()
@@ -80,13 +80,10 @@ class ModelIO:
                                 reaction = Reaction().parse_new(line, reaction_notation)
                                 if reaction.name in reaction_names:
                                     raise IOError(
-                                        "Multiple reactions have the same name:\t" 
+                                        "Multiple reactions have the same name:\t"
                                         + str(reaction.name))
                                 reaction_system.reactions.append(reaction)
                                 reaction_names.add(reaction.name)
-                                if (FORMAL_FOOD.name in reaction.catalysts 
-                                    and not FORMAL_FOOD in reaction_system.foods):
-                                    reaction_system.foods.append(FORMAL_FOOD)
                         except IOError as e:
                             msg = e.args[0]
                             raise IOError(msg, i)
@@ -95,22 +92,24 @@ class ModelIO:
 
         return "\n".join(leading_comments)
 
-    def get_rs_as_str(reaction_system: ReactionSystem, 
-                      include_food: bool, 
-                      reaction_notation: ReactionNotation, 
-                      arrow_notation: ArrowNotation) -> str:
-        try:
-            return ModelIO.write(reaction_system, include_food, reaction_notation, arrow_notation)
-        except IOError as e:
-            return ""
-
-    def write(self, 
-              reaction_system: ReactionSystem, 
-              include_food: bool, 
-              reaction_notation: ReactionNotation, 
-              arrow_notation: ArrowNotation, 
+    def write(self,
+              reaction_system: ReactionSystem,
+              include_food: bool,
+              reaction_notation: ReactionNotation,
+              arrow_notation: ArrowNotation,
               food_first: bool = True) -> str:
+        """Parses a reaction system to a str in the format of a '.crs' file.
 
+        Args:
+            reaction_system (ReactionSystem): reaction system to be parsed
+            include_food (bool): should food be icluded in the file
+            reaction_notation (ReactionNotation): Determines reaction notation format i.e. TABBED
+            arrow_notation (ArrowNotation): Determines arrow format i.e. USES_EQUALS
+            food_first (bool, optional): Should the food be at the beginning or end of the file. Defaults to True.
+
+        Returns:
+            str: str format of reaction system
+        """        
         if not reaction_system.reactions:
             tqdm.write("The resulting reaction system has no reactions")
             return "The resulting reaction system has no reactions"
@@ -125,16 +124,11 @@ class ModelIO:
             res += "Food: " + ModelIO().get_food_str(reaction_system, reaction_notation) + "\n\n"
         return res
 
-    def get_food_str(self, 
-                     reaction_system: ReactionSystem, 
+    def get_food_str(self,
+                     reaction_system: ReactionSystem,
                      reaction_notation: ReactionNotation) -> str:
-        global FORMAL_FOOD
         try:
             foods = reaction_system.foods
-            try:
-                foods.remove(FORMAL_FOOD)
-            except ValueError:
-                pass
             foods = [food.name for food in reaction_system.foods]
             if reaction_notation == ReactionNotation.FULL:
                 return ", ".join(foods)
@@ -143,10 +137,20 @@ class ModelIO:
         except IOError:
             return ""
 
-    def get_reaction_str(self, 
-                         reaction: Reaction, 
-                         reaction_notation: ReactionNotation, 
+    def get_reaction_str(self,
+                         reaction: Reaction,
+                         reaction_notation: ReactionNotation,
                          arrow_notation: ArrowNotation) -> str:
+        """str representation of a reaction for a '.crs' file
+
+        Args:
+            reaction (Reaction): reacton to be parsed to str
+            reaction_notation (ReactionNotation): Determines reaction notation format i.e. TABBED
+            arrow_notation (ArrowNotation): Determines arrow format i.e. USES_EQUALS
+
+        Returns:
+            str: str representation of a reaction
+        """        
         res = ""
         sep = " "
         arrow = ""
@@ -166,8 +170,8 @@ class ModelIO:
             for reactant in reaction.reactants:
                 try:
                     reactants_and_coefficients.append(
-                        str(reaction.reactant_coefficients[reactant.name]) 
-                        + " " + 
+                        str(reaction.reactant_coefficients[reactant.name])
+                        + " " +
                         reactant.name)
                 except:
                     reactants_and_coefficients.append(reactant.name)
@@ -177,8 +181,8 @@ class ModelIO:
             for product in reaction.products:
                 try:
                     products_and_coefficients.append(
-                        str(reaction.product_coefficients[product.name]) 
-                        + " " + 
+                        str(reaction.product_coefficients[product.name])
+                        + " " +
                         product.name)
                 except:
                     products_and_coefficients.append(product.name)
@@ -201,8 +205,8 @@ class ModelIO:
             for reactant in reaction.reactants:
                 try:
                     reactants_and_coefficients.append(
-                        str(reaction.reactant_coefficients[reactant.name]) 
-                        + " " 
+                        str(reaction.reactant_coefficients[reactant.name])
+                        + " "
                         + reactant.name)
                 except:
                     reactants_and_coefficients.append(reactant.name)
@@ -223,8 +227,8 @@ class ModelIO:
             for product in reaction.products:
                 try:
                     products_and_coefficients.append(
-                        str(reaction.product_coefficients[product.name]) 
-                        + " " 
+                        str(reaction.product_coefficients[product.name])
+                        + " "
                         + product.name)
                 except:
                     products_and_coefficients.append(product.name)

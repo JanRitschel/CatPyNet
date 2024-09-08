@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 from sample.model.ReactionSystem import ReactionSystem
-from sample.Utilities import Utilities
+import sample.Utilities as Utilities
 
 import sys
 import os
@@ -26,6 +26,14 @@ class MaxCAFAlgorithm(AlgorithmBase):
         return "computes the maximal CAF [HMS15]"
 
     def apply(self, input: ReactionSystem) -> ReactionSystem:
+        """Computes the maximal CAF
+
+        Args:
+            input (ReactionSystem): system to be computed
+
+        Returns:
+            ReactionSystem: maximal CAF
+        """        
         result = ReactionSystem(self.NAME)
 
         input_reactions = set(input.reactions)

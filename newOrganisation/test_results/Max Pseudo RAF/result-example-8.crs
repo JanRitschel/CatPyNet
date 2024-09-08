@@ -1,4 +1,4 @@
-Food: b, a, aa, bb
+Food: a, bb, b, aa
 
 r01 : a + baa [aa,aabaabbb] <=> baaa
 r02 : aaba + ab [baaa] <=> aabaab

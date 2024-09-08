@@ -29,12 +29,10 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
 
-FORMAL_FOOD = MoleculeType().value_of(name="$")
-
-
 class Reaction:
     """A reaction.
     """
+
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)
         _copy = memo.get(id_self)
@@ -62,7 +60,7 @@ class Reaction:
             reactant_coefficients (dict[MoleculeType:float]): reactants mapped to their coefficients. Defaults to {}
             product_coefficients (dict[MoleculeType:float]): products mapped to their coefficients. Defaults to {}
             direction (str): direction the reaction flows in. Defaults to "forward".
-            
+
         Returns:
             Reaction: the resutling reaction
         """
@@ -90,7 +88,7 @@ class Reaction:
 
         Args:
             direction (str): direction of the reaction
-            
+
         KwArgs:
             food (list[MoleculeType]): Molecules in food
 
@@ -101,7 +99,7 @@ class Reaction:
         Returns:
             bool: True if uninhibited, catalyzed and all reactants present.
                   If any of these are false returns False. 
-                  
+
         Needs either "food"- or all 3 "food_for_..."-kwargs.
         """
         if "food" in kwargs:
@@ -169,7 +167,7 @@ class Reaction:
 
         Returns:
             Reaction: reaction represented in line
-            
+
         Description:
             The accepted formats for the line are a FULL, SPARSE and TABBED format.
             The arrows represent the direction of the reaction with:
@@ -302,8 +300,7 @@ class Reaction:
 
         catalysts = token_dict["catalysts"]
         if catalysts == "":
-            global FORMAL_FOOD
-            catalysts = FORMAL_FOOD.name
+            pass
         else:
             catalysts = self.uniform_logic_notation(catalysts)
         token_dict["catalysts"] = catalysts
@@ -329,7 +326,7 @@ class Reaction:
 
         Returns:
             set[MoleculeType]: separated catalyst conjunctions
-        """        
+        """
         dnf = compute(self.catalysts)
         parts = dnf.split(",")
         return set(MoleculeType().values_of(parts))

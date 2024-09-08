@@ -21,15 +21,27 @@ class Importance ():
     def compute_food_importance(input_system: ReactionSystem,
                                 original_result: ReactionSystem,
                                 algorithm: AlgorithmBase) -> list[tuple[MoleculeType, float]]:
+        """Calculates importance of one molecule in food for reaction system size.
+
+        Args:
+            input_system (ReactionSystem): system to be analyzed
+            original_result (ReactionSystem): original result of algorithm on input system
+            algorithm (AlgorithmBase): algorithm to be used on input system
+
+        Returns:
+            list[tuple[MoleculeType, float]]: list of importances of food molecules from (0, 100].
+            
+        Food items are only listed if they have any importance. If they can be ignored with the same result they are not listed.
+        """        
         result = []
         for food in input_system.foods:
             replicate_input = copy.copy(input_system)
             replicate_input.name = "Food importance"
             replicate_input.foods.remove(food)
 
-            replicate_output = algorithm.apply(replicate_input)
+            replicate_output = algorithm().apply(replicate_input)
             importance = 100.0 * \
-                (original_result.size - replicate_output.get_size) / \
+                (original_result.size - replicate_output.size) / \
                 float(original_result.size)
             if importance > 0:
                 result.append((food, importance))
@@ -40,6 +52,18 @@ class Importance ():
                                     original_result: ReactionSystem,
                                     algorithm: AlgorithmBase,
                                     pbar: tqdm) -> list[tuple[Reaction, float]]:
+        """Calculates importance of one reacton for reaction system size.
+
+        Args:
+            input_system (ReactionSystem): system to be analyzed
+            original_result (ReactionSystem): original result of algorithm on input system
+            algorithm (AlgorithmBase): algorithm to be used on input system
+
+        Returns:
+            list[tuple[MoleculeType, float]]: list of importances of reactions from (0, 100].
+            
+        Reaction items are only listed if they have any importance. If they can be ignored with the same result they are not listed.
+        """          
         result = []
         if original_result.size == 1:
             result.append((original_result.reactions[0], 100.0))

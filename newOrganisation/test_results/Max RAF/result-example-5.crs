@@ -1,4 +1,4 @@
-Food: f1, f2
+Food: f2, f1
 
 r11 : f1 + f2 [UA,UC,UG,UU] => AA
 r12 : f1 + f2 [GA,GC,GG,GU] => AC

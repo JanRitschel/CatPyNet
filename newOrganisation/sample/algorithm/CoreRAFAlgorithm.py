@@ -12,7 +12,9 @@ sys.path.insert(0, os.path.abspath(
 
 
 class CoreRAFAlgorithm (AlgorithmBase):
-
+    '''
+    Computes the unique, irreducible RAF if it exists.
+    '''
     NAME: str = "Core RAF"
 
     @property
@@ -24,7 +26,14 @@ class CoreRAFAlgorithm (AlgorithmBase):
         return "computes the unique irreducible RAF, if it exists (Section 4.1 of [SXH20])"
 
     def apply(self, input: ReactionSystem) -> ReactionSystem:
+        """Computes the unique, irreducible RAF if it exists.
 
+        Args:
+            input (ReactionSystem): reaction system to reduce
+
+        Returns:
+            ReactionSystem: core raf
+        """
         max_raf = MaxRAFAlgorithm().apply(input)
         with tqdm(total=max_raf.size, desc="CoreRAFAlgorithm") as craf_pbar:
 

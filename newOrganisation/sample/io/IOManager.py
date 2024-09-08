@@ -26,11 +26,21 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                        reaction_notation:str = ReactionNotation.FULL,
                        arrow_notation:str = ArrowNotation.USES_EQUALS,
                        algorithm:AlgorithmBase|None = None):
-    
-    if not output_format and output_path != "stdout":
-        output_format = os.path.splitext(output_path)[1]
-    else:
+    """Processes the inputs and redirects data to appropriate file writer.
+
+    Args:
+        output_systems (list[ReactionSystem]): reaction systems to be written as a file/files
+        output_path (str, optional): path to generated file. Default stdout prints in terminal. Defaults to "stdout".
+        output_format (str | None, optional): If given this determines the file format of the output. Defaults to None.
+        zipped (bool, optional): should the resulting files be zipped to an archive. Defaults to False.
+        reaction_notation (str, optional): For '.crs' files. Determines reaction notation format. Defaults to ReactionNotation.FULL.
+        arrow_notation (str, optional): For '.crs' files. Determines arrow format. Defaults to ArrowNotation.USES_EQUALS.
+        algorithm (AlgorithmBase | None, optional): only relevant for message generation. Defaults to None.
+    """
+    if output_format and output_path != "stdout":
         output_path = os.path.splitext(output_path)[0] + output_format
+    elif not output_format and output_path != "stdout":
+        output_format = os.path.splitext(output_path)[1]
 
     if zipped:
         output = os.path.split(os.path.abspath(output_path))
@@ -42,14 +52,17 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
     if output_path != "stdout":
         tqdm.write("Writing file: " + output_path)
 
-    any_not_empty_bool = any([rs.reactions for rs in output_systems])
-    
-    if not any_not_empty_bool:
+    if all(output_systems):
+        if not any([rs.reactions for rs in output_systems]):
+            tqdm.write("The resulting reaction systems have no reactions.\n"
+                       + "No " + algorithm.NAME)
+    if not any(output_systems):
         tqdm.write("The resulting reaction systems have no reactions.\n"
                        + "No " + algorithm.NAME)
+        return
     
     if output_format in SUPPORTED_GRAPH_FILE_FORMATS:
-        write(output_systems, output_path, algorithm)
+        write(output_systems, output_path, output_format, algorithm)
     elif output_format == ".crs":
         with open(output_path, "w") as f:
             res_str = ""
@@ -58,6 +71,7 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                     res_str += ("The resulting reaction system has no reactions.\n"
                         + "No " + algorithm.NAME)
                 else:
+                    tqdm.write(output_system.get_header_line())
                     res_str += ModelIO().write(output_system,
                                             True,
                                             reaction_notation,
@@ -71,6 +85,7 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                 res_str += ("The resulting reaction system has no reactions.\n"
                        + "No " + algorithm.NAME)
             else:
+                tqdm.write(output_system.get_header_line())
                 res_str += ModelIO().write(output_system,
                                         True,
                                         reaction_notation,
@@ -81,20 +96,20 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
         tqdm.write("Given output file format was not recognized.\n" +
                    ".crs is assumed.")
         output_path = output_path.split(".")[0] + ".crs"
-        with open(output_path, "w") as f:
-            res_str = ""
-            if not output_system.reactions:
-                    res_str += ("The resulting reaction system has no reactions.\n"
-                        + "No " + algorithm.NAME)
-            else:
-                res_str += ModelIO().write(output_system,
-                                        True,
-                                        reaction_notation,
-                                        arrow_notation)
-            res_str += "\n"
-            f.write(res_str)
-
-    tqdm.write("wrote file")
+        for output_system in output_systems:
+            with open(output_path, "w") as f:
+                res_str = ""
+                if not output_system.reactions:
+                        res_str += ("The resulting reaction system has no reactions.\n"
+                            + "No " + algorithm.NAME)
+                else:
+                    tqdm.write(output_system.get_header_line())
+                    res_str += ModelIO().write(output_system,
+                                            True,
+                                            reaction_notation,
+                                            arrow_notation)
+                res_str += "\n"
+                f.write(res_str)
 
     if zipped == "True":
         shutil.make_archive(output_directory, 'zip', output_directory)

@@ -1,4 +1,4 @@
-Food: f1, f2
+Food: f2, f1
 
 r1 : f2 [f1,p3] => p1
 r2 : p1 [f2] => p2

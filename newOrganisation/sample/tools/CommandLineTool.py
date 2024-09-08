@@ -1,5 +1,7 @@
 from sample.io.IOManager import ALL_FILE_FORMATS
+from _version import __version__, AUTHOR
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from tqdm import tqdm
 import sample.main.CatPyNet as cpn
 import argparse
 
@@ -14,15 +16,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="Performs Max RAF and other computations")
 
-    # ZU MACHEN, Versionsnummer muss ordnetlich geklärt werden
-    parser.add_argument("--version", action="version", version='%(prog)s 1.0')
-    parser.add_argument("--license", action="store_const",
-                        const="Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein
-    parser.add_argument("--authors", action="store_const",
-                        const="Jan Ritschel")
+    # ZU MACHEN, __version__snummer muss ordnetlich geklärt werden
+    parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
+    parser.add_argument("--license", action="store_true")
+    parser.add_argument("--authors", action="store_true")
     parser.add_argument("-c", metavar="compute", required=True,
                         help="The computation to perform", choices=cpn.ALL_ALGORITHMS)
-    # UNKLAR, soll der file so heißen oder wird etwas spezifisches aufgerufen
     parser.add_argument("-i", metavar="input",
                         help="Input file (stdin ok)", default="stdin")
     parser.add_argument("-o", metavar='output_file',
@@ -46,6 +45,11 @@ def main():
 
     arguments = vars(parser.parse_args())
     
+    if arguments["-license"]:
+        tqdm.write("Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein)
+    if arguments['-author']:
+        tqdm.write(AUTHOR)
+        
     cpn.run_on_file(arguments['c'], arguments['i'], arguments['o'],arguments['z'], arguments['of'],
                     arguments['rn'], arguments['an'], arguments['r'])
 

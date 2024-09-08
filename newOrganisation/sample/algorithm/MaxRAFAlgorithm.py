@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 from sample.model.ReactionSystem import ReactionSystem
-from sample.Utilities import Utilities
+import sample.Utilities as Utilities
 from tqdm import tqdm
 import sys
 import os
@@ -23,10 +23,17 @@ class MaxRAFAlgorithm (AlgorithmBase):
 
     @property
     def description(self):
-        return "computes the maximal RAF [HMS15] (see also [H23])"
+        return "computes the maximal RAF"
 
     def apply(self, input: ReactionSystem) -> ReactionSystem:
+        """Computes the maximal RAF
 
+        Args:
+            input (ReactionSystem): system to be computed
+
+        Returns:
+            ReactionSystem: maximal RAF
+        """       
         result = ReactionSystem(self.NAME)
 
         input_reactions = input.reactions

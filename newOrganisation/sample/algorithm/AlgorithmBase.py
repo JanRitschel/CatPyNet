@@ -24,13 +24,11 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
 
-class AlgorithmBase():
+class AlgorithmBase:
     '''
-    computes a new reaction system
-    Daniel Huson, 7.2019
+    computes a new reaction system.
+    super class of all algorithms
     '''
-    """ def __init__(self):
-        pass """
 
     NAME: str = ""
 
@@ -56,6 +54,9 @@ class AlgorithmBase():
 
         pass
 
+    def load_algorithms():
+        pass
+    
     def list_all_algorithms() -> list[str]:
         '''
         list all known algorithms
@@ -77,12 +78,14 @@ class AlgorithmBase():
         return list
 
     def get_algorithm_by_name(name: str) -> AlgorithmBase | None:
-        '''
-        get algorithm by name
+        """gets a subclass of Algorithmbase by name
 
-        param name
-        returns algorithm
-        '''
+        Args:
+            name (str): name of the searched algorithm
+
+        Returns:
+            AlgorithmBase | None: referenced algorithm
+        """        
         for algorithm in AlgorithmBase.__subclasses__():
             if name.casefold() == algorithm.NAME.casefold():
                 return algorithm

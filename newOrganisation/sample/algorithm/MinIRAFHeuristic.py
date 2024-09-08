@@ -35,18 +35,32 @@ class MinIRAFHeuristic(AlgorithmBase):
 
     @property
     def description(self):
-        return "searches for irreducible RAFs in a heuristic fashion [HS23]"
+        return "searches for irreducible RAFs in a heuristic fashion"
 
     def apply(self, input: ReactionSystem) -> ReactionSystem | None:
+        """returns one of the smallest reaction systems possible produced by RAF
 
+        Args:
+            input (ReactionSystem): reaction system to be computed
+
+        Returns:
+            list[ReactionSystem]: reaction systems which are minimal
+        """
         list = MinIRAFHeuristic().apply_all_smallest(input)
         if list:
             return list[0]
         else:
-            return None
+            return ReactionSystem()
 
     def apply_all_smallest(self, input: ReactionSystem) -> list[ReactionSystem]:
+        """returns a list of the smallest reaction systems 
 
+        Args:
+            input (ReactionSystem): reaction system to be computed
+
+        Returns:
+            list[ReactionSystem]: reaction systems which are minimal
+        """
         max_raf = MaxRAFAlgorithm().apply(input)
         reactions = max_raf.reactions
         if self.number_of_random_insertion_orders == None:
@@ -67,7 +81,7 @@ class MinIRAFHeuristic(AlgorithmBase):
                 work_system.reactions.remove(reaction)
                 next = MaxRAFAlgorithm().apply(work_system)
                 next.name = self.name
-                if next.size < 0 and next.size <= work_system.size:
+                if next.size > 0 and next.size <= work_system.size:
                     work_system = next
                     if next.size < best_size:
                         best.clear()

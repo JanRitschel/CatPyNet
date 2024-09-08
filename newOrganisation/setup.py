@@ -3,7 +3,7 @@
 # Learn more: https://github.com/kennethreitz/setup.py
 
 from setuptools import setup, find_packages
-
+from _version import VERSION, AUTHOR
 
 with open('README.rst') as f:
     readme = f.read()
@@ -13,10 +13,10 @@ with open('LICENSE') as f:
 
 setup(
     name='CatPyNet',
-    version='0.1.0',
-    description='A Package for autocatalytic network calculations',
+    version=VERSION,
+    description='A Package for autocatalytic network computations',
     long_description=readme,
-    author='Jan Ritschel',
+    author=AUTHOR,
     author_email='me@kennethreitz.com',
     url='https://github.com/kennethreitz/samplemod',
     license=license,
