@@ -77,7 +77,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         for seed in tqdm(seeds, desc="MinIRafHeuristic seeds: "):
             
             work_system.reactions.extend(reactions)
-            work_system.foods.extend(food)
+            work_system.foods.update(food)
             ordering = work_system.reactions
             random.Random(seed).shuffle(ordering)
 

@@ -61,7 +61,6 @@ class MaxRAFAlgorithm (AlgorithmBase):
 
             if len(reactions[i]) > 0:
                 result.reactions = reactions[i]
-                result.foods = list(
-                    result.compute_mentioned_foods(input.foods))
+                result.foods = result.compute_mentioned_foods(input.foods)
 
         return result

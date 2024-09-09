@@ -62,7 +62,7 @@ class MoleculeTypeTests(unittest.TestCase):
         data_obj = MoleculeType("A", {"A":MoleculeType("A")})
         data_list = ["A", "B", "C", "A"]
         result_of_function = data_obj.values_of(data_list)
-        self.assertEqual([MoleculeType("A"), MoleculeType("B"), MoleculeType("C"), MoleculeType("A")], result_of_function)
+        self.assertEqual(set([MoleculeType("A"), MoleculeType("B"), MoleculeType("C"), MoleculeType("A")]), result_of_function)
         self.assertEqual(MoleculeType("A", {"A":MoleculeType("A"), "B":MoleculeType("B"), "C":MoleculeType("C")}), data_obj)
         
     def test_copy(self):
@@ -96,8 +96,8 @@ class ReactionTests(unittest.TestCase):
             if i == 0:
                 continue
             catalysts_str += "," + c
-        reaction_coefficients_dict = {reactants_m[i]:reaction_coefficients[i] for i in range(len(reaction_coefficients))}
-        product_coefficients_dict = {products_m[i]:product_coefficients[i] for i in range(len(product_coefficients))}
+        reaction_coefficients_dict = {mol:reaction_coefficients[i] for i, mol in enumerate(reactants_m)}
+        product_coefficients_dict = {mol:product_coefficients[i] for i, mol in enumerate(products_m)}
         match str(direction):
             case "0":
                 direction_key = "forward"
@@ -128,8 +128,8 @@ class ReactionTests(unittest.TestCase):
         
         result = Reaction("A")
         expected = Reaction("A", warned_about_suppressing_coefficients = False,
-                                reactants = [], products = [],
-                                catalysts = "", inhibitions = [],
+                                reactants = set(), products = set(),
+                                catalysts = "", inhibitions = set(),
                                 reactant_coefficients = {},
                                 product_coefficients = {},
                                 direction = "forward")
@@ -169,27 +169,27 @@ class ReactionTests(unittest.TestCase):
         
         if (direction_key in {"forward" or "both"}
             and data_food_catalyzed 
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_catalysts).issubset(data_food_catalyzed)
+            and data_obj.reactants.issubset(data_food_catalyzed)
+            and data_catalysts.issubset(data_food_catalyzed)
             and data_obj.inhibitions.isdisjoint(data_food_catalyzed)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and data_obj.products.issubset(set(data_food_catalyzed)) 
-            and set(data_catalysts).issubset(data_food_catalyzed)
+            and data_obj.products.issubset(data_food_catalyzed)
+            and data_catalysts.issubset(data_food_catalyzed)
             and data_obj.inhibitions.isdisjoint(data_food_catalyzed)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_catalysts).issubset(data_food_catalyzed)
+            and data_obj.reactants.issubset(data_food_catalyzed) 
+            and data_catalysts.issubset(data_food_catalyzed)
             and data_obj.inhibitions.issubset(data_food_catalyzed)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and data_obj.products.issubset(set(data_food_catalyzed)) 
-            and set(data_catalysts).issubset(data_food_catalyzed)
+            and data_obj.products.issubset(data_food_catalyzed)
+            and data_catalysts.issubset(data_food_catalyzed)
             and data_obj.inhibitions.issubset(data_food_catalyzed)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
@@ -221,24 +221,24 @@ class ReactionTests(unittest.TestCase):
                                                                            food_for_inhibitions = data_food_inhibitors)
         
         if (direction_key in {"forward" or "both"}
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and data_obj.reactants.issubset(data_food_catalyzed) 
+            and data_obj_catalysts.issubset(data_food_catalysts)
             and data_obj.inhibitions.isdisjoint(data_food_inhibitors)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and data_obj.reactants.issubset(data_food_catalyzed) 
+            and data_obj_catalysts.issubset(data_food_catalysts)
             and data_obj.inhibitions.isdisjoint(data_food_inhibitors)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and data_obj.reactants.issubset(data_food_catalyzed) 
+            and data_obj_catalysts.issubset(data_food_catalysts)
             and data_obj.inhibitions.issubset(data_food_inhibitors)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
-            and set(data_obj_catalysts).issubset(data_food_catalysts)
+            and data_obj.reactants.issubset(data_food_catalyzed) 
+            and data_obj_catalysts.issubset(data_food_catalysts)
             and data_obj.inhibitions.issubset(data_food_inhibitors)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
@@ -313,7 +313,7 @@ class ReactionTests(unittest.TestCase):
         
         data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
         dummy_res_str = [{"AB","CD&EF&GH","IJ"}, {"AB","CD&EF&GH","IJ"}, {"AB","CD&GH","EF&GH","IJ"}, {"AB&EF","AB&GH","CD&EF","CD&GH","IJ"}]
-        res_str = [set(MoleculeType().values_of(list(dummy_res_str[i]))) for i in range(0,len(dummy_res_str))]
+        res_str = [MoleculeType().values_of(list(dummy_res_str[i])) for i in range(0,len(dummy_res_str))]
         test_str = [Reaction("", catalysts=data).get_catalyst_conjunctions() for data in data_str]
         print([[mol.name for mol in s] for s in test_str])
         self.assertEqual(test_str, res_str)
@@ -321,7 +321,7 @@ class ReactionTests(unittest.TestCase):
     def dnf_elements(self):
         data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
         dummy_res_str = [{"AB","CD","EF","GH","IJ"}, {"AB","CD","EF","GH","IJ"},{"AB","CD","EF","GH","IJ"},{"AB","CD","EF","GH","IJ"}]
-        res_str = [set(MoleculeType().values_of(list(dummy_res_str[i]))) for i in range(0,len(dummy_res_str))]
+        res_str = [MoleculeType().values_of(list(dummy_res_str[i])) for i in range(0,len(dummy_res_str))]
         test_str = [Reaction("", catalysts=data).get_catalyst_elements() for data in data_str]
         print([[mol.name for mol in s] for s in test_str])
         self.assertEqual(test_str, res_str)
@@ -385,7 +385,7 @@ class ReactionSystemTests(unittest.TestCase):
                 for reaction in reactions:
                     molecules.append(reaction)
         molecules = list(set(molecules).intersection(outside_foods))
-        result = set(MoleculeType().values_of(molecules))
+        result = MoleculeType().values_of(molecules)
         test_res = test_obj.compute_mentioned_foods(MoleculeType().values_of(molecules))
         """ print("function: ")
         print([mol.name for mol in test_res])

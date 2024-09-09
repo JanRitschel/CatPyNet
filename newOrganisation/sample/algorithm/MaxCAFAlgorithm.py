@@ -37,7 +37,7 @@ class MaxCAFAlgorithm(AlgorithmBase):
         result = ReactionSystem(self.NAME)
 
         input_reactions = set(input.reactions)
-        input_food = set(input.foods)
+        input_food = input.foods
 
         molecules = [input_food]
         reactions = [Utilities.filter_reactions(input_food, input_reactions)]
@@ -60,5 +60,5 @@ class MaxCAFAlgorithm(AlgorithmBase):
 
         if len(reactions[i+1]) > 0:
             result.reactions = reactions[i+1]
-            result.foods = list(result.compute_mentioned_foods(input.foods))
+            result.foods = result.compute_mentioned_foods(input.foods)
         return result

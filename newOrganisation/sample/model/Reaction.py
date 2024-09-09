@@ -89,11 +89,11 @@ class Reaction:
             direction (str): direction of the reaction
 
         KwArgs:\n
-        food (list[MoleculeType]): Molecules in food
+        food (set[MoleculeType]): Molecules in food
 
-        food_for_reactants(list[MoleculeType]): Molecules available as reactants
-        food_for_catalysts(list[MoleculeType]): Molecules available as catalysts
-        food_for_inhibitions(list[MoleculeType]): Molecules available as inhibitions
+        food_for_reactants(set[MoleculeType]): Molecules available as reactants
+        food_for_catalysts(set[MoleculeType]): Molecules available as catalysts
+        food_for_inhibitions(set[MoleculeType]): Molecules available as inhibitions
 
         Returns:
             bool: True if uninhibited, catalyzed and all reactants present.
@@ -102,24 +102,21 @@ class Reaction:
         Needs either "food"- or all 3 "food_for_..."-kwargs.
         """
         if "food" in kwargs:
-            food_set = set(kwargs["food"])
+            food_set = kwargs["food"]
             return ((direction in {"forward", "both"} and self.reactants.issubset(food_set)
                      or direction in {"reverse", "both"} and self.products.issubset(food_set))
                     and (len(self.catalysts) == 0
-                         or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions()))
+                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(food_set) for conjunction in self.get_catalyst_conjunctions()))
                     and (len(self.inhibitions) == 0
                          or food_set.isdisjoint(self.inhibitions)))
         else:
-            reactant_set = set() if not "food_for_reactants" in kwargs else set(
-                kwargs["food_for_reactants"])
-            catalyst_set = set() if not "food_for_catalysts" in kwargs else set(
-                kwargs["food_for_catalysts"])
-            inhibition_set = set() if not "food_for_inhibitions" in kwargs else set(
-                kwargs["food_for_inhibitions"])
+            reactant_set = set() if not "food_for_reactants" in kwargs else kwargs["food_for_reactants"]
+            catalyst_set = set() if not "food_for_catalysts" in kwargs else kwargs["food_for_catalysts"]
+            inhibition_set = set() if not "food_for_inhibitions" in kwargs else kwargs["food_for_inhibitions"]
             return ((direction in {"forward", "both"} and self.reactants.issubset(reactant_set)
                      or direction in {"reverse", "both"} and self.products.issubset(reactant_set))
                     and (len(self.catalysts) == 0
-                         or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(catalyst_set) for conjunction in self.get_catalyst_conjunctions()))
+                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(catalyst_set) for conjunction in self.get_catalyst_conjunctions()))
                     and (len(self.inhibitions) == 0
                          or not bool(inhibition_set & self.inhibitions)))
 
@@ -328,7 +325,7 @@ class Reaction:
         """
         dnf = compute(self.catalysts)
         parts = dnf.split(",")
-        return set(MoleculeType().values_of(parts))
+        return MoleculeType().values_of(parts)
 
     def get_catalyst_elements(self) -> set[MoleculeType]:
         '''
@@ -337,8 +334,7 @@ class Reaction:
         toplevel_conjuncitons = self.get_catalyst_conjunctions()
         all_elements = set()
         for conjunction in toplevel_conjuncitons:
-            con_elements = conjunction.name.split("&")
-            all_elements.update(MoleculeType().values_of(con_elements))
+            all_elements.update(MoleculeType().values_of(conjunction.name.split("&")))
         return all_elements
 
     def any_as_forward(self) -> list[Reaction]:

@@ -26,11 +26,8 @@ class MoleculeType:
             self.name2type[name] = MoleculeType(name)
         return self.name2type[name]
 
-    def values_of(self, names: list[str]) -> list[MoleculeType]:
-        res = []
-        for name in names:
-            res.append(self.value_of(name))
-        return res
+    def values_of(self, names: list[str]) -> set[MoleculeType]:
+        return set([self.value_of(name) for name in names])
 
     def __eq__(self, other: MoleculeType) -> bool:
         if isinstance(other, MoleculeType):

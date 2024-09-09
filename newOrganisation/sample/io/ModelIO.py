@@ -15,7 +15,7 @@ SUPPORTED_FILE_FORMATS = set([".crs"])
 
 class ModelIO:
 
-    def parse_food(a_line: str) -> list[MoleculeType]:
+    def parse_food(a_line: str) -> set[MoleculeType]:
         """Determines if a line is a food line and parses to a list of molecules.
 
         Args:
@@ -74,7 +74,7 @@ class ModelIO:
                             if (line.startswith("Food:")
                                 or (line.startswith("F:")
                                     and arrow_bool)):
-                                reaction_system.foods.extend(
+                                reaction_system.foods.update(
                                     ModelIO.parse_food(line))
                             else:
                                 reaction = Reaction().parse_new(line, reaction_notation)
@@ -86,7 +86,7 @@ class ModelIO:
                                 reaction_names.add(reaction.name)
                                 if (FORMAL_FOOD.name in reaction.catalysts 
                                     and not FORMAL_FOOD in reaction_system.foods):
-                                    reaction_system.foods.append(FORMAL_FOOD)
+                                    reaction_system.foods.add(FORMAL_FOOD)
                         except IOError as e:
                             msg = e.args[0]
                             raise IOError(msg, i)
@@ -133,6 +133,7 @@ class ModelIO:
         try:
             foods = reaction_system.foods
             foods = [food.name for food in reaction_system.foods]
+            foods.sort()
             if reaction_notation == ReactionNotation.FULL:
                 return ", ".join(foods)
             else:
@@ -178,6 +179,7 @@ class ModelIO:
                         reactant.name)
                 except:
                     reactants_and_coefficients.append(reactant.name)
+            reactants_and_coefficients.sort()
             res += " + ".join(reactants_and_coefficients)
             res += arrow
             products_and_coefficients = []
@@ -189,13 +191,16 @@ class ModelIO:
                         product.name)
                 except:
                     products_and_coefficients.append(product.name)
+            products_and_coefficients.sort()
             res += " + ".join(products_and_coefficients)
             res += "\t"
             if reaction.catalysts != "":
                 res += "[" + reaction.catalysts + "]"
             if reaction.inhibitions:
                 res += "\t{"
-                for i, inh in enumerate(reaction.inhibitions):
+                inh_list = list(reaction.inhibitions)
+                inh_list.sort()
+                for i, inh in enumerate(inh_list):
                     if i == 0:
                         res += inh.name
                     else:
@@ -213,13 +218,16 @@ class ModelIO:
                         + reactant.name)
                 except:
                     reactants_and_coefficients.append(reactant.name)
+            reactants_and_coefficients.sort()
             res += " + ".join(reactants_and_coefficients)
             res += " "
             if reaction.catalysts != "":
                 res += "[" + reaction.catalysts + "]"
             if reaction.inhibitions:
                 res += " {"
-                for i, inh in enumerate(reaction.inhibitions):
+                inh_list = list(reaction.inhibitions)
+                inh_list.sort()
+                for i, inh in enumerate(inh_list):
                     if i == 0:
                         res += str(inh.name)
                     else:
@@ -235,5 +243,6 @@ class ModelIO:
                         + product.name)
                 except:
                     products_and_coefficients.append(product.name)
+            products_and_coefficients.sort()
             res += " + ".join(products_and_coefficients)
             return res

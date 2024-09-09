@@ -43,8 +43,7 @@ class ReactionSystem:
         self.name: str = name
         self.reactions: list[Reaction] = [
         ] if "reactions" not in kwargs else kwargs["reactions"]
-        self.foods: list[MoleculeType] = [
-        ] if "foods" not in kwargs else kwargs["foods"]
+        self.foods: set[MoleculeType] = set() if "foods" not in kwargs else kwargs["foods"]
         self.inhibitors_present: bool = False
         self.size: int
         self.food_size: int
@@ -130,14 +129,14 @@ class ReactionSystem:
         """
         molecule_types = self.foods
         for reaction in self.reactions:
-            molecule_types.extend(reaction.reactants)
-            molecule_types.extend(reaction.products)
-            molecule_types.extend(reaction.inhibitions)
+            molecule_types.update(reaction.reactants)
+            molecule_types.update(reaction.products)
+            molecule_types.update(reaction.inhibitions)
             catalysts = MoleculeType().values_of(reaction.catalysts.replace(",", "\t")
                                                  .replace("|", "\t").replace("*", "\t")
                                                  .replace("&", "\t").split("\t"))
-            molecule_types.extend(catalysts)
-        return set(molecule_types)
+            molecule_types.update(catalysts)
+        return molecule_types
 
     def get_reaction_names(self) -> set[str]:
         names = []
@@ -145,7 +144,7 @@ class ReactionSystem:
             names.append(reaction.name)
         return names
 
-    def compute_mentioned_foods(self, foods: list[MoleculeType]) -> set[MoleculeType]:
+    def compute_mentioned_foods(self, foods: set[MoleculeType]) -> set[MoleculeType]:
         """Might need to return a dict?
 
         Args:
@@ -154,14 +153,13 @@ class ReactionSystem:
         Returns:
             set[MoleculeType]: set of all MoleculeTypes mentioned in any reaction and foods
         """
-        molecule_types = []
+        molecule_types = set()
         for reaction in self.reactions:
-            molecule_types.extend(reaction.reactants)
-            molecule_types.extend(reaction.inhibitions)
-            molecule_types.extend(reaction.products)
-            molecule_types.extend(reaction.get_catalyst_elements())
-        all_molecules_mentioned = set(molecule_types)
-        return all_molecules_mentioned.intersection(foods)
+            molecule_types.update(reaction.reactants)
+            molecule_types.update(reaction.inhibitions)
+            molecule_types.update(reaction.products)
+            molecule_types.update(reaction.get_catalyst_elements())
+        return molecule_types.intersection(foods)
 
     def replace_named_reaction(self, name: str, reaction: Reaction) -> None:
         old_reaction = self.get_reaction_by_name(name)
@@ -169,12 +167,6 @@ class ReactionSystem:
             raise TypeError("no such reaction: " + name)
         self.reactions.remove(old_reaction)
         self.reactions.append(reaction)
-
-    def sorted_by_hashcode(self) -> ReactionSystem:
-        sorted_reaction_system = ReactionSystem(self.name)
-        sorted_reaction_system.foods = sorted(self.foods)
-        sorted_reaction_system.reactions = sorted(self.reactions)
-        return sorted_reaction_system
 
     def get_reaction_by_name(self, name: str) -> Reaction:
         for reaction in self.reactions:  # UNSCHÖN
@@ -189,7 +181,7 @@ class ReactionSystem:
             return True  # FEHLERANFÄLLIG, temporäre Lösung
         if not (isinstance(other, ReactionSystem)):
             return False
-        return (set(self.foods) == set(other.foods)
+        return (self.foods == other.foods
                 and set(self.reactions) == set(other.reactions))
 
     def __lt__(self, other: Reaction) -> bool:

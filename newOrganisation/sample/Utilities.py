@@ -3,13 +3,12 @@ from __future__ import annotations
 from .model.Reaction import Reaction
 from .model.MoleculeType import MoleculeType
 import math
-import bisect
 import decimal
 
     
     
-def add_all_mentioned_products(molecules:list[MoleculeType], reactions:list[Reaction]) -> set[MoleculeType]:
-    res = set(molecules)
+def add_all_mentioned_products(molecules:set[MoleculeType], reactions:list[Reaction]) -> set[MoleculeType]:
+    res = molecules
     for reaction in reactions:
         if reaction.direction in {"forward", "both"}:
             res = res.union(reaction.products)
@@ -17,8 +16,8 @@ def add_all_mentioned_products(molecules:list[MoleculeType], reactions:list[Reac
             res = res.union(reaction.reactants)
     return res
 
-def compute_closure(molecules:list[MoleculeType], reactions:list[Reaction]) -> set[MoleculeType]:
-    all_molecules = set(molecules)
+def compute_closure(molecules:set[MoleculeType], reactions:list[Reaction]) -> set[MoleculeType]:
+    all_molecules = molecules
     size = -1
     while len(all_molecules) > size:
         size = len(all_molecules)
@@ -30,17 +29,17 @@ def compute_closure(molecules:list[MoleculeType], reactions:list[Reaction]) -> s
                 if reaction.products.issubset(all_molecules):
                     all_molecules.update(reaction.reactants)
     
-    return list(all_molecules)
+    return all_molecules
 
-def filter_reactions(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
+def filter_reactions(food:set[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
     res_reactions = []
     for r in reactions:
         if r.is_catalyzed_uninhibited_all_reactants(r.direction, food=food):
             res_reactions.append(r)
     return res_reactions
 
-def compute_food_generated(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
-    available_food = set(food)
+def compute_food_generated(food:set[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
+    available_food = food
     available_reactions = reactions
     closure = []
     while(True):
@@ -54,20 +53,16 @@ def compute_food_generated(food:list[MoleculeType], reactions:list[Reaction]) ->
                     case "reverse":
                         available_food.update(reaction.reactants)
                     case "both":
-                        res = []
+                        res = set()
                         if reaction.reactants.issubset(available_food):
-                            res.extend(reaction.products)
+                            res.update(reaction.products)
                         if reaction.products.issubset(available_food):
-                            res.extend(reaction.reactants)
+                            res.update(reaction.reactants)
                         available_food.update(res)
             for reaction in to_add: available_reactions.remove(reaction)
         else:
             break
     return closure
-    
-def contains_all(set:iter, subset:iter) -> bool:
-    '''check if iteralble "set" contains all elements of another iterable "subset"'''
-    return all(element in set for element in subset)
 
 def is_float(s:str)-> bool:
     return s.replace(".", "", 1).replace(",", "", 1).isdigit()

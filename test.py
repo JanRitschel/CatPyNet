@@ -53,7 +53,6 @@ def read_graph():
     graph.add_nodes_from(molecule_nodes)
     reaction_nodes = [(reaction.name, {"reaction":True}) for reaction in reaction_system.reactions]
     graph.add_nodes_from(reaction_nodes)
-    graph.add_edge[]
     #test = nx.read_gml("G:\\Github\\BA-Jan\\newOrganisation\\test_results\\graph_test\\test.gml")
     nx.write_gml(graph, "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\graph_test\\test1.gml")
 

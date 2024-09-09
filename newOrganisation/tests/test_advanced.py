@@ -21,7 +21,7 @@ if __name__ == '__main__':
     test_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     
     algos.remove("iRAF")
-    algos = ["iRAF"]
+    #algos = ["iRAF"]
     total_test_files = (len(algos) * 2 * len(ALL_FILE_FORMATS) * len(ReactionNotation) 
                         * len(ArrowNotation) * len(test_files))
     with tqdm(desc="Total Test Files:", total=total_test_files) as tot_f:
