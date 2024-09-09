@@ -48,12 +48,16 @@ def main():
     arguments = vars(parser.parse_args())
     zipped = True if arguments['z'].casefold() in ['True'.casefold(), "1"] else False
     overwrite_ok = True if arguments['ow'].casefold() in ['True'.casefold(), "1"] else False
+    if arguments["i"] == 'stdin': 
+        input_file = input("Please enter the file path you want to read from:")
+    else:
+        input_file = arguments["i"]
     """ if arguments["-license"]:
         tqdm.write("Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein)
     if arguments['-author']:
         tqdm.write(AUTHOR) """
         
-    cpn.apply_to_file(arguments['c'], arguments['i'], arguments['o'],zipped, arguments['of'],
+    cpn.apply_to_file(arguments['c'], input_file, arguments['o'],zipped, arguments['of'],
                     arguments['rn'], arguments['an'], arguments['r'], overwrite_ok)
 
 if __name__ == "__main__":

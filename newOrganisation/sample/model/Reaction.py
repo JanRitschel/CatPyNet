@@ -240,45 +240,55 @@ class Reaction:
 
         token_dict: dict[list | str] = {"r_name": tokens[0],
                                         "reactants": tokens[1],
-                                        "reactant_coefficients": [],
+                                        "reactant_coefficients": {},
                                         "catalysts": tokens[2],
                                         "inhibitions": tokens[3],
                                         "products": tokens[4],
-                                        "product_coefficients": []}
+                                        "product_coefficients": {}}
         is_all_numeric = True
         for side in ["reactants", "products"]:
             if "+" in token_dict[side]:
+                plus_bool = True
                 token_dict[side] = token_dict[side].split("+")
             else:
-                token_dict[side] = [token_dict[side]]
+                plus_bool = False
+                token_dict[side] = token_dict[side].split()
             if is_all_numeric:
                 is_all_numeric = all([r.replace(".", "").replace(",", "")
                                       .replace(" ", "").isdigit()
                                       for r in token_dict[side]])
         for side in ["reactants", "products"]:
+            numeric_buffer = [False, False]
+            remove_list = []
             for i, r in enumerate(token_dict[side]):
                 r = r.strip()
                 if not is_all_numeric:
-                    if " " in r:
-                        cache = r.split()
-                        if (cache[0].isnumeric() or
-                            cache[0].replace(".", "", 1)
+                    if plus_bool:
+                        if " " in r:
+                            cache = r.split()
+                            if (cache[0].isnumeric() or
+                                cache[0].replace(".", "", 1)
+                                    .replace(",", "", 1).isdigit()):
+                                token_dict[side[:-1] +
+                                        "_coefficients"].update({cache[1]:cache[0]})
+                                r = cache[1]
+                            elif (cache[1].isnumeric() or
+                                cache[1].replace(".", "", 1)
                                 .replace(",", "", 1).isdigit()):
-                            token_dict[side[:-1] +
-                                       "_coefficients"].append(cache[0])
-                            r = cache[1]
-                        elif (cache[1].isnumeric() or
-                              cache[1].replace(".", "", 1)
-                              .replace(",", "", 1).isdigit()):
-                            token_dict[side[:-1] +
-                                       "_coefficients"].append(cache[1])
-                            r = cache[0]
-                        else:
-                            tqdm.write("There was an unexpected whitespace in reaction: " +
-                                       token_dict["r_name"] + " in reactant " +
-                                       r)
+                                token_dict[side[:-1] +
+                                        "_coefficients"].append({cache[0]:cache[1]})
+                                r = cache[0]
+                            else:
+                                tqdm.write("There was an unexpected whitespace in reaction: " +
+                                        token_dict["r_name"] + " in reactant " +
+                                        r)
                     else:
-                        token_dict[side[:-1] + "_coefficients"].append("")
+                        numeric_buffer[1] = (r.isnumeric() or r.replace(".", "", 1)
+                                             .replace(",", "", 1).isdigit())
+                        if numeric_buffer[0] and not numeric_buffer[1]:
+                            token_dict[side[:-1] + "_coefficients"].update({r:token_dict[side][i-1]})
+                            remove_list.append(i-1)
+                        numeric_buffer[0] = numeric_buffer[1]
                 else:
                     if " " in r:
                         if not coefficient_bool:
@@ -288,8 +298,10 @@ class Reaction:
                                        + "\nThe first issue occured at reaction: \n"
                                        + token_dict["r_name"] + " in molecule " + r)
                         r = r.split()[1]
+                        
                 token_dict[side][i] = r
-
+            for index in reversed(remove_list):
+                token_dict[side].pop(index)
         token_dict["inhibitions"] = (token_dict["inhibitions"]
                                      .replace(",", " ").split(" ")
                                      if token_dict["inhibitions"] != "" else [])

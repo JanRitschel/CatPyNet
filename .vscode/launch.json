@@ -42,11 +42,11 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max raf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
                 "-of", ".graphml",
                 "-rn", "SPARSE",
-                "-an", "USES_EQUALS"
+                "-an", "USES_EQUALS",
+                "-ow", "1"
             ]
         },
         {
