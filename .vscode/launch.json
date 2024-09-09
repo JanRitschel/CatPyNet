@@ -29,7 +29,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "core raf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\pm_a6_k1_n3_m1.0_r1.crs",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-0.crs",
                 "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
                 "-rn", "SPARSE"
             ]
@@ -47,6 +47,23 @@
                 "-of", ".graphml",
                 "-rn", "SPARSE",
                 "-an", "USES_EQUALS"
+            ]
+        },
+        {
+            "name": "MinIRAF Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-c", "iRAF",
+                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-9.crs",
+                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
+                "-of", ".crs",
+                "-r", "1000",
+                "-rn", "SPARSE",
+                "-an", "USES_EQUALS",
+                "-ow", "1"
             ]
         },
         {

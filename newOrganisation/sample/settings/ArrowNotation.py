@@ -4,6 +4,8 @@ from enum import StrEnum
 
 class ArrowNotation(StrEnum):
 
+    __order__ = "USES_EQUALS USES_MINUS"
+    
     USES_EQUALS = "USES_EQUALS"
     USES_MINUS = "USES_MINUS"
 

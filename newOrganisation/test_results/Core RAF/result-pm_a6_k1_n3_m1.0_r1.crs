@@ -1,8 +1,0 @@
-Food: a2, a0, a5
-
-r012 : a0 + a2 [a5] <=> a0a2
-r030 : a2 + a2 [a0a2a2] <=> a2a2
-r084 : a0a2 + a2 [a0] <=> a0a2a2
-r159 : a2a2 + a2 [a2a2a5] <=> a2a2a2
-r168 : a2a2 + a5 [a0a1,a0a2a2] <=> a2a2a5
-

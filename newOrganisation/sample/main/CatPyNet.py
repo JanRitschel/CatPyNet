@@ -6,17 +6,19 @@ from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 import sample.Utilities as Utilities
 from itertools import combinations_with_replacement
+import shutil
 import random
 import bisect
 from tqdm import tqdm
 
+from os.path import isfile, join, isdir
 import os
 import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 ALL_ALGORITHMS = AlgorithmBase.list_all_algorithms()
-ALL_ALGORITHMS.extend([algo.lower()
+ALL_ALGORITHMS.update([algo.lower()
                       for algo in AlgorithmBase.list_all_algorithms()])
 
 
@@ -67,20 +69,22 @@ def apply_algorithm(input_system: ReactionSystem,
     return output_system
 
 
-def run_on_file(algorithm: str | AlgorithmBase,
-                input_file: str,
-                output_path: str = "stdout",
-                zipped: str | bool = False,
-                output_format: str = ".crs",
-                reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
-                arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
-                heuristic_runs: str | int = 10):
+def apply_to_file(algorithm: str | AlgorithmBase,
+                  input_file: str,
+                  output_path: str = "stdout",
+                  zipped: bool = False,
+                  output_format: str = ".crs",
+                  reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
+                  arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
+                  heuristic_runs: str | int = 10,
+                  overwrite_ok: bool = False):
 
     input_system = parse_input_file(input_file)
 
-    if isinstance(zipped, str):
-        zipped = zipped.casefold()
-        zipped = True if zipped == "True".casefold() else False
+    if not overwrite_ok and os.path.exists(output_path):
+        tqdm.write("The given output file " + output_path + " already exists.\n"
+                   + "If you want to overwrite it please run this function with "
+                   + "the 'overwrite_ok' attribute set to True")
 
     if not isinstance(algorithm, AlgorithmBase) and isinstance(algorithm, str):
         algorithm: AlgorithmBase = AlgorithmBase.get_algorithm_by_name(
@@ -96,7 +100,44 @@ def run_on_file(algorithm: str | AlgorithmBase,
                        reaction_notation, arrow_notation,
                        algorithm)
 
-    tqdm.write("algo done")
+
+def apply_to_directory(algorithm: str | AlgorithmBase,
+                       input_directory: str,
+                       output_path: str = "stdout",
+                       zipped: bool = False,
+                       output_format: str = ".crs",
+                       reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
+                       arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
+                       heuristic_runs: str | int = 10,
+                       overwrite_ok: bool = False):
+    
+    if output_format not in ALL_FILE_FORMATS or not output_format:
+        tqdm.write("please choose a valid file format from:\n" +
+                   str(ALL_FILE_FORMATS) + "\n"+
+                   "File format cannot be inferred here.")
+        return
+    
+    dir_files = [join(input_directory, f) for f in os.listdir(input_directory)
+                 if isfile(join(input_directory, f))]
+
+    file_zipped = False if zipped else True
+    
+    for file in tqdm(dir_files, desc="Files to " + output_path):
+        if os.path.splitext(file)[1] in ALL_FILE_FORMATS:
+            if isdir(output_path) or output_path == 'stdout':
+                output_file = os.path.join(output_path, os.path.split(file)[1])
+                apply_to_file(algorithm, file, output_file, file_zipped, output_format,
+                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok)
+            else:
+                os.makedirs(output_path, exist_ok=True)
+                output_file = os.path.join(output_path, os.path.split(file)[1])
+                apply_to_file(algorithm, file, output_file, file_zipped, output_format,
+                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok)
+                
+    if output_path != 'stdout' and zipped:
+        shutil.make_archive(output_path, 'zip', output_path)
+        if os.path.isdir(output_path):
+            shutil.rmtree(output_path)
 
 
 def generate_reaction_system_files(alphabet_sizes: list[int],
@@ -109,7 +150,8 @@ def generate_reaction_system_files(alphabet_sizes: list[int],
                                    zipped: bool = False,
                                    output_format: str = '.crs',
                                    reaction_notation: ReactionNotation = ReactionNotation.FULL,
-                                   arrow_notation: ArrowNotation = ArrowNotation.USES_EQUALS) -> None:
+                                   arrow_notation: ArrowNotation = ArrowNotation.USES_EQUALS,
+                                   overwrite_ok: bool = False) -> None:
     tqdm.write("writing files to: " + output_directory)
 
     files_count = 0
@@ -125,18 +167,29 @@ def generate_reaction_system_files(alphabet_sizes: list[int],
                             parameters = {"a": a, "k": k,
                                           "n": n, "m": m, "r": r}
 
-                            if all([x != None for x in parameters.values()]):
-                                res_reaction_system = generate_reaction_system(
-                                    parameters)
-                            else:
-                                res_reaction_system = None
-
                             if output_directory == "stdout":
                                 filename = "stdout"
                             else:
                                 file = Utilities.replace_parameters(
                                     file_template, parameters)
                                 filename = os.path.join(output_directory, file)
+
+                            if os.path.exists(filename) and not overwrite_ok:
+                                tqdm.write("The given output file " + filename + " already exists.\n"
+                                           + "If you want to overwrite it please run this function with "
+                                           + "the 'overwrite_ok' attribute set to True")
+                                continue
+
+                            if all([x != None for x in parameters.values()]):
+                                res_reaction_system = generate_reaction_system(
+                                    parameters)
+                            else:
+                                tqdm.write(
+                                    "Not all neccessary paramters were given.\n")
+                                for key, value in zip(parameters.keys(), parameters.values()):
+                                    if not value:
+                                        tqdm.write("- missing: " + key)
+                                return
 
                             redirect_to_writer([res_reaction_system], filename,
                                                output_format, zipped,

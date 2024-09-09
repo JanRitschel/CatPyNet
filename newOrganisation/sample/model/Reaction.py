@@ -28,6 +28,8 @@ import os
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
 
+FORMAL_FOOD = MoleculeType().value_of(name="$")
+
 
 class Reaction:
     """A reaction.
@@ -53,7 +55,7 @@ class Reaction:
             name (str, optional): name of the reaction. Defaults to None.
 
         KwArgs:
-            reactants (list[MoleculeType]): reactants used in reaction. Defaults to []
+            reactants (set[MoleculeType]): reactants used in reaction. Defaults to []
             products (list[MoleculeType]): products produced by reaction. Defaults to []
             catalysts (str): catalysts conjunction for reaction. Defaults to ""
             inhibitions (list[MoleculeType]): inhibitions of reaction. Defaults to []
@@ -70,13 +72,10 @@ class Reaction:
         self.warned_about_suppressing_coefficients = False if "warned_about_suppressing_coefficients" not in kwargs else kwargs[
             "warned_about_suppressing_coefficients"]
         self.name = name
-        self.reactants: list[MoleculeType] = [
-        ] if "reactants" not in kwargs else kwargs["reactants"]
-        self.products: list[MoleculeType] = [
-        ] if "products" not in kwargs else kwargs["products"]
+        self.reactants: set[MoleculeType] = set() if "reactants" not in kwargs else kwargs["reactants"]
+        self.products: set[MoleculeType] = set() if "products" not in kwargs else kwargs["products"]
         self.catalysts: str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
-        self.inhibitions: list[MoleculeType] = [
-        ] if "inhibitions" not in kwargs else kwargs["inhibitions"]
+        self.inhibitions: set[MoleculeType] = set() if "inhibitions" not in kwargs else kwargs["inhibitions"]
         self.reactant_coefficients = {
         } if "reactant_coefficients" not in kwargs else kwargs["reactant_coefficients"]
         self.product_coefficients = {
@@ -89,12 +88,12 @@ class Reaction:
         Args:
             direction (str): direction of the reaction
 
-        KwArgs:
-            food (list[MoleculeType]): Molecules in food
+        KwArgs:\n
+        food (list[MoleculeType]): Molecules in food
 
-            food_for_reactants(list[MoleculeType]): Molecules available as reactants
-            food_for_catalysts(list[MoleculeType]): Molecules available as catalysts
-            food_for_inhibitions(list[MoleculeType]): Molecules available as inhibitions
+        food_for_reactants(list[MoleculeType]): Molecules available as reactants
+        food_for_catalysts(list[MoleculeType]): Molecules available as catalysts
+        food_for_inhibitions(list[MoleculeType]): Molecules available as inhibitions
 
         Returns:
             bool: True if uninhibited, catalyzed and all reactants present.
@@ -104,8 +103,8 @@ class Reaction:
         """
         if "food" in kwargs:
             food_set = set(kwargs["food"])
-            return ((direction in {"forward", "both"} and set(self.reactants).issubset(food_set)
-                     or direction in {"reverse", "both"} and set(self.products).issubset(food_set))
+            return ((direction in {"forward", "both"} and self.reactants.issubset(food_set)
+                     or direction in {"reverse", "both"} and self.products.issubset(food_set))
                     and (len(self.catalysts) == 0
                          or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(food_set) for conjunction in self.get_catalyst_conjunctions()))
                     and (len(self.inhibitions) == 0
@@ -117,38 +116,38 @@ class Reaction:
                 kwargs["food_for_catalysts"])
             inhibition_set = set() if not "food_for_inhibitions" in kwargs else set(
                 kwargs["food_for_inhibitions"])
-            return ((direction in {"forward", "both"} and set(self.reactants).issubset(reactant_set)
-                     or direction in {"reverse", "both"} and set(self.products).issubset(reactant_set))
+            return ((direction in {"forward", "both"} and self.reactants.issubset(reactant_set)
+                     or direction in {"reverse", "both"} and self.products.issubset(reactant_set))
                     and (len(self.catalysts) == 0
                          or any(set(MoleculeType().values_of(conjunction.name.split("&"))).issubset(catalyst_set) for conjunction in self.get_catalyst_conjunctions()))
                     and (len(self.inhibitions) == 0
-                         or not bool(inhibition_set & set(self.inhibitions))))
+                         or not bool(inhibition_set & self.inhibitions)))
 
     def is_all_reactants(self, food: set[MoleculeType], direction: str) -> bool:
         return (direction in {"forward", "both"}
-                and (set(self.reactants).issubset(food)
+                and (self.reactants.issubset(food)
                      or direction in {"reverse", "both"})
-                and set(self.products).issubset(food))
+                and self.products.issubset(food))
 
     def __eq__(self, other: Reaction | None) -> bool:
         if not (isinstance(other, Reaction)):
             return False
         if self.name != other.name:
-            return False  # print("failed at name")
+            return False  
         if self.reactants != other.reactants:
-            return False  # print("failed at reactants")
+            return False  
         if self.products != other.products:
-            return False  # print("failed at products")
+            return False  
         if self.catalysts != other.catalysts:
-            return False  # print("failed at catalysts")
+            return False  
         if self.inhibitions != other.inhibitions:
-            return False  # print("failed at inhibitions")
+            return False  
         if self.reactant_coefficients != other.reactant_coefficients:
-            return False  # print("failed at reactant_coefficients")
+            return False  
         if self.product_coefficients != other.product_coefficients:
-            return False  # print("failed at product_coefficients")
+            return False 
         if self.direction != other.direction:
-            return False  # print("failed at product_coefficients")
+            return False 
 
         return True
 

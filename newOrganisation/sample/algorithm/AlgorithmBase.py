@@ -57,7 +57,7 @@ class AlgorithmBase:
     def load_algorithms():
         pass
     
-    def list_all_algorithms() -> list[str]:
+    def list_all_algorithms() -> set[str]:
         '''
         list all known algorithms
 
@@ -75,7 +75,7 @@ class AlgorithmBase:
         for algorithm in AlgorithmBase.__subclasses__():
             list.append(algorithm.NAME)
 
-        return list
+        return set(list)
 
     def get_algorithm_by_name(name: str) -> AlgorithmBase | None:
         """gets a subclass of Algorithmbase by name

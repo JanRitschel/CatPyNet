@@ -169,28 +169,28 @@ class ReactionTests(unittest.TestCase):
         
         if (direction_key in {"forward" or "both"}
             and data_food_catalyzed 
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_catalysts).issubset(data_food_catalyzed)
-            and set(data_obj.inhibitions).isdisjoint(data_food_catalyzed)):
+            and data_obj.inhibitions.isdisjoint(data_food_catalyzed)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and set(data_obj.products).issubset(set(data_food_catalyzed)) 
+            and data_obj.products.issubset(set(data_food_catalyzed)) 
             and set(data_catalysts).issubset(data_food_catalyzed)
-            and set(data_obj.inhibitions).isdisjoint(data_food_catalyzed)):
+            and data_obj.inhibitions.isdisjoint(data_food_catalyzed)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_catalysts).issubset(data_food_catalyzed)
-            and set(data_obj.inhibitions).issubset(data_food_catalyzed)
+            and data_obj.inhibitions.issubset(data_food_catalyzed)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
               and data_food_catalyzed 
-            and set(data_obj.products).issubset(set(data_food_catalyzed)) 
+            and data_obj.products.issubset(set(data_food_catalyzed)) 
             and set(data_catalysts).issubset(data_food_catalyzed)
-            and set(data_obj.inhibitions).issubset(data_food_catalyzed)
+            and data_obj.inhibitions.issubset(data_food_catalyzed)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
             
@@ -221,25 +221,25 @@ class ReactionTests(unittest.TestCase):
                                                                            food_for_inhibitions = data_food_inhibitors)
         
         if (direction_key in {"forward" or "both"}
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_obj_catalysts).issubset(data_food_catalysts)
-            and set(data_obj.inhibitions).isdisjoint(data_food_inhibitors)):
+            and data_obj.inhibitions.isdisjoint(data_food_inhibitors)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_obj_catalysts).issubset(data_food_catalysts)
-            and set(data_obj.inhibitions).isdisjoint(data_food_inhibitors)):
+            and data_obj.inhibitions.isdisjoint(data_food_inhibitors)):
             self.assertTrue(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_obj_catalysts).issubset(data_food_catalysts)
-            and set(data_obj.inhibitions).issubset(data_food_inhibitors)
+            and data_obj.inhibitions.issubset(data_food_inhibitors)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
         elif (direction_key in {"forward" or "both"}
-            and set(data_obj.reactants).issubset(set(data_food_catalyzed)) 
+            and data_obj.reactants.issubset(set(data_food_catalyzed)) 
             and set(data_obj_catalysts).issubset(data_food_catalysts)
-            and set(data_obj.inhibitions).issubset(data_food_inhibitors)
+            and data_obj.inhibitions.issubset(data_food_inhibitors)
             and data_obj.inhibitions):
             self.assertFalse(result_catalyzed)
      

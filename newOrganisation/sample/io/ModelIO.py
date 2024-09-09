@@ -2,15 +2,15 @@ from __future__ import annotations
 import re
 from sample.settings.ArrowNotation import ArrowNotation
 from sample.settings.ReactionNotation import ReactionNotation
-from sample.model.ReactionSystem import ReactionSystem, Reaction, MoleculeType
+from sample.model.ReactionSystem import ReactionSystem, MoleculeType
+from sample.model.Reaction import Reaction, FORMAL_FOOD
 from tqdm import tqdm
 import sys
 import os
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
-
-SUPPORTED_FILE_FORMATS = [".crs"]
+SUPPORTED_FILE_FORMATS = set([".crs"])
 
 
 class ModelIO:
@@ -84,6 +84,9 @@ class ModelIO:
                                         + str(reaction.name))
                                 reaction_system.reactions.append(reaction)
                                 reaction_names.add(reaction.name)
+                                if (FORMAL_FOOD.name in reaction.catalysts 
+                                    and not FORMAL_FOOD in reaction_system.foods):
+                                    reaction_system.foods.append(FORMAL_FOOD)
                         except IOError as e:
                             msg = e.args[0]
                             raise IOError(msg, i)

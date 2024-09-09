@@ -1,4 +1,4 @@
-from sample.io.IOManager import ALL_FILE_FORMATS
+from sample.io.IOManager import ALL_FILE_FORMATS, TRUTH_STRINGS
 from _version import __version__, AUTHOR
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
 from tqdm import tqdm
@@ -28,7 +28,7 @@ def main():
                         help="Output file (stdout ok)", default="stdout")
     parser.add_argument("-z", metavar='output_zipped',
                         help="Should the output be a zipped directory. (True or False)", 
-                        choices=["True", "False"], 
+                        choices=TRUTH_STRINGS, 
                         default="False")
     parser.add_argument("-of", metavar="output_format",
                         help="file format to be written. e.g. '.crs'", 
@@ -40,18 +40,21 @@ def main():
                         help="Output arrow notation", default="USES_EQUALS")
     parser.add_argument("-r", metavar="runs", help="Number of randomized runs for " +
                         MinIRAFHeuristic().name + " heuristic")
+    parser.add_argument("-ow", metavar="overwrite ok", help="Sets if the program is allowed to " +
+                        "write over files", choices=TRUTH_STRINGS, default="False")
     # ZU MACHEN, Default File muss erstellt werden
     parser.add_argument("-p", metavar="properties_file", default="")
 
     arguments = vars(parser.parse_args())
-    
-    if arguments["-license"]:
+    zipped = True if arguments['z'].casefold() in ['True'.casefold(), "1"] else False
+    overwrite_ok = True if arguments['ow'].casefold() in ['True'.casefold(), "1"] else False
+    """ if arguments["-license"]:
         tqdm.write("Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein)
     if arguments['-author']:
-        tqdm.write(AUTHOR)
+        tqdm.write(AUTHOR) """
         
-    cpn.run_on_file(arguments['c'], arguments['i'], arguments['o'],arguments['z'], arguments['of'],
-                    arguments['rn'], arguments['an'], arguments['r'])
+    cpn.apply_to_file(arguments['c'], arguments['i'], arguments['o'],zipped, arguments['of'],
+                    arguments['rn'], arguments['an'], arguments['r'], overwrite_ok)
 
 if __name__ == "__main__":
     main()

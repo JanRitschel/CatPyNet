@@ -26,10 +26,11 @@ class node_types(StrEnum):
     CATALYST_CONJUNCTION = "catalyst_conjunction"
 
 
-SUPPORTED_GRAPH_FILE_FORMATS = [".gml", ".graphml"]
+SUPPORTED_GRAPH_FILE_FORMATS = {".gml", ".graphml"}
 
 
-def write(reaction_systems: list[ReactionSystem], filename: str, output_format:str, algorithm: AlgorithmBase = None) -> None:
+def write(reaction_systems: list[ReactionSystem], 
+          filename: str, output_format:str) -> None:
     """Generate '.gml' files from a list of reactions systems.
 
     Args:
@@ -47,19 +48,16 @@ def write(reaction_systems: list[ReactionSystem], filename: str, output_format:s
             output = os.path.split(os.path.abspath(filename))
             output_directory = os.path.join(output[0], output[1].split(".")[0])
             output_file = output[1]
-            os.path.join(output_directory, output_file)
             os.makedirs(os.path.dirname(output_directory), exist_ok=True)
 
     for i, rs in enumerate(reaction_systems):
-        if not rs.reactions:
-            tqdm.write("The resulting reaction system has no reactions.\n"
-                       + "No " + algorithm.NAME)
         graph = parse_rs_to_graph(rs)
         if len(reaction_systems) > 1:
             output_file = ".".join(
                 [output_file.split(".")[0] + str(i), output_file.split(".")[1]])
             filename = os.path.join(output_directory, output_file)
         if ".gml" == output_format:
+            tqdm.write("Writing file: " + filename)
             tqdm.write(rs.get_header_line())
             nx.write_gml(graph, filename)
         elif ".graphml" in filename:

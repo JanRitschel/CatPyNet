@@ -1,6 +1,5 @@
 import sample.Utilities as Ut
-from sample.model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
-from sample.io.IOManager import ALL_FILE_FORMATS
+from sample.io.IOManager import ALL_FILE_FORMATS, TRUTH_STRINGS
 import argparse
 import sample.main.CatPyNet as cpn
 from tqdm import tqdm
@@ -39,7 +38,7 @@ def main():
                         default="polymer_model_a#a_k#k_n#n_m#m_r#r.crs")
     parser.add_argument("-z", metavar='output_zipped',
                         help="Should the output be a zipped directory. (True or False)",
-                        choices=["True", "False"],
+                        choices=TRUTH_STRINGS,
                         default="False")
     parser.add_argument("-of", metavar="output_format",
                         help="file format to be written. e.g. '.crs'",
@@ -49,6 +48,8 @@ def main():
                         help="Output reaction notation", default="FULL")
     parser.add_argument("-an", metavar="arrow_notation",
                         help="Output arrow notation", default="USES_EQUALS")
+    parser.add_argument("-ow", metavar="overwrite ok", help="Sets if the program is allowed to " +
+                        "write over files", choices=TRUTH_STRINGS, default="False")
 
     arguments = vars(parser.parse_args())
 
@@ -57,7 +58,8 @@ def main():
     polymer_max_lengths = Ut.parse_integer_input(arguments["n"])
     means = Ut.parse_float_input(arguments["m"])
     number_of_replicates = Ut.parse_integer_input(arguments["r"])
-    zipped = True if arguments['z'].casefold() == 'True'.casefold() else False
+    zipped = True if arguments['z'].casefold() in ['True'.casefold(), "1"] else False
+    overwrite_ok = True if arguments['ow'].casefold() in ['True'.casefold(), "1"] else False
 
     cpn.generate_reaction_system_files(alphabet_sizes,
                                        food_max_lengths,
@@ -69,7 +71,8 @@ def main():
                                        zipped,
                                        arguments['of'],
                                        arguments['rn'],
-                                       arguments['an'])
+                                       arguments['an'],
+                                       overwrite_ok)
 
 
 if __name__ == "__main__":

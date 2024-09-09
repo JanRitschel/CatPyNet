@@ -4,6 +4,7 @@ from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from sample.model.Reaction import Reaction
 from sample.model.ReactionSystem import ReactionSystem
 
+from tqdm import tqdm
 import copy
 import sys
 import os
@@ -51,7 +52,7 @@ class GreedilyGrowMaxCAF2MaxRAF():
                 augmented_reactions.append(augmented_reaction.name)
                 remaining_reactions.remove(augmented_reaction.name)
             else:
-                print("No valid greedy choice found")
+                tqdm.write("No valid greedy choice found")
 
         result = (max_caf.size, max_raf.size, augmented_reactions)
         message = ""

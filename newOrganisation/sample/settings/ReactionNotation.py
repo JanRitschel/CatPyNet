@@ -6,6 +6,8 @@ from .ArrowNotation import ArrowNotation
 
 class ReactionNotation(StrEnum):
 
+    __order__ = "FULL SPARSE TABBED"
+
     FULL = "FULL"
     SPARSE = "SPARSE"
     TABBED = "TABBED"

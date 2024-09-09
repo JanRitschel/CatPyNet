@@ -14,10 +14,11 @@ sys.path.insert(0, os.path.abspath(
 
 
 ALL_FILE_FORMATS = SUPPORTED_FILE_FORMATS
-ALL_FILE_FORMATS.extend(SUPPORTED_GRAPH_FILE_FORMATS)
-ALL_FILE_FORMATS.extend([format.casefold() for format in ALL_FILE_FORMATS])
-ALL_FILE_FORMATS.append(None)
+ALL_FILE_FORMATS.update(SUPPORTED_GRAPH_FILE_FORMATS)
+ALL_FILE_FORMATS.update(set([format.casefold() for format in ALL_FILE_FORMATS]))
+ALL_FILE_FORMATS.update([None])
 
+TRUTH_STRINGS = ["True", "False", "1", "0"]
 
 def redirect_to_writer(output_systems:list[ReactionSystem],
                        output_path:str ="stdout",
@@ -49,21 +50,20 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
         output_path = os.path.join(output_directory, output_file)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    if output_path != "stdout":
-        tqdm.write("Writing file: " + output_path)
-
     if all(output_systems):
         if not any([rs.reactions for rs in output_systems]):
             tqdm.write("The resulting reaction systems have no reactions.\n"
                        + "No " + algorithm.NAME)
+            return
     if not any(output_systems):
         tqdm.write("The resulting reaction systems have no reactions.\n"
                        + "No " + algorithm.NAME)
         return
     
     if output_format in SUPPORTED_GRAPH_FILE_FORMATS:
-        write(output_systems, output_path, output_format, algorithm)
+        write(output_systems, output_path, output_format)
     elif output_format == ".crs":
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, "w") as f:
             res_str = ""
             for output_system in output_systems:
@@ -77,6 +77,7 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                                             reaction_notation,
                                             arrow_notation)
                 res_str += "\n"
+            tqdm.write("Writing file: " + output_path)
             f.write(res_str)
     elif output_path == "stdout":
         res_str = ""
@@ -91,11 +92,12 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                                         reaction_notation,
                                         arrow_notation)
             res_str += "\n"
-        print(res_str)
+        tqdm.write(res_str)
     else:
         tqdm.write("Given output file format was not recognized.\n" +
                    ".crs is assumed.")
         output_path = output_path.split(".")[0] + ".crs"
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
         for output_system in output_systems:
             with open(output_path, "w") as f:
                 res_str = ""
@@ -109,11 +111,11 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                                             reaction_notation,
                                             arrow_notation)
                 res_str += "\n"
+                tqdm.write("Writing file: " + output_path)
                 f.write(res_str)
 
-    if zipped == "True":
+    if zipped:
         shutil.make_archive(output_directory, 'zip', output_directory)
         if os.path.isdir(output_directory):
             shutil.rmtree(output_directory)
-        tqdm.write("made zip")
     

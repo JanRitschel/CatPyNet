@@ -46,7 +46,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         Returns:
             list[ReactionSystem]: reaction systems which are minimal
         """
-        list = MinIRAFHeuristic().apply_all_smallest(input)
+        list = self.apply_all_smallest(input)
         if list:
             return list[0]
         else:
@@ -62,7 +62,8 @@ class MinIRAFHeuristic(AlgorithmBase):
             list[ReactionSystem]: reaction systems which are minimal
         """
         max_raf = MaxRAFAlgorithm().apply(input)
-        reactions = max_raf.reactions
+        reactions = copy.deepcopy(max_raf.reactions)
+        food = copy.deepcopy(max_raf.foods)
         if self.number_of_random_insertion_orders == None:
             self.number_of_random_insertion_orders = 10
         seeds = [
@@ -70,15 +71,19 @@ class MinIRAFHeuristic(AlgorithmBase):
 
         best: list[ReactionSystem] = []
         best_size = max_raf.size
+        
+        work_system = ReactionSystem(self.name)
 
-        for seed in tqdm(seeds, desc="MinIRafHeuristic: "):
-            ordering = reactions
+        for seed in tqdm(seeds, desc="MinIRafHeuristic seeds: "):
+            
+            work_system.reactions.extend(reactions)
+            work_system.foods.extend(food)
+            ordering = work_system.reactions
             random.Random(seed).shuffle(ordering)
-            work_system = copy.copy(max_raf)
-            work_system.name = self.name
 
             for reaction in ordering:
-                work_system.reactions.remove(reaction)
+                try: work_system.reactions.remove(reaction)
+                except: continue
                 next = MaxRAFAlgorithm().apply(work_system)
                 next.name = self.name
                 if next.size > 0 and next.size <= work_system.size:
@@ -94,7 +99,7 @@ class MinIRAFHeuristic(AlgorithmBase):
                         break
                 else:
                     work_system.reactions.append(reaction)
-        if best:
+        if not best:
             result = copy.copy(max_raf)
             result.name = self.name
             best.append(result)

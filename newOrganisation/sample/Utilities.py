@@ -24,10 +24,10 @@ def compute_closure(molecules:list[MoleculeType], reactions:list[Reaction]) -> s
         size = len(all_molecules)
         for reaction in reactions:
             if reaction.direction in {"forward", "both"}:
-                if set(reaction.reactants).issubset(all_molecules):
+                if reaction.reactants.issubset(all_molecules):
                     all_molecules.update(reaction.products)
             if reaction.direction in {"reverse", "both"}:
-                if set(reaction.products).issubset(all_molecules):
+                if reaction.products.issubset(all_molecules):
                     all_molecules.update(reaction.reactants)
     
     return list(all_molecules)
@@ -35,7 +35,7 @@ def compute_closure(molecules:list[MoleculeType], reactions:list[Reaction]) -> s
 def filter_reactions(food:list[MoleculeType], reactions:list[Reaction]) -> list[Reaction]:
     res_reactions = []
     for r in reactions:
-        if r.is_catalyzed_uninhibited_all_reactants(food=food, direction=r.direction):
+        if r.is_catalyzed_uninhibited_all_reactants(r.direction, food=food):
             res_reactions.append(r)
     return res_reactions
 
@@ -55,9 +55,9 @@ def compute_food_generated(food:list[MoleculeType], reactions:list[Reaction]) ->
                         available_food.update(reaction.reactants)
                     case "both":
                         res = []
-                        if set(reaction.reactants).issubset(available_food):
+                        if reaction.reactants.issubset(available_food):
                             res.extend(reaction.products)
-                        if set(reaction.products).issubset(available_food):
+                        if reaction.products.issubset(available_food):
                             res.extend(reaction.reactants)
                         available_food.update(res)
             for reaction in to_add: available_reactions.remove(reaction)
@@ -137,8 +137,14 @@ def binom_dist(n: int, p: float) -> list[float]:
 
 def replace_parameters(input_str: str, 
                        parameters: dict[str:int, str:int, str:int, str:float, str:int]) -> str:
+    
+    if "." in str(parameters['m']):
+        mean_str = str(parameters['m']).replace('.', "-")
+    else:
+        mean_str = str(parameters['m'])
+        
     return (input_str.replace("#a", str(parameters["a"]))
             .replace("#k", str(parameters["k"]))
             .replace("#n", str(parameters["n"]))
-            .replace("#m", str(parameters["m"]))
+            .replace("#m", mean_str)
             .replace("#r", str(parameters["r"])))

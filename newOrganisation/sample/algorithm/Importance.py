@@ -69,18 +69,19 @@ class Importance ():
             result.append((original_result.reactions[0], 100.0))
         elif original_result.size > 1:
             size_to_compare_against = original_result.size - 1
-            for reaction in input_system.reactions:
-                replicate_input = copy.copy(input_system)
-                replicate_input.name = "Reaction importance"
+            replicate_input = copy.deepcopy(input_system)
+            replicate_input.name = "Reaction importance"
+            for reaction in tqdm(input_system.reactions, desc="Calculating Reaction Importance: "):
                 replicate_input.reactions.remove(reaction)
 
                 replicate_output: ReactionSystem = algorithm().apply(replicate_input)
                 if replicate_output.size < size_to_compare_against:
-                    importance = 100.0 * \
-                        (size_to_compare_against - replicate_output.size) / \
-                        float(size_to_compare_against)
+                    importance = (100.0 * 
+                        (size_to_compare_against - replicate_output.size) / 
+                        float(size_to_compare_against))
                     if importance > 0:
                         result.append((reaction, importance))
+                replicate_input.reactions.append(reaction)
                 pbar.update(1)
             result.sort(key=lambda x: x[1])
         return result
