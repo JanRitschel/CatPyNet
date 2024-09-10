@@ -178,7 +178,7 @@ class ReactionSystem:
 
     def __eq__(self, other: ReactionSystem) -> bool:
         if hash(self) == hash(other):
-            return True  # FEHLERANFÄLLIG, temporäre Lösung
+            return True 
         if not (isinstance(other, ReactionSystem)):
             return False
         return (self.foods == other.foods

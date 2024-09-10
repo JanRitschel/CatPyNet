@@ -1,2 +1,0 @@
-General:
-    - unclear if sets can fulfill all roles that may be required        [Reaction.py]
