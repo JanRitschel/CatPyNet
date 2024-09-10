@@ -11,13 +11,13 @@ from hypothesis import assume, example, given, settings, strategies as st
 import unittest
 import copy
 
-from sample.io.ModelIO import ModelIO
-from sample.settings.ReactionNotation import ReactionNotation
-from sample.settings.ArrowNotation import ArrowNotation
-from sample.model.MoleculeType import MoleculeType
-from sample.model.ReactionSystem import ReactionSystem
-from sample.model.Reaction import Reaction
-from sample.model.DisjunctiveNormalForm import *
+from catPyNet.io.ModelIO import ModelIO
+from catPyNet.settings.ReactionNotation import ReactionNotation
+from catPyNet.settings.ArrowNotation import ArrowNotation
+from catPyNet.model.MoleculeType import MoleculeType
+from catPyNet.model.ReactionSystem import ReactionSystem
+from catPyNet.model.Reaction import Reaction
+from catPyNet.model.DisjunctiveNormalForm import *
 
 
 listsize = 3

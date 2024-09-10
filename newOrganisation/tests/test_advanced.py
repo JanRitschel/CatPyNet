@@ -3,12 +3,12 @@
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from sample.io.IOManager import OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS
-from sample.settings.ReactionNotation import ReactionNotation, ArrowNotation
-import sample.tools.CommandLineTool as clt
-import sample.main.CatPyNet as cpn
-from sample.algorithm.AlgorithmBase import AlgorithmBase
-from sample.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from catPyNet.io.IOManager import OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS
+from catPyNet.settings.ReactionNotation import ReactionNotation, ArrowNotation
+import catPyNet.tools.CommandLineTool as clt
+import catPyNet.main.CatPyNet as cpn
+from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
+from catPyNet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from os import listdir
 from os.path import isfile, join
 from tqdm import tqdm
