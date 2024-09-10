@@ -3,22 +3,19 @@ from sample.io.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 import argparse
 import sample.main.CatPyNet as cpn
 from tqdm import tqdm
-from _version import AUTHOR, __version__
+import importlib.metadata
+
 import os
 import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
+__version__ = importlib.metadata.version('catpynet')
 
 def main():
 
     parser = argparse.ArgumentParser(description="Constructs Polymer Models")
-
     parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
-    parser.add_argument("--license", action="store_const",
-                        const="Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein
-    parser.add_argument("--authors", action="store_const",
-                        const=AUTHOR)
     parser.add_argument("-a", metavar="alphabet_size",
                         help="alphabet size (list (x,y,z,...) or range (x-z or x-z/step) ok)",
                         default="2")

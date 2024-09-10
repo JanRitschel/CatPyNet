@@ -1,9 +1,9 @@
 from sample.io.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
-from _version import __version__, AUTHOR
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
 from tqdm import tqdm
 import sample.main.CatPyNet as cpn
 import argparse
+import importlib.metadata
 
 import os
 import sys
@@ -11,15 +11,14 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 
+__version__ = importlib.metadata.version('catpynet')
+
 def main():
 
     parser = argparse.ArgumentParser(
         description="Performs Max RAF and other computations")
-
-    # ZU MACHEN, __version__snummer muss ordnetlich geklärt werden
+    
     parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
-    parser.add_argument("--license", action="store_true")
-    parser.add_argument("--authors", action="store_true")
     parser.add_argument("-c", metavar="compute", required=True,
                         help="The computation to perform", choices=cpn.ALL_ALGORITHMS)
     parser.add_argument("-i", metavar="input",
@@ -42,8 +41,6 @@ def main():
                         MinIRAFHeuristic().name + " heuristic")
     parser.add_argument("-ow", metavar="overwrite ok", help="Sets if the program is allowed to " +
                         "write over files", choices=TRUTH_STRINGS, default="False")
-    # ZU MACHEN, Default File muss erstellt werden
-    parser.add_argument("-p", metavar="properties_file", default="")
 
     arguments = vars(parser.parse_args())
     zipped = True if arguments['z'].casefold() in ['True'.casefold(), "1"] else False
@@ -52,10 +49,6 @@ def main():
         input_file = input("Please enter the file path you want to read from:")
     else:
         input_file = arguments["i"]
-    """ if arguments["-license"]:
-        tqdm.write("Copyright (C) 2023. GPL 3. This program comes with ABSOLUTELY NO WARRANTY.")  # ZU MACHEN, License muss richtige sein)
-    if arguments['-author']:
-        tqdm.write(AUTHOR) """
         
     cpn.apply_to_file(arguments['c'], input_file, arguments['o'],zipped, arguments['of'],
                     arguments['rn'], arguments['an'], arguments['r'], overwrite_ok)
