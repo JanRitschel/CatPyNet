@@ -1,5 +1,5 @@
 import sample.Utilities as Ut
-from sample.io.IOManager import ALL_FILE_FORMATS, TRUTH_STRINGS
+from sample.io.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 import argparse
 import sample.main.CatPyNet as cpn
 from tqdm import tqdm
@@ -42,7 +42,7 @@ def main():
                         default="False")
     parser.add_argument("-of", metavar="output_format",
                         help="file format to be written. e.g. '.crs'",
-                        choices=ALL_FILE_FORMATS,
+                        choices=OUTPUT_FILE_FORMATS,
                         default=None)
     parser.add_argument("-rn", metavar="reaction_notation",
                         help="Output reaction notation", default="FULL")

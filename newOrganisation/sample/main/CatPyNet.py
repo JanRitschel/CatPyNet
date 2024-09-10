@@ -1,7 +1,7 @@
 from sample.model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
 from sample.settings.ReactionNotation import ReactionNotation
 from sample.settings.ArrowNotation import ArrowNotation
-from sample.io.IOManager import redirect_to_writer, ALL_FILE_FORMATS, ModelIO
+from sample.io.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
 from sample.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
 from sample.algorithm.AlgorithmBase import AlgorithmBase
 import sample.Utilities as Utilities
@@ -25,7 +25,12 @@ ALL_ALGORITHMS.update([algo.lower()
 def parse_input_file(file_name: str) -> ReactionSystem:
 
     res_lines = []
-    notation = {None, None}
+    notation = [None, None]
+    if os.path.splitext(file_name)[1] not in INPUT_FILE_FORMATS:
+        raise IOError("The file format " + os.path.splitext(file_name)[1] 
+                      + " is not supported by this function.\n"
+                      + "Please try a file with format in: " +
+                      str(INPUT_FILE_FORMATS))
     with open(file_name, "r") as f:
         res_lines = f.readlines()
         if not res_lines:
@@ -57,13 +62,12 @@ def parse_input_file(file_name: str) -> ReactionSystem:
 def apply_algorithm(input_system: ReactionSystem,
                     algorithm: AlgorithmBase,
                     heuristic_runs: int = 10):
-
-    if algorithm == MinIRAFHeuristic:
-        irr_raf_heuristic = MinIRAFHeuristic()
-        irr_raf_heuristic.number_of_random_insertion_orders = heuristic_runs
-        output_system = irr_raf_heuristic.apply(input_system)
+    
+    if isinstance(algorithm, MinIRAFHeuristic):
+        algorithm.number_of_random_insertion_orders = heuristic_runs
+        output_system = algorithm.apply(input_system)
     else:
-        output_system = algorithm().apply(input_system)
+        output_system = algorithm.apply(input_system)
         output_system = output_system
 
     return output_system
@@ -77,7 +81,7 @@ def apply_to_file(algorithm: str | AlgorithmBase,
                   reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
                   arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
                   heuristic_runs: str | int = 10,
-                  overwrite_ok: bool = False):
+                  overwrite_ok: bool = False) -> ReactionSystem|None:
 
     input_system = parse_input_file(input_file)
 
@@ -86,10 +90,12 @@ def apply_to_file(algorithm: str | AlgorithmBase,
                    + "If you want to overwrite it please run this function with "
                    + "the 'overwrite_ok' attribute set to True")
 
-    if not isinstance(algorithm, AlgorithmBase) and isinstance(algorithm, str):
+    if isinstance(algorithm, str):
         algorithm: AlgorithmBase = AlgorithmBase.get_algorithm_by_name(
             algorithm)
-
+    
+    if isinstance(algorithm, type): algorithm = algorithm()
+    
     if isinstance(heuristic_runs, str):
         heuristic_runs = int(heuristic_runs)
 
@@ -99,6 +105,8 @@ def apply_to_file(algorithm: str | AlgorithmBase,
                        output_format, zipped,
                        reaction_notation, arrow_notation,
                        algorithm)
+    
+    return output_systems
 
 
 def apply_to_directory(algorithm: str | AlgorithmBase,
@@ -109,35 +117,36 @@ def apply_to_directory(algorithm: str | AlgorithmBase,
                        reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
                        arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
                        heuristic_runs: str | int = 10,
-                       overwrite_ok: bool = False):
+                       overwrite_ok: bool = False) -> list[ReactionSystem]|None:
     
-    if output_format not in ALL_FILE_FORMATS or not output_format:
+    if output_format not in OUTPUT_FILE_FORMATS or not output_format:
         tqdm.write("please choose a valid file format from:\n" +
-                   str(ALL_FILE_FORMATS) + "\n"+
+                   str(OUTPUT_FILE_FORMATS) + "\n"+
                    "File format cannot be inferred here.")
         return
     
     dir_files = [join(input_directory, f) for f in os.listdir(input_directory)
                  if isfile(join(input_directory, f))]
 
-    file_zipped = False if zipped else True
-    
+    file_zipped = False
+    output_systems=[]
     for file in tqdm(dir_files, desc="Files to " + output_path):
-        if os.path.splitext(file)[1] in ALL_FILE_FORMATS:
+        if os.path.splitext(file)[1] in INPUT_FILE_FORMATS:
             if isdir(output_path) or output_path == 'stdout':
                 output_file = os.path.join(output_path, os.path.split(file)[1])
-                apply_to_file(algorithm, file, output_file, file_zipped, output_format,
-                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok)
+                output_systems.append(apply_to_file(algorithm, file, output_file, file_zipped, output_format,
+                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok))
             else:
                 os.makedirs(output_path, exist_ok=True)
                 output_file = os.path.join(output_path, os.path.split(file)[1])
-                apply_to_file(algorithm, file, output_file, file_zipped, output_format,
-                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok)
+                output_systems.append(apply_to_file(algorithm, file, output_file, file_zipped, output_format,
+                              reaction_notation, arrow_notation, heuristic_runs, overwrite_ok))
                 
     if output_path != 'stdout' and zipped:
         shutil.make_archive(output_path, 'zip', output_path)
         if os.path.isdir(output_path):
             shutil.rmtree(output_path)
+    return output_systems
 
 
 def generate_reaction_system_files(alphabet_sizes: list[int],

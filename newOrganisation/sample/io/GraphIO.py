@@ -1,6 +1,5 @@
 from __future__ import annotations
 from sample.model.ReactionSystem import ReactionSystem
-from sample.algorithm.AlgorithmBase import AlgorithmBase
 from enum import StrEnum
 from tqdm import tqdm
 import networkx as nx
@@ -26,7 +25,7 @@ class node_types(StrEnum):
     CATALYST_CONJUNCTION = "catalyst_conjunction"
 
 
-SUPPORTED_GRAPH_FILE_FORMATS = {".gml", ".graphml"}
+SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS = {".gml", ".graphml"}
 
 
 def write(reaction_systems: list[ReactionSystem], 

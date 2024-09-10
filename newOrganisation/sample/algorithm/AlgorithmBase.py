@@ -56,7 +56,7 @@ class AlgorithmBase:
 
     def load_algorithms():
         pass
-    
+
     def list_all_algorithms() -> set[str]:
         '''
         list all known algorithms
@@ -85,7 +85,7 @@ class AlgorithmBase:
 
         Returns:
             AlgorithmBase | None: referenced algorithm
-        """        
+        """
         for algorithm in AlgorithmBase.__subclasses__():
             if name.casefold() == algorithm.NAME.casefold():
                 return algorithm

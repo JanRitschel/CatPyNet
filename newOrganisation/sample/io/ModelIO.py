@@ -10,7 +10,9 @@ import os
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
-SUPPORTED_FILE_FORMATS = set([".crs"])
+SUPPORTED_OUTPUT_FILE_FORMATS = set([".crs"])
+
+SUPPORTED_INPUT_FILE_FORMATS = set([".crs"])
 
 
 class ModelIO:

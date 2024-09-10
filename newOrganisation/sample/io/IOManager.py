@@ -2,8 +2,8 @@ from sample.model.ReactionSystem import ReactionSystem
 from sample.settings.ReactionNotation import ReactionNotation
 from sample.settings.ArrowNotation import ArrowNotation
 from sample.algorithm.AlgorithmBase import AlgorithmBase
-from sample.io.GraphIO import write, SUPPORTED_GRAPH_FILE_FORMATS
-from sample.io.ModelIO import ModelIO, SUPPORTED_FILE_FORMATS
+from sample.io.GraphIO import write, SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS
+from sample.io.ModelIO import ModelIO, SUPPORTED_OUTPUT_FILE_FORMATS, SUPPORTED_INPUT_FILE_FORMATS
 import shutil
 from tqdm import tqdm
 
@@ -13,10 +13,14 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 
-ALL_FILE_FORMATS = SUPPORTED_FILE_FORMATS
-ALL_FILE_FORMATS.update(SUPPORTED_GRAPH_FILE_FORMATS)
-ALL_FILE_FORMATS.update(set([format.casefold() for format in ALL_FILE_FORMATS]))
-ALL_FILE_FORMATS.update([None])
+OUTPUT_FILE_FORMATS = SUPPORTED_OUTPUT_FILE_FORMATS
+OUTPUT_FILE_FORMATS.update(SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS)
+OUTPUT_FILE_FORMATS.update(set([format.casefold() for format in OUTPUT_FILE_FORMATS]))
+OUTPUT_FILE_FORMATS.update([None])
+
+INPUT_FILE_FORMATS = SUPPORTED_INPUT_FILE_FORMATS
+#INPUT_FILE_FORMATS.update(SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS)
+INPUT_FILE_FORMATS.update(set([format.casefold() for format in INPUT_FILE_FORMATS]))
 
 TRUTH_STRINGS = ["True", "False", "1", "0"]
 
@@ -60,7 +64,7 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                        + "No " + algorithm.NAME)
         return
     
-    if output_format in SUPPORTED_GRAPH_FILE_FORMATS:
+    if output_format in SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS:
         write(output_systems, output_path, output_format)
     elif output_format == ".crs":
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
