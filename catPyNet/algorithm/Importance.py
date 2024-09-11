@@ -1,8 +1,8 @@
 from __future__ import annotations
-from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
-from catPyNet.model.MoleculeType import MoleculeType
-from catPyNet.model.Reaction import Reaction
-from catPyNet.model.ReactionSystem import ReactionSystem
+from algorithm.AlgorithmBase import AlgorithmBase
+from model.MoleculeType import MoleculeType
+from model.Reaction import Reaction
+from model.ReactionSystem import ReactionSystem
 import time
 from tqdm import tqdm
 

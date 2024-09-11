@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .model.Reaction import Reaction
-from .model.MoleculeType import MoleculeType
+from model.Reaction import Reaction
+from model.MoleculeType import MoleculeType
 import math
 import decimal
 

@@ -1,24 +1,25 @@
-from catPyNet.io.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
-from catPyNet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from tqdm import tqdm
-import catPyNet.main.CatPyNet as cpn
-import argparse
-import importlib.metadata
-
 import os
 import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
+from main import CatPyNet
+from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
+from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from tqdm import tqdm
+import main.CatPyNet as cpn
+import argparse
+import importlib.metadata
 
-__version__ = importlib.metadata.version('catpynet')
+
+#__version__ = importlib.metadata.version('catPyNet')
 
 def main():
 
     parser = argparse.ArgumentParser(
         description="Performs Max RAF and other computations")
     
-    parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
+#    parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
     parser.add_argument("-c", metavar="compute", required=True,
                         help="The computation to perform", choices=cpn.ALL_ALGORITHMS)
     parser.add_argument("-i", metavar="input",

@@ -1,8 +1,8 @@
 from __future__ import annotations
-from catPyNet.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
-from catPyNet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-from catPyNet.model.Reaction import Reaction
-from catPyNet.model.ReactionSystem import ReactionSystem
+from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
+from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from model.Reaction import Reaction
+from model.ReactionSystem import ReactionSystem
 
 from tqdm import tqdm
 import copy

@@ -1,9 +1,9 @@
 from __future__ import annotations
 import re
-from catPyNet.settings.ArrowNotation import ArrowNotation
-from catPyNet.settings.ReactionNotation import ReactionNotation
-from catPyNet.model.ReactionSystem import ReactionSystem, MoleculeType
-from catPyNet.model.Reaction import Reaction, FORMAL_FOOD
+from settings.ArrowNotation import ArrowNotation
+from settings.ReactionNotation import ReactionNotation
+from model.ReactionSystem import ReactionSystem, MoleculeType
+from model.Reaction import Reaction, FORMAL_FOOD
 from tqdm import tqdm
 import sys
 import os

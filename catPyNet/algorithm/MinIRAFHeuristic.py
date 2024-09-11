@@ -2,9 +2,9 @@ from __future__ import annotations
 from tqdm import tqdm
 import random
 import copy
-from catPyNet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
-from catPyNet.model.ReactionSystem import ReactionSystem
+from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from algorithm.AlgorithmBase import AlgorithmBase
+from model.ReactionSystem import ReactionSystem
 
 import sys
 import os

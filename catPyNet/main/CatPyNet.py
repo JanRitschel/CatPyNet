@@ -1,10 +1,10 @@
-from catPyNet.model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
-from catPyNet.settings.ReactionNotation import ReactionNotation
-from catPyNet.settings.ArrowNotation import ArrowNotation
-from catPyNet.io.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
-from catPyNet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
-import catPyNet.Utilities as Utilities
+from model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
+from settings.ReactionNotation import ReactionNotation
+from settings.ArrowNotation import ArrowNotation
+from fileIO.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
+from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from algorithm.AlgorithmBase import AlgorithmBase
+import Utilities as Utilities
 from itertools import combinations_with_replacement
 import shutil
 import random

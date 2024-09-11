@@ -1,8 +1,8 @@
 from __future__ import annotations
-from catPyNet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-from catPyNet.algorithm.Importance import Importance
-from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
-from catPyNet.model.ReactionSystem import ReactionSystem
+from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from algorithm.Importance import Importance
+from algorithm.AlgorithmBase import AlgorithmBase
+from model.ReactionSystem import ReactionSystem
 from tqdm import tqdm
 
 import sys

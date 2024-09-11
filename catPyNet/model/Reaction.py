@@ -1,7 +1,7 @@
 from __future__ import annotations
-from catPyNet.model.MoleculeType import MoleculeType
+from model.MoleculeType import MoleculeType
 from copy import copy, deepcopy
-from catPyNet.model.DisjunctiveNormalForm import compute
+from model.DisjunctiveNormalForm import compute
 from tqdm import tqdm
 '''
  * Reaction.java Copyright (C) 2022 Daniel H. Huson

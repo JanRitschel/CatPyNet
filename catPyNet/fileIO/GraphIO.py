@@ -1,5 +1,5 @@
 from __future__ import annotations
-from catPyNet.model.ReactionSystem import ReactionSystem
+from model.ReactionSystem import ReactionSystem
 from enum import StrEnum
 from tqdm import tqdm
 import networkx as nx

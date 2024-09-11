@@ -1,9 +1,9 @@
-from catPyNet.model.ReactionSystem import ReactionSystem
-from catPyNet.settings.ReactionNotation import ReactionNotation
-from catPyNet.settings.ArrowNotation import ArrowNotation
-from catPyNet.algorithm.AlgorithmBase import AlgorithmBase
-from catPyNet.io.GraphIO import write, SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS
-from catPyNet.io.ModelIO import ModelIO, SUPPORTED_OUTPUT_FILE_FORMATS, SUPPORTED_INPUT_FILE_FORMATS
+from model.ReactionSystem import ReactionSystem
+from settings.ReactionNotation import ReactionNotation
+from settings.ArrowNotation import ArrowNotation
+from algorithm.AlgorithmBase import AlgorithmBase
+from fileIO.GraphIO import write, SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS
+from fileIO.ModelIO import ModelIO, SUPPORTED_OUTPUT_FILE_FORMATS, SUPPORTED_INPUT_FILE_FORMATS
 import shutil
 from tqdm import tqdm
 

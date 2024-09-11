@@ -1,5 +1,5 @@
 from __future__ import annotations
-from catPyNet.model.ReactionSystem import ReactionSystem
+from model.ReactionSystem import ReactionSystem
 '''
   AlgorithmBase.java Copyright (C) 2022 Daniel H. Huson
  

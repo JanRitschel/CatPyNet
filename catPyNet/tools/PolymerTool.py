@@ -1,7 +1,7 @@
-import catPyNet.Utilities as Ut
-from catPyNet.io.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
+import Utilities as Ut
+from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 import argparse
-import catPyNet.main.CatPyNet as cpn
+import main.CatPyNet as cpn
 from tqdm import tqdm
 import importlib.metadata
 
