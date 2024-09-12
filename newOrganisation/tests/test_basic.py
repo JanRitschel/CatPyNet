@@ -314,7 +314,7 @@ class ReactionTests(unittest.TestCase):
         data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
         dummy_res_str = [{"AB","CD&EF&GH","IJ"}, {"AB","CD&EF&GH","IJ"}, {"AB","CD&GH","EF&GH","IJ"}, {"AB&EF","AB&GH","CD&EF","CD&GH","IJ"}]
         res_str = [MoleculeType().values_of(list(dummy_res_str[i])) for i in range(0,len(dummy_res_str))]
-        test_str = [Reaction("", catalysts=data).get_catalyst_conjunctions() for data in data_str]
+        test_str = [Reaction("", catalysts=data).catalyst_conjunctions for data in data_str]
         print([[mol.name for mol in s] for s in test_str])
         self.assertEqual(test_str, res_str)
         

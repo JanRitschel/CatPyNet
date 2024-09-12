@@ -106,7 +106,7 @@ class Reaction:
             return ((direction in {"forward", "both"} and self.reactants.issubset(food_set)
                      or direction in {"reverse", "both"} and self.products.issubset(food_set))
                     and (len(self.catalysts) == 0
-                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(food_set) for conjunction in self.get_catalyst_conjunctions()))
+                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(food_set) for conjunction in self.catalyst_conjunctions))
                     and (len(self.inhibitions) == 0
                          or food_set.isdisjoint(self.inhibitions)))
         else:
@@ -116,7 +116,7 @@ class Reaction:
             return ((direction in {"forward", "both"} and self.reactants.issubset(reactant_set)
                      or direction in {"reverse", "both"} and self.products.issubset(reactant_set))
                     and (len(self.catalysts) == 0
-                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(catalyst_set) for conjunction in self.get_catalyst_conjunctions()))
+                         or any(MoleculeType().values_of(conjunction.name.split("&")).issubset(catalyst_set) for conjunction in self.catalyst_conjunctions))
                     and (len(self.inhibitions) == 0
                          or not bool(inhibition_set & self.inhibitions)))
 
@@ -343,7 +343,7 @@ class Reaction:
         '''
         returns all catalyst elements for this reaction as a set, not considering associations between catalysts.
         '''
-        toplevel_conjuncitons = self.get_catalyst_conjunctions()
+        toplevel_conjuncitons = self.catalyst_conjunctions
         all_elements = set()
         for conjunction in toplevel_conjuncitons:
             all_elements.update(MoleculeType().values_of(conjunction.name.split("&")))

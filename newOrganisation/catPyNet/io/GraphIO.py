@@ -207,7 +207,7 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
         for inhibitor in reaction.inhibitions:
             parse_edge(graph, inhibitor.name, reaction.name,
                        edge_types.INHIBITOR)
-        for catalyst in [cata.name for cata in reaction.get_catalyst_conjunctions()]:
+        for catalyst in [cata.name for cata in reaction.catalyst_conjunctions]:
             if "&" in catalyst:
                 catalyst_node = [(catalyst, {"graphics": {"NodeShape": "OCTAGON",
                                                           "fill": "#FFFFFF"},
