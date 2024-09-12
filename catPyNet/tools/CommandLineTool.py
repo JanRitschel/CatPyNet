@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.abspath(
 
 from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
 from tqdm import tqdm
 import main.CatPyNet as cpn
 import argparse
@@ -39,6 +40,8 @@ def main():
                         help="Output arrow notation", default="USES_EQUALS")
     parser.add_argument("-r", metavar="runs", help="Number of randomized runs for " +
                         MinIRAFHeuristic().name + " heuristic")
+    parser.add_argument("-t", metavar="target_molecule", help="Target Molecule for " +
+                        MinRAFGeneratingElement().name)
     parser.add_argument("-ow", metavar="overwrite ok", help="Sets if the program is allowed to " +
                         "write over files", choices=TRUTH_STRINGS, default="False")
 
@@ -49,9 +52,14 @@ def main():
         input_file = input("Please enter the file path you want to read from:")
     else:
         input_file = arguments["i"]
+    if "," in arguments["t"]:
+        target_molecules = arguments["t"].split(",")
+    else:
+        target_molecules = [arguments["t"]]
         
     cpn.apply_to_file(arguments['c'], input_file, arguments['o'],zipped, arguments['of'],
-                    arguments['rn'], arguments['an'], arguments['r'], overwrite_ok)
+                    arguments['rn'], arguments['an'], arguments['r'], target_molecules, 
+                    overwrite_ok)
 
 if __name__ == "__main__":
     main()

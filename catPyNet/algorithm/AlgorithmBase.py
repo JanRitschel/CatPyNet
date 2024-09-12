@@ -70,6 +70,7 @@ class AlgorithmBase:
             from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
             from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
             from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+            from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
         except:
             pass
         for algorithm in AlgorithmBase.__subclasses__():

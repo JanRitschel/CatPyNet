@@ -179,6 +179,7 @@ def run_everything():
 def test_one_algo(algo:AlgorithmBase):
     total_test_files = (len(ReactionNotation) * len(ArrowNotation) * len(test_files))
     output_format = ".crs"
+    time_dict = {}
     with tqdm(desc=algo.NAME + " Test Files:", total=total_test_files) as tot_f:
         for reaction_notation in ReactionNotation:
             for arrow_notation in ArrowNotation:
@@ -197,7 +198,9 @@ def test_one_algo(algo:AlgorithmBase):
                                     zipped=False,
                                     reaction_notation=reaction_notation,
                                     arrow_notation=arrow_notation,
-                                    overwrite_ok=True)
+                                    overwrite_ok=True,
+                                    heuristic_runs=100,
+                                    time_dict=time_dict)
                 
                 tot_f.update(len(test_files))
     output_foods = {}
@@ -238,7 +241,9 @@ def test_one_algo(algo:AlgorithmBase):
         for key, value in zip(reaction_truth.keys(), reaction_truth.values()):
             if not value: tqdm.write(key)
         
-        return all(food_truth.values()) and all(reaction_truth.values())
+    
+    tqdm.write(str(float(sum(time_dict.values())) / float(len(time_dict.values()))))
+    return all(food_truth.values()) and all(reaction_truth.values())
     
     
         

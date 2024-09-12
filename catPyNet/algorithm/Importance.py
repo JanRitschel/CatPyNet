@@ -69,8 +69,9 @@ class Importance ():
             result.append((original_result.reactions[0], 100.0))
         elif original_result.size > 1:
             size_to_compare_against = original_result.size - 1
-            replicate_input = copy.deepcopy(input_system)
-            replicate_input.name = "Reaction importance"
+            replicate_input = ReactionSystem("Reaction importance")
+            replicate_input.foods = input_system.foods
+            replicate_input.reactions = input_system.reactions.copy()
             for reaction in tqdm(input_system.reactions, desc="Calculating Reaction Importance: "):
                 replicate_input.reactions.remove(reaction)
 

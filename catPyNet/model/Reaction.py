@@ -35,7 +35,7 @@ class Reaction:
     """A reaction.
     """
 
-    @property
+    """ @property
     def catalysts(self):
         return self._catalysts
 
@@ -43,7 +43,7 @@ class Reaction:
     def catalysts(self, value: str):
         self._catalysts = value
         buffer = self.get_catalyst_conjunctions()
-        self._catalyst_conjunctions = buffer
+        self._catalyst_conjunctions = buffer """
     
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)

@@ -68,6 +68,24 @@
             ]
         },
         {
+            "name": "MinRAF Generating Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "-c", "Min RAF Generating Element",
+                "-i", "G:\\Github\\BA-Jan\\test_files\\prokaryotic-network.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
+                "-of", ".crs",
+                "-r", "100",
+                "-rn", "SPARSE",
+                "-an", "USES_EQUALS",
+                "-t", "C00004",
+                "-ow", "1"
+            ]
+        },
+        {
             "name": "Polymer Debugger Ranges: Current File with Arguments",
             "type": "debugpy",
             "request": "launch",

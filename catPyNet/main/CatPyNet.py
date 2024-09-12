@@ -3,6 +3,7 @@ from settings.ReactionNotation import ReactionNotation
 from settings.ArrowNotation import ArrowNotation
 from fileIO.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
 from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
 from algorithm.AlgorithmBase import AlgorithmBase
 import Utilities as Utilities
 from itertools import combinations_with_replacement
@@ -10,6 +11,8 @@ import shutil
 import random
 import bisect
 from tqdm import tqdm
+
+from time import time
 
 from os.path import isfile, join, isdir
 import os
@@ -61,14 +64,18 @@ def parse_input_file(file_name: str) -> ReactionSystem:
 
 def apply_algorithm(input_system: ReactionSystem,
                     algorithm: AlgorithmBase,
-                    heuristic_runs: int = 10):
+                    heuristic_runs: int = 10,
+                    target_molecule:list[str] = []):
     
     if isinstance(algorithm, MinIRAFHeuristic):
         algorithm.number_of_random_insertion_orders = heuristic_runs
         output_system = algorithm.apply(input_system)
+    elif isinstance(algorithm, MinRAFGeneratingElement):
+        algorithm.targets = MoleculeType().values_of(target_molecule)
+        algorithm.number_of_random_insertion_orders = heuristic_runs
+        output_system = algorithm.apply(input_system)
     else:
         output_system = algorithm.apply(input_system)
-        output_system = output_system
 
     return output_system
 
@@ -81,8 +88,10 @@ def apply_to_file(algorithm: str | AlgorithmBase,
                   reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
                   arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
                   heuristic_runs: str | int = 10,
+                  target_molecule:list[str] = [],
                   overwrite_ok: bool = False) -> ReactionSystem|None:
 
+    start_time = time()
     input_system = parse_input_file(input_file)
 
     if not overwrite_ok and os.path.exists(output_path):
@@ -99,13 +108,14 @@ def apply_to_file(algorithm: str | AlgorithmBase,
     if isinstance(heuristic_runs, str):
         heuristic_runs = int(heuristic_runs)
 
-    output_systems = apply_algorithm(input_system, algorithm, heuristic_runs)
+    output_systems = apply_algorithm(input_system, algorithm, heuristic_runs, target_molecule)
 
     redirect_to_writer([output_systems], output_path,
                        output_format, zipped,
                        reaction_notation, arrow_notation,
                        algorithm)
     
+    tqdm.write("Total time spent: " + str(time() - start_time))
     return output_systems
 
 
@@ -117,8 +127,10 @@ def apply_to_directory(algorithm: str | AlgorithmBase,
                        reaction_notation: str | ReactionNotation = ReactionNotation.FULL,
                        arrow_notation: str | ArrowNotation = ArrowNotation.USES_EQUALS,
                        heuristic_runs: str | int = 10,
-                       overwrite_ok: bool = False) -> list[ReactionSystem]|None:
+                       overwrite_ok: bool = False,
+                       time_dict:dict = {}) -> list[ReactionSystem]|None:
     
+    st = time()
     if output_format not in OUTPUT_FILE_FORMATS or not output_format:
         tqdm.write("please choose a valid file format from:\n" +
                    str(OUTPUT_FILE_FORMATS) + "\n"+
@@ -146,6 +158,8 @@ def apply_to_directory(algorithm: str | AlgorithmBase,
         shutil.make_archive(output_path, 'zip', output_path)
         if os.path.isdir(output_path):
             shutil.rmtree(output_path)
+    et = time()
+    time_dict.update({output_path:et-st})
     return output_systems
 
 

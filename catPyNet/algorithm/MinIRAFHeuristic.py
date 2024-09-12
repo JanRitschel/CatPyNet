@@ -5,6 +5,7 @@ import copy
 from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from algorithm.AlgorithmBase import AlgorithmBase
 from model.ReactionSystem import ReactionSystem
+from time import time
 
 import sys
 import os
@@ -61,6 +62,7 @@ class MinIRAFHeuristic(AlgorithmBase):
         Returns:
             list[ReactionSystem]: reaction systems which are minimal
         """
+        
         max_raf = MaxRAFAlgorithm().apply(input)
         
         if self.number_of_random_insertion_orders == None:
@@ -73,17 +75,20 @@ class MinIRAFHeuristic(AlgorithmBase):
 
         for seed in tqdm(seeds, desc="MinIRafHeuristic seeds: "):
             
+            start_time = time()
             work_system = ReactionSystem(self.name)
             work_system.reactions = max_raf.reactions.copy()
             work_system.foods.update(max_raf.foods)
-            ordering = work_system.reactions.copy()
+            ordering = max_raf.reactions.copy()
             random.Random(seed).shuffle(ordering)
-
+            
             for reaction in ordering:
                 try: work_system.reactions.remove(reaction)
                 except: pass
                 next = MaxRAFAlgorithm().apply(work_system)
                 next.name = self.name
+                tqdm.write("reactions run: " + str(time() -start_time))
+                start_time = time()
                 if next.size > 0 and next.size <= work_system.size:
                     work_system = next
                     if next.size < best_size:
@@ -97,6 +102,7 @@ class MinIRAFHeuristic(AlgorithmBase):
                         break
                 else:
                     work_system.reactions.append(reaction)
+                
         if not best:
             result = copy.copy(max_raf)
             result.name = self.name
