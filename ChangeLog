@@ -1,0 +1,44 @@
+CHANGES
+=======
+
+* further cleanup
+* cleaned version
+* removed reference
+* small formal changes
+
+0.9.0
+-----
+
+* expanded tests a bit
+* whitespace as seps and stdin for cmdtool
+* changed to sets
+* fixed core raf, started with set implementation, made minor changes
+* further refactoring, added graphML support
+* some refactoring and docstrings
+* made central class
+* reformatting, START OF REFACTORING
+* As Far as i can tell all main features are done
+* started graphIO
+* line parser, minor fixes, progBars
+* Added the polymertool and some starting progressbars also fixed tons of small bugs
+* added rest of algos
+* ModelIO is working and commandlinetool works on a basic level
+* continued testing
+* debugged Moleculetype and Reaction and added testing
+* added MinIRAFHeuristic, ModelIO, ReactionNotation and started on ArrowNotation
+* removed unneccesary files and made a basic version of commandtool
+* some small corrections and some more algo work
+* continued work on Algorithms
+* started on adding utilities started some stuff missed on reaction
+* reactionSystem done
+* finished Reactionsystem class except for hash functions and copies
+* finished reaction and dnf classes
+* in the process of debugging
+* some minor changes
+* fixed the early cutoff issue
+* moved everything one level up, almost finished dnf
+* finished reaction,py, started on disjunctiveNormalForm.py, started issues.txt file
+* finished parse, made placeholder dnf class
+* mostly parse fkt in reaaction
+* Ini Commit
+* Initial commit

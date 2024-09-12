@@ -1,6 +1,0 @@
-Food: a b c f1 f2 f3 f4 f5 g
-
-r3 : b + f4 [a] => c
-r1 : f1 + f2 [g] => a
-r4 : c + f5 [b] => a + g
-

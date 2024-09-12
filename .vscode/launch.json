@@ -14,8 +14,8 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max caf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\inhibitions-1.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\inhibitions-1.crs",
+                "-i", "G:\\Github\\BA-Jan\\test_files\\inhibitions-1.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\inhibitions-1.crs",
                 "-of", ".crs",
                 "-an", "USES_MINUS",
                 "-rn", "SPARSE"
@@ -29,9 +29,10 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "core raf",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-0.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
-                "-rn", "SPARSE"
+                "-i", "G:\\Github\\BA-Jan\\test_files\\example-0.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
+                "-rn", "SPARSE",
+                "-ow", "True"
             ]
         },
         {
@@ -42,7 +43,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max raf",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
                 "-of", ".graphml",
                 "-rn", "SPARSE",
                 "-an", "USES_EQUALS",
@@ -57,8 +58,8 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "iRAF",
-                "-i", "G:\\Github\\BA-Jan\\newOrganisation\\test_files\\example-9.crs",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\result4.crs",
+                "-i", "G:\\Github\\BA-Jan\\test_files\\example-9.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
                 "-of", ".crs",
                 "-r", "1000",
                 "-rn", "SPARSE",
@@ -78,7 +79,7 @@
                 "-n", "6-8/2",
                 "-m", "1.0,2.0",
                 "-r", "1",
-                "-o", "G:\\Github\\BA-Jan\\newOrganisation\\test_results\\poly_test",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\poly_test",
                 "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
                 "-rn", "TABBED"
             ]
