@@ -44,6 +44,15 @@ class Reaction:
         self._catalysts = value
         buffer = self.get_catalyst_conjunctions()
         self._catalyst_conjunctions = buffer
+        
+    @property
+    def catalyst_conjunctions(self):
+        return self._catalyst_conjunctions
+    
+    @catalyst_conjunctions.setter
+    def catalyst_conjunctions(self, value: set[MoleculeType]):
+        self._catalyst_conjunctions = value
+    
     
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)
@@ -90,8 +99,8 @@ class Reaction:
         self.name = name
         self.reactants: set[MoleculeType] = set() if "reactants" not in kwargs else kwargs["reactants"]
         self.products: set[MoleculeType] = set() if "products" not in kwargs else kwargs["products"]
-        self.catalysts: str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
         self.catalyst_conjunctions: set[MoleculeType] = set() if "catalyst_conjunctions" not in kwargs else kwargs["catalyst_conjunctions"]
+        self.catalysts: str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
         self.inhibitions: set[MoleculeType] = set() if "inhibitions" not in kwargs else kwargs["inhibitions"]
         self.reactant_coefficients = {
         } if "reactant_coefficients" not in kwargs else kwargs["reactant_coefficients"]
