@@ -3,7 +3,6 @@ import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
-from main import CatPyNet
 from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
 from tqdm import tqdm

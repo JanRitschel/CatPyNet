@@ -31,7 +31,8 @@
                 "-c", "core raf",
                 "-i", "G:\\Github\\BA-Jan\\test_files\\example-0.crs",
                 "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
-                "-rn", "SPARSE"
+                "-rn", "SPARSE",
+                "-ow", "True"
             ]
         },
         {

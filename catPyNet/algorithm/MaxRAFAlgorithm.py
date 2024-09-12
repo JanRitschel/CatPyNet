@@ -36,8 +36,8 @@ class MaxRAFAlgorithm (AlgorithmBase):
         """       
         result = ReactionSystem(self.NAME)
 
-        input_reactions = input.reactions
-        input_food = input.foods
+        input_reactions = input.reactions.copy()
+        input_food = input.foods.copy()
 
         if len(input_reactions) > 0:
             reactions = []

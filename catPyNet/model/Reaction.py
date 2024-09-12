@@ -35,16 +35,32 @@ class Reaction:
     """A reaction.
     """
 
+    @property
+    def catalysts(self):
+        return self._catalysts
+
+    @catalysts.setter
+    def catalysts(self, value: str):
+        self._catalysts = value
+        buffer = self.get_catalyst_conjunctions()
+        self._catalyst_conjunctions = buffer
+    
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)
         _copy = memo.get(id_self)
         if _copy == None:
-            _copy = Reaction(deepcopy(self.name, memo), warned_about_suppressing_coefficients=deepcopy(self.warned_about_suppressing_coefficients, memo),
-                             reactants=deepcopy(self.reactants, memo), products=deepcopy(
-                                 self.products, memo), catalysts=deepcopy(self.catalysts, memo),
-                             inhibitions=deepcopy(self.inhibitions, memo), reactant_coefficients=deepcopy(
+            _copy = Reaction(deepcopy(self.name, memo), 
+                             warned_about_suppressing_coefficients=deepcopy(self.warned_about_suppressing_coefficients, memo),
+                             reactants=deepcopy(self.reactants, memo), 
+                             products=deepcopy(
+                                 self.products, memo), 
+                             catalysts=deepcopy(self.catalysts, memo),
+                             catalyst_conjunctions = deepcopy(self.catalyst_conjunctions),
+                             inhibitions=deepcopy(self.inhibitions, memo), 
+                             reactant_coefficients=deepcopy(
                                  self.reactant_coefficients, memo),
-                             product_coefficients=deepcopy(self.product_coefficients, memo), direction=deepcopy(self.direction, memo))
+                             product_coefficients=deepcopy(self.product_coefficients, memo), 
+                             direction=deepcopy(self.direction, memo))
             memo[id_self] = _copy
         return _copy
 
@@ -75,6 +91,7 @@ class Reaction:
         self.reactants: set[MoleculeType] = set() if "reactants" not in kwargs else kwargs["reactants"]
         self.products: set[MoleculeType] = set() if "products" not in kwargs else kwargs["products"]
         self.catalysts: str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
+        self.catalyst_conjunctions: set[MoleculeType] = set() if "catalyst_conjunctions" not in kwargs else kwargs["catalyst_conjunctions"]
         self.inhibitions: set[MoleculeType] = set() if "inhibitions" not in kwargs else kwargs["inhibitions"]
         self.reactant_coefficients = {
         } if "reactant_coefficients" not in kwargs else kwargs["reactant_coefficients"]

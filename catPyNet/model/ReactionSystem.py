@@ -145,10 +145,10 @@ class ReactionSystem:
         return names
 
     def compute_mentioned_foods(self, foods: set[MoleculeType]) -> set[MoleculeType]:
-        """Might need to return a dict?
+        """Returns all food items that are mentioned in reactions
 
         Args:
-            foods (iter[MoleculeType]): foods to compare reactions against
+            foods (set[MoleculeType]): foods to compare reactions against
 
         Returns:
             set[MoleculeType]: set of all MoleculeTypes mentioned in any reaction and foods

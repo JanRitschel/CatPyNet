@@ -65,11 +65,11 @@ class AlgorithmBase:
         '''
         list = []
         try:
-            from catPyNet.algorithm.MaxPseudoRAFAlgorithm import MaxPseudoRAFAlgorithm
-            from catPyNet.algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
-            from catPyNet.algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
-            from catPyNet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-            from catPyNet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+            from algorithm.MaxPseudoRAFAlgorithm import MaxPseudoRAFAlgorithm
+            from algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
+            from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
+            from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+            from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
         except:
             pass
         for algorithm in AlgorithmBase.__subclasses__():

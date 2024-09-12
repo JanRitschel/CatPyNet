@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d7" for="edge" attr.name="graphics#color" attr.type="string"/>
+<key id="d6" for="edge" attr.name="att#edge_type" attr.type="string"/>
+<key id="d5" for="edge" attr.name="graphics#ArrowShape" attr.type="string"/>
+<key id="d4" for="node" attr.name="graphics#fill" attr.type="string"/>
+<key id="d3" for="node" attr.name="att#node_type" attr.type="string"/>
+<key id="d2" for="node" attr.name="att#Food" attr.type="boolean"/>
+<key id="d1" for="node" attr.name="graphics#NodeShape" attr.type="string"/>
+<key id="d0" for="graph" attr.name="name" attr.type="string"/>
+<graph edgedefault="directed"><data key="d0">Max RAF</data>
+<node id="a">
+  <data key="d1">ELLIPSE</data>
+  <data key="d2">True</data>
+  <data key="d3">molecule</data>
+  <data key="d4">#FFFFFF</data>
+</node>
+<node id="x">
+  <data key="d1">ELLIPSE</data>
+  <data key="d2">True</data>
+  <data key="d3">molecule</data>
+  <data key="d4">#FFFFFF</data>
+</node>
+<node id="y">
+  <data key="d1">ELLIPSE</data>
+  <data key="d2">True</data>
+  <data key="d3">molecule</data>
+  <data key="d4">#FFFFFF</data>
+</node>
+<node id="b">
+  <data key="d1">ELLIPSE</data>
+  <data key="d2">True</data>
+  <data key="d3">molecule</data>
+  <data key="d4">#FFFFFF</data>
+</node>
+<node id="r1">
+  <data key="d1">TRIANGLE</data>
+  <data key="d3">reaction</data>
+  <data key="d4">#000000</data>
+</node>
+<edge source="a" target="r1">
+  <data key="d5">Arrow</data>
+  <data key="d6">reactant</data>
+  <data key="d7">#000000</data>
+</edge>
+<edge source="x" target="r1">
+  <data key="d5">Arrow</data>
+  <data key="d6">catalyst</data>
+  <data key="d7">#00FF00</data>
+</edge>
+<edge source="b" target="r1">
+  <data key="d5">Arrow</data>
+  <data key="d6">reactant</data>
+  <data key="d7">#000000</data>
+</edge>
+<edge source="r1" target="y">
+  <data key="d5">Arrow</data>
+  <data key="d6">product</data>
+  <data key="d7">#000000</data>
+</edge>
+</graph></graphml>

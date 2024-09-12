@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath(
 class MinIRAFHeuristic(AlgorithmBase):
 
     NAME: str = "iRAF"
-    NUMBER_OF_RANDOM_INSERTION_ORDERS: int = 100
+    NUMBER_OF_RANDOM_INSERTION_ORDERS: int
 
     @property
     def number_of_random_insertion_orders(self):
@@ -62,8 +62,7 @@ class MinIRAFHeuristic(AlgorithmBase):
             list[ReactionSystem]: reaction systems which are minimal
         """
         max_raf = MaxRAFAlgorithm().apply(input)
-        reactions = copy.deepcopy(max_raf.reactions)
-        food = copy.deepcopy(max_raf.foods)
+        
         if self.number_of_random_insertion_orders == None:
             self.number_of_random_insertion_orders = 10
         seeds = [
@@ -71,19 +70,18 @@ class MinIRAFHeuristic(AlgorithmBase):
 
         best: list[ReactionSystem] = []
         best_size = max_raf.size
-        
-        work_system = ReactionSystem(self.name)
 
         for seed in tqdm(seeds, desc="MinIRafHeuristic seeds: "):
             
-            work_system.reactions.extend(reactions)
-            work_system.foods.update(food)
-            ordering = work_system.reactions
+            work_system = ReactionSystem(self.name)
+            work_system.reactions = max_raf.reactions.copy()
+            work_system.foods.update(max_raf.foods)
+            ordering = work_system.reactions.copy()
             random.Random(seed).shuffle(ordering)
 
             for reaction in ordering:
                 try: work_system.reactions.remove(reaction)
-                except: continue
+                except: pass
                 next = MaxRAFAlgorithm().apply(work_system)
                 next.name = self.name
                 if next.size > 0 and next.size <= work_system.size:

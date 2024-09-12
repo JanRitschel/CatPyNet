@@ -17,7 +17,7 @@ def add_all_mentioned_products(molecules:set[MoleculeType], reactions:list[React
     return res
 
 def compute_closure(molecules:set[MoleculeType], reactions:list[Reaction]) -> set[MoleculeType]:
-    all_molecules = molecules
+    all_molecules = molecules.copy()
     size = -1
     while len(all_molecules) > size:
         size = len(all_molecules)
