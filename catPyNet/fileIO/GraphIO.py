@@ -1,12 +1,14 @@
 from __future__ import annotations
+import sys
+import os
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '.')))
 from model.ReactionSystem import ReactionSystem
 from enum import StrEnum
 from tqdm import tqdm
 import networkx as nx
-import sys
-import os
-sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..')))
+import matplotlib.pyplot as plt
+
 
 
 class edge_types(StrEnum):
@@ -27,6 +29,23 @@ class node_types(StrEnum):
 
 SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS = {".gml", ".graphml"}
 
+ARROW_SHAPE_DICT = {edge_types.INHIBITOR:'T',
+                    edge_types.CATALYST:"Arrow",
+                   edge_types.CATALYST_CONJUNCTION:"Arrow",
+                   edge_types.REACTANT:"Arrow",
+                   edge_types.PRODUCT:"Arrow"}
+NODE_SHAPE_DICT = {node_types.MOLECULE:'ELLIPSE', 
+                   node_types.REACTION:'TRIANGLE', 
+                   node_types.CATALYST_CONJUNCTION:'OCTAGON'}
+
+EDGE_COLOR_DICT = {edge_types.INHIBITOR:"#FF0000",
+                   edge_types.CATALYST:"#00FF00",
+                   edge_types.CATALYST_CONJUNCTION:"#00FF00",
+                   edge_types.REACTANT:"#000000",
+                   edge_types.PRODUCT:"#000000"}
+NODE_COLOR_DICT = {node_types.MOLECULE:'#d3d3d3', 
+                   node_types.REACTION:'#d3d3d3', 
+                   node_types.CATALYST_CONJUNCTION:'#d3d3d3'}
 
 def write(reaction_systems: list[ReactionSystem], 
           filename: str, output_format:str) -> None:
@@ -154,8 +173,8 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
     graph = nx.DiGraph(name=reaction_system.name)
     molecule_nodes = reaction_system.get_mentioned_molecules()
     molecule_nodes = [(node.name,
-                       {"graphics": {"NodeShape": "ELLIPSE",
-                                     "fill": "#FFFFFF"},
+                       {"graphics": {"NodeShape": NODE_SHAPE_DICT[node_types.MOLECULE],
+                                     "fill": NODE_COLOR_DICT[node_types.MOLECULE]},
                         "att": {"node_type": node_types.MOLECULE.value,
                                 "Food": False}})
                       for node in molecule_nodes]
@@ -163,8 +182,8 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
     for food in reaction_system.foods:
         graph.nodes[food.name]["att"]["Food"] = True
     reaction_nodes = [(reaction.name,
-                       {"graphics": {"NodeShape": "TRIANGLE",
-                                     "fill": "#000000"},
+                       {"graphics": {"NodeShape": NODE_SHAPE_DICT[node_types.REACTION],
+                                     "fill": NODE_COLOR_DICT[node_types.REACTION]},
                         "att": {"node_type": node_types.REACTION.value}})
                       for reaction in reaction_system.reactions]
     graph.add_nodes_from(reaction_nodes)
@@ -209,8 +228,8 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
                        edge_types.INHIBITOR)
         for catalyst in [cata.name for cata in reaction.get_catalyst_conjunctions()]:
             if "&" in catalyst:
-                catalyst_node = [(catalyst, {"graphics": {"NodeShape": "OCTAGON",
-                                                          "fill": "#FFFFFF"},
+                catalyst_node = [(catalyst, {"graphics": {"NodeShape": NODE_SHAPE_DICT[node_types.CATALYST_CONJUNCTION],
+                                                          "fill": NODE_COLOR_DICT[node_types.CATALYST_CONJUNCTION]},
                                              "att": {"node_type":
                                                      node_types.CATALYST_CONJUNCTION.value}})]
                 graph.add_nodes_from(catalyst_node)
@@ -224,6 +243,55 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
 
     return graph
 
+def print_graph(graph:nx.DiGraph) -> None:
+    
+    pos = nx.spring_layout(graph)
+    nodes = graph.nodes(data=True)
+    edges = graph.edges(data=True)
+    node_shape_dict = {'circle':[], 
+                       'triangle':[], 
+                       'hexagon':[]}
+    for node in nodes:
+        if node[1]['graphics']['NodeShape'] == 'ELLIPSE':
+            node_shape_dict["circle"].append(node[0])
+        elif node[1]['graphics']['NodeShape'] == 'TRIANGLE':
+            node_shape_dict["triangle"].append(node[0])
+        elif node[1]['graphics']['NodeShape'] == 'OCTAGON':
+            node_shape_dict["hexagon"].append(node[0])
+        else:
+            tqdm.write("Node: " + node[0] + "could not be recognized as molecule, reaction or catalyst conjunction")
+
+    for edge in edges:
+        if edge[2]['graphics']['ArrowShape'] == 'Arrow':
+            style = '->'
+        else:
+            style = '|-|'
+        try:
+            weight = edge[2]['weight']
+        except KeyError:
+            weight = 1
+        nx.draw_networkx_edges(graph, 
+                               pos, 
+                               edgelist=[edge],
+                               width = weight,
+                               edge_color=edge[2]['graphics']['color'],
+                               arrowstyle=style)
+    
+    nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["circle"], 
+                           node_color=NODE_COLOR_DICT[node_types.MOLECULE], node_shape='o')
+    nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["triangle"], 
+                           node_color=NODE_COLOR_DICT[node_types.REACTION], node_shape='^')
+    nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["hexagon"], 
+                           node_color=NODE_COLOR_DICT[node_types.CATALYST_CONJUNCTION], node_shape='h')
+    
+    nx.draw_networkx_labels(graph, pos)
+    
+    plt.show()
+    
+def print_rs_as_graph(reaction_system:ReactionSystem) -> None:
+    
+    graph = parse_rs_to_graph(reaction_system)
+    print_graph(graph)
 
 def parse_edge(graph: nx.DiGraph,
                u: str,

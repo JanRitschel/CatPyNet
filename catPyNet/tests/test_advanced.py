@@ -7,6 +7,7 @@ from fileIO.IOManager import OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS
 from settings.ReactionNotation import ReactionNotation, ArrowNotation
 import tools.CommandLineTool as clt
 import main.CatPyNet as cpn
+import fileIO.GraphIO as gio
 from algorithm.AlgorithmBase import AlgorithmBase
 from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
@@ -250,8 +251,9 @@ def test_one_algo(algo:AlgorithmBase):
 
 if __name__ == "__main__":
     
-    
-    tqdm.write(str(test_one_algo(MinIRAFHeuristic)))
+    reaction_system = cpn.parse_input_file(os.path.join(mypath, "inhibitions-1.crs"))
+    gio.print_rs_as_graph(reaction_system)
+    #tqdm.write(str(test_one_algo(MinIRAFHeuristic)))
     #run_everything()           
     
     
