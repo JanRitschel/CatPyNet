@@ -14,11 +14,11 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max caf",
-                "-i", "G:\\Github\\BA-Jan\\test_files\\inhibitions-1.crs",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\inhibitions-1.crs",
+                "-i", "G:\\Github\\BA-Jan\\test_results\\test_reactions.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\test_reactions_max_caf.crs",
                 "-of", ".crs",
-                "-an", "USES_MINUS",
-                "-rn", "SPARSE"
+                "-an", "USES_EQUALS",
+                "-rn", "TABBED"
             ]
         },
         {
@@ -29,9 +29,11 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "core raf",
-                "-i", "G:\\Github\\BA-Jan\\test_files\\example-0.crs",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
-                "-rn", "SPARSE",
+                "-i", "G:\\Github\\BA-Jan\\test_results\\test_reactions.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\test_reactions_core_raf.crs",
+                "-of", ".crs",
+                "-an", "USES_EQUALS",
+                "-rn", "TABBED",
                 "-ow", "True"
             ]
         },
@@ -43,11 +45,12 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "max raf",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
-                "-of", ".graphml",
-                "-rn", "SPARSE",
+                "-i", "G:\\Github\\BA-Jan\\test_files\\",
+                "-o", "G:\\Github\\BA-Jan\\test_results.crs",
+                "-of", ".crs",
                 "-an", "USES_EQUALS",
-                "-ow", "1"
+                "-rn", "TABBED",
+                "-ow", "True"
             ]
         },
         {
@@ -58,13 +61,13 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "iRAF",
-                "-i", "G:\\Github\\BA-Jan\\test_files\\example-9.crs",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
+                "-i", "G:\\Github\\BA-Jan\\test_results\\test_reactions.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\test_reactions_min_irr_raf.crs",
                 "-of", ".crs",
-                "-r", "1000",
-                "-rn", "SPARSE",
                 "-an", "USES_EQUALS",
-                "-ow", "1"
+                "-rn", "TABBED",
+                "-ow", "True",
+                "-r", "100"
             ]
         },
         {
@@ -75,14 +78,15 @@
             "console": "integratedTerminal",
             "args": [
                 "-c", "Min RAF Generating Element",
-                "-i", "G:\\Github\\BA-Jan\\test_files\\prokaryotic-network.crs",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\result4.crs",
+                "-c", "iRAF",
+                "-i", "G:\\Github\\BA-Jan\\test_results\\test_reactions.crs",
+                "-o", "G:\\Github\\BA-Jan\\test_results\\test_reactions_min_raf_gen.crs",
                 "-of", ".crs",
-                "-r", "100",
-                "-rn", "SPARSE",
                 "-an", "USES_EQUALS",
-                "-t", "C00004",
-                "-ow", "1"
+                "-rn", "TABBED",
+                "-ow", "True",
+                "-t", "C00041",
+                "-r", "100"
             ]
         },
         {
@@ -97,40 +101,8 @@
                 "-n", "6-8/2",
                 "-m", "1.0,2.0",
                 "-r", "1",
-                "-o", "G:\\Github\\BA-Jan\\test_results\\poly_test",
                 "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
                 "-rn", "TABBED"
-            ]
-        },
-        {
-            "name": "version: Current File with Arguments",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "args": [
-                "--version",
-            ]
-        },
-        {
-            "name": "license: Current File with Arguments",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "args": [
-                "--license"
-            ]
-        },
-        {
-            "name": "author: Current File with Arguments",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "args": [
-
-                "--authors"
             ]
         }
     ]

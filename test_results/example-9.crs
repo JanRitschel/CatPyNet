@@ -1,0 +1,7 @@
+Food: f1 f2 f3 f4 f5
+
+r1	f1 + f2 => a	[g]
+r2	a + f3 => b	[c]
+r3	b + f4 => c	[a]
+r4	c + f5 => a + g	[b]
+

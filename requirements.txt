@@ -1,2 +1,7 @@
 nose
 sphinx
+networkx
+matplotlib
+scipy
+tqdm
+hypothesis

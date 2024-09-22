@@ -1,0 +1,20 @@
+Food: a aa b bb
+
+r01	a + baa <=> baaa	[aa,aabaabbb]
+r02	aaba + ab <=> aabaab	[baaa]
+r03	aa + ba <=> aaba	[a]
+r04	aa + aabaa <=> aaaabaa	[aaba]
+r05	a + aaba <=> aabaa	[baa]
+r06	baa + bab <=> baabab	[aabaa,ba]
+r07	a + ba <=> baa	[baab]
+r08	baa + bb <=> baabb	[b]
+r09	baabb + bab <=> baabbbab	[abb]
+r10	b + bab <=> babb	[baabbbab]
+r11	b + ba <=> bab	[bb]
+r12	a + b <=> ba	[ab]
+r13	a + b <=> ab	[a]
+r14	a + bb <=> abb	[ab,b]
+r15	ab + ba <=> baab	[abb]
+r16	ab <=> abab	[aabaabbb]
+r17	aabaab + bb <=> aabaabbb	[baab]
+

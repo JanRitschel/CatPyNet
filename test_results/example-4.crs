@@ -1,0 +1,12 @@
+Food: f
+
+r1	f => t1	[t2,t3,t4,t5,t8]
+r2	f => t2	[t2,t8]
+r3	f => t3	[t5,t7]
+r4	f => t4	[t1,t7]
+r5	f => t5	[t3,t5,t7]
+r6	f => t6	[t2,t8]
+r7	f => t7	[t3,t4,t5,t8]
+r8	f => t8	[t2,t6,t8]
+r9	f => t9	[t2,t5]
+

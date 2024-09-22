@@ -30,7 +30,7 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
                        zipped:bool = False, 
                        reaction_notation:str = ReactionNotation.FULL,
                        arrow_notation:str = ArrowNotation.USES_EQUALS,
-                       algorithm:AlgorithmBase|None = None):
+                       algorithm:AlgorithmBase|None = None) -> None:
     """Processes the inputs and redirects data to appropriate file writer.
 
     Args:

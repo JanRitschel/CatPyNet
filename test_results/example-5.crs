@@ -1,0 +1,19 @@
+Food: f1 f2
+
+r11	f1 + f2 => AA	[UA,UC,UG,UU]
+r12	f1 + f2 => AC	[GA,GC,GG,GU]
+r13	f1 + f2 => AG	[CA,CC,CG,CU]
+r14	f1 + f2 => AU	[AA,AC,AG,AU]
+r21	f1 + f2 => CA	[UA,UC,UG,UU]
+r22	f1 + f2 => CC	[GA,GC,GG,GU]
+r23	f1 + f2 => CG	[CA,CC,CG,CU]
+r24	f1 + f2 => CU	[AA,AC,AG,AU]
+r31	f1 + f2 => GA	[UA,UC,UG,UU]
+r32	f1 + f2 => GC	[GA,GC,GG,GU]
+r33	f1 + f2 => GG	[CA,CC,CG,CU]
+r34	f1 + f2 => GU	[AA,AC,AG,AU]
+r41	f1 + f2 => UA	[UA,UC,UG,UU]
+r42	f1 + f2 => UC	[GA,GC,GG,GU]
+r43	f1 + f2 => UG	[CA,CC,CG,CU]
+r44	f1 + f2 => UU	[AA,AC,AG,AU]
+

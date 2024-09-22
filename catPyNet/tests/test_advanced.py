@@ -165,7 +165,7 @@ def run_everything():
                             
                             output_path = os.path.join(respath, output_addition)
                             
-                            cpn.apply_to_directory(algo,
+                            cpn.apply_algorithm_to_directory(algo,
                                                 mypath,
                                                 output_path,
                                                 zipped,
@@ -192,7 +192,7 @@ def test_one_algo(algo:AlgorithmBase):
                 
                 output_path = os.path.join(respath, output_addition)
                 
-                output_systems = cpn.apply_to_directory(algo,
+                output_systems = cpn.apply_algorithm_to_directory(algo,
                                     mypath,
                                     output_path,
                                     output_format=output_format,
@@ -251,7 +251,7 @@ def test_one_algo(algo:AlgorithmBase):
 
 if __name__ == "__main__":
     
-    reaction_system = cpn.parse_input_file(os.path.join(mypath, "inhibitions-1.crs"))
+    reaction_system = cpn.parse_input_file_to_rs(os.path.join(mypath, "inhibitions-1.crs"))
     gio.print_rs_as_graph(reaction_system)
     #tqdm.write(str(test_one_algo(MinIRAFHeuristic)))
     #run_everything()           
