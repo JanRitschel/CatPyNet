@@ -1,6 +1,21 @@
 CHANGES
 =======
 
+0.9.1
+-----
+
+* Update python-package.yml
+* Update python-package.yml
+* Update python-package.yml
+* Create python-package.yml
+* Update setup.cfg
+* Create LICENSE
+* intermediate step, autoimport added, extra tests
+* added licenses, some docstrings, minor fixes
+* Added graph drawing
+* added MinRAFGenerating Element
+* debugging MiniRaf, ADDING CAT\_CON AS PROPERTY
+* First Upload and new file structure
 * further cleanup
 * cleaned version
 * removed reference
