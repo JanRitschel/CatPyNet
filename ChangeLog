@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+* updated readme further
+* Update setup.cfg
+* formality
+* explicit inclusion of readme
 * further readme drama
 * minor dist changes
 * git upload update changed to linux

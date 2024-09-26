@@ -39,5 +39,5 @@ if __name__ == "__main__":
         products = ut.add_all_mentioned_products(max_raf.foods, max_raf.reactions)
         products.difference_update(max_raf.foods)
         #for product in products:
-        tqdm.write(algorithm + str((len(products))))
+        #tqdm.write(algorithm + str((len(products))))
         tqdm.write(algorithm + str((len(max_raf.reactions))))
