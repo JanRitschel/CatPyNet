@@ -39,5 +39,5 @@ class MoleculeType:
     def __hash__(self) -> int:
         return hash(self.name)
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         return self.name

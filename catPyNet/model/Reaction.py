@@ -3,25 +3,6 @@ from model.MoleculeType import MoleculeType
 from copy import copy, deepcopy
 from model.DisjunctiveNormalForm import compute
 from tqdm import tqdm
-'''
- * Reaction.java Copyright (C) 2022 Daniel H. Huson
- *
- * (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- '''
-
 import re
 import sys
 import os
@@ -44,22 +25,25 @@ class Reaction:
         self._catalysts = value
         buffer = self.get_catalyst_conjunctions()
         self._catalyst_conjunctions = buffer """
-    
+
     def __deepcopy__(self, memo) -> Reaction:
         id_self = id(self)
         _copy = memo.get(id_self)
         if _copy == None:
-            _copy = Reaction(deepcopy(self.name, memo), 
-                             warned_about_suppressing_coefficients=deepcopy(self.warned_about_suppressing_coefficients, memo),
-                             reactants=deepcopy(self.reactants, memo), 
+            _copy = Reaction(deepcopy(self.name, memo),
+                             warned_about_suppressing_coefficients=deepcopy(
+                                 self.warned_about_suppressing_coefficients, memo),
+                             reactants=deepcopy(self.reactants, memo),
                              products=deepcopy(
-                                 self.products, memo), 
+                                 self.products, memo),
                              catalysts=deepcopy(self.catalysts, memo),
-                             catalyst_conjunctions = deepcopy(self.catalyst_conjunctions),
-                             inhibitions=deepcopy(self.inhibitions, memo), 
+                             catalyst_conjunctions=deepcopy(
+                                 self.catalyst_conjunctions),
+                             inhibitions=deepcopy(self.inhibitions, memo),
                              reactant_coefficients=deepcopy(
                                  self.reactant_coefficients, memo),
-                             product_coefficients=deepcopy(self.product_coefficients, memo), 
+                             product_coefficients=deepcopy(
+                                 self.product_coefficients, memo),
                              direction=deepcopy(self.direction, memo))
             memo[id_self] = _copy
         return _copy
@@ -88,11 +72,15 @@ class Reaction:
         self.warned_about_suppressing_coefficients = False if "warned_about_suppressing_coefficients" not in kwargs else kwargs[
             "warned_about_suppressing_coefficients"]
         self.name = name
-        self.reactants: set[MoleculeType] = set() if "reactants" not in kwargs else kwargs["reactants"]
-        self.products: set[MoleculeType] = set() if "products" not in kwargs else kwargs["products"]
+        self.reactants: set[MoleculeType] = set(
+        ) if "reactants" not in kwargs else kwargs["reactants"]
+        self.products: set[MoleculeType] = set(
+        ) if "products" not in kwargs else kwargs["products"]
         self.catalysts: str = "" if "catalysts" not in kwargs else kwargs["catalysts"]
-        self.catalyst_conjunctions: set[MoleculeType] = set() if "catalyst_conjunctions" not in kwargs else kwargs["catalyst_conjunctions"]
-        self.inhibitions: set[MoleculeType] = set() if "inhibitions" not in kwargs else kwargs["inhibitions"]
+        self.catalyst_conjunctions: set[MoleculeType] = set(
+        ) if "catalyst_conjunctions" not in kwargs else kwargs["catalyst_conjunctions"]
+        self.inhibitions: set[MoleculeType] = set(
+        ) if "inhibitions" not in kwargs else kwargs["inhibitions"]
         self.reactant_coefficients = {
         } if "reactant_coefficients" not in kwargs else kwargs["reactant_coefficients"]
         self.product_coefficients = {
@@ -127,9 +115,12 @@ class Reaction:
                     and (len(self.inhibitions) == 0
                          or food_set.isdisjoint(self.inhibitions)))
         else:
-            reactant_set = set() if not "food_for_reactants" in kwargs else kwargs["food_for_reactants"]
-            catalyst_set = set() if not "food_for_catalysts" in kwargs else kwargs["food_for_catalysts"]
-            inhibition_set = set() if not "food_for_inhibitions" in kwargs else kwargs["food_for_inhibitions"]
+            reactant_set = set(
+            ) if not "food_for_reactants" in kwargs else kwargs["food_for_reactants"]
+            catalyst_set = set(
+            ) if not "food_for_catalysts" in kwargs else kwargs["food_for_catalysts"]
+            inhibition_set = set(
+            ) if not "food_for_inhibitions" in kwargs else kwargs["food_for_inhibitions"]
             return ((direction in {"forward", "both"} and self.reactants.issubset(reactant_set)
                      or direction in {"reverse", "both"} and self.products.issubset(reactant_set))
                     and (len(self.catalysts) == 0
@@ -147,21 +138,21 @@ class Reaction:
         if not (isinstance(other, Reaction)):
             return False
         if self.name != other.name:
-            return False  
+            return False
         if self.reactants != other.reactants:
-            return False  
+            return False
         if self.products != other.products:
-            return False  
+            return False
         if self.catalysts != other.catalysts:
-            return False  
+            return False
         if self.inhibitions != other.inhibitions:
-            return False  
+            return False
         if self.reactant_coefficients != other.reactant_coefficients:
-            return False  
+            return False
         if self.product_coefficients != other.product_coefficients:
-            return False 
+            return False
         if self.direction != other.direction:
-            return False 
+            return False
 
         return True
 
@@ -287,23 +278,24 @@ class Reaction:
                                 cache[0].replace(".", "", 1)
                                     .replace(",", "", 1).isdigit()):
                                 token_dict[side[:-1] +
-                                        "_coefficients"].update({cache[1]:cache[0]})
+                                           "_coefficients"].update({cache[1]: cache[0]})
                                 r = cache[1]
                             elif (cache[1].isnumeric() or
-                                cache[1].replace(".", "", 1)
-                                .replace(",", "", 1).isdigit()):
+                                  cache[1].replace(".", "", 1)
+                                  .replace(",", "", 1).isdigit()):
                                 token_dict[side[:-1] +
-                                        "_coefficients"].append({cache[0]:cache[1]})
+                                           "_coefficients"].append({cache[0]: cache[1]})
                                 r = cache[0]
                             else:
                                 tqdm.write("There was an unexpected whitespace in reaction: " +
-                                        token_dict["r_name"] + " in reactant " +
-                                        r)
+                                           token_dict["r_name"] + " in reactant " +
+                                           r)
                     else:
                         numeric_buffer[1] = (r.isnumeric() or r.replace(".", "", 1)
                                              .replace(",", "", 1).isdigit())
                         if numeric_buffer[0] and not numeric_buffer[1]:
-                            token_dict[side[:-1] + "_coefficients"].update({r:token_dict[side][i-1]})
+                            token_dict[side[:-1] +
+                                       "_coefficients"].update({r: token_dict[side][i-1]})
                             remove_list.append(i-1)
                         numeric_buffer[0] = numeric_buffer[1]
                 else:
@@ -315,7 +307,7 @@ class Reaction:
                                        + "\nThe first issue occured at reaction: \n"
                                        + token_dict["r_name"] + " in molecule " + r)
                         r = r.split()[1]
-                        
+
                 token_dict[side][i] = r
             for index in reversed(remove_list):
                 token_dict[side].pop(index)
@@ -363,7 +355,8 @@ class Reaction:
         toplevel_conjuncitons = self.get_catalyst_conjunctions()
         all_elements = set()
         for conjunction in toplevel_conjuncitons:
-            all_elements.update(MoleculeType().values_of(conjunction.name.split("&")))
+            all_elements.update(MoleculeType().values_of(
+                conjunction.name.split("&")))
         return all_elements
 
     def any_as_forward(self) -> list[Reaction]:

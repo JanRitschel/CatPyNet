@@ -21,7 +21,8 @@ def main():
     
 #    parser.add_argument("--version", action="version", version='%(prog)s ' + __version__)
     parser.add_argument("-c", metavar="compute", required=True,
-                        help="The computation to perform", choices=cpn.ALL_ALGORITHMS)
+                        help="The computation to perform from: " + str(cpn.ALL_ALGORITHMS), 
+                        choices=cpn.ALL_ALGORITHMS)
     parser.add_argument("-i", metavar="input",
                         help="Input file (stdin ok)", default="stdin")
     parser.add_argument("-o", metavar='output_file',

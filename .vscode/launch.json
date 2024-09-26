@@ -18,7 +18,8 @@
                 "-o", "G:\\Github\\BA-Jan\\test_results\\test_reactions_max_caf.crs",
                 "-of", ".crs",
                 "-an", "USES_EQUALS",
-                "-rn", "TABBED"
+                "-rn", "TABBED",
+                "-ow", "True"
             ]
         },
         {
@@ -96,10 +97,10 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-a", "7-8",
-                "-k", "1-3",
-                "-n", "6-8/2",
-                "-m", "1.0,2.0",
+                "-a", "2",
+                "-k", "2",
+                "-n", "3",
+                "-m", "1.0",
                 "-r", "1",
                 "-f", "pm_a#a_k#k_n#n_m#m_r#r.crs",
                 "-rn", "TABBED"

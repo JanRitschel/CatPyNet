@@ -5,24 +5,6 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '.')))
-'''
- * ReactionSystem.java Copyright (C) 2022 Daniel H. Huson
- *
- * (Some files contain contributions from other authors, who are then mentioned separately.)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- '''
 
 
 class ReactionSystem:
@@ -43,7 +25,8 @@ class ReactionSystem:
         self.name: str = name
         self.reactions: list[Reaction] = [
         ] if "reactions" not in kwargs else kwargs["reactions"]
-        self.foods: set[MoleculeType] = set() if "foods" not in kwargs else kwargs["foods"]
+        self.foods: set[MoleculeType] = set(
+        ) if "foods" not in kwargs else kwargs["foods"]
         self.inhibitors_present: bool = False
         self.size: int
         self.food_size: int
@@ -178,7 +161,7 @@ class ReactionSystem:
 
     def __eq__(self, other: ReactionSystem) -> bool:
         if hash(self) == hash(other):
-            return True 
+            return True
         if not (isinstance(other, ReactionSystem)):
             return False
         return (self.foods == other.foods

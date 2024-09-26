@@ -97,7 +97,7 @@ def next_outside_or(expression: str, start_pos: int) -> int:
     Returns:
         start_pos (int): position of next ','
         -1 (int): if ',' is not found at bracket-level
-    """    
+    """
     end_pos = len(expression)-1
     inside_brackets_depth = 0
     while start_pos <= end_pos:

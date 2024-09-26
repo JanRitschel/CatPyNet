@@ -64,18 +64,18 @@ class AlgorithmBase:
         return names of all known algorithms
         '''
         list = []
-        try:
-            from algorithm.MaxPseudoRAFAlgorithm import MaxPseudoRAFAlgorithm
-            from algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
-            from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
-            from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-            from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-            from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
-        except:
-            pass
-        for algorithm in AlgorithmBase.__subclasses__():
-            list.append(algorithm.NAME)
+        path = os.path.dirname(os.path.abspath(__file__))
 
+        for py in [f[:-3] for f in os.listdir(path) if f.endswith('.py') and f != '__init__.py' and f != "AlgorithmBase.py"]:
+            parent_name = '.'.join(__name__.split('.')[:-1])
+            mod = __import__('.'.join([parent_name, py]), fromlist=[py])
+            classes = [getattr(mod, x) for x in dir(mod) if isinstance(getattr(mod, x), type)]
+            for cls in classes:
+                setattr(sys.modules[__name__], cls.__name__, cls)
+        for algorithm in AlgorithmBase.__subclasses__():
+            print(algorithm.NAME)
+            list.append(algorithm.NAME)
+        print(list)
         return set(list)
 
     def get_algorithm_by_name(name: str) -> AlgorithmBase | None:

@@ -54,16 +54,23 @@ def redirect_to_writer(output_systems:list[ReactionSystem],
         output_path = os.path.join(output_directory, output_file)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    if all(output_systems):
-        if not any([rs.reactions for rs in output_systems]):
-            tqdm.write("The resulting reaction systems have no reactions.\n"
-                       + "No " + algorithm.NAME)
+    error_str = "The resulting reaction systems have no reactions.\n"
+    if algorithm:
+        error_str += "No " + algorithm.NAME
+    if isinstance(output_systems, list):
+        if all(output_systems):
+            if not any([rs.reactions for rs in output_systems]):
+                tqdm.write(error_str)
+                return
+        if not any(output_systems):
+            tqdm.write(error_str)
             return
-    if not any(output_systems):
-        tqdm.write("The resulting reaction systems have no reactions.\n"
-                       + "No " + algorithm.NAME)
-        return
-    
+    else:
+        output_systems = [output_systems]
+        if not any([rs.reactions for rs in output_systems]):
+            tqdm.write(error_str)
+            return
+        
     if output_format in SUPPORTED_GRAPH_OUTPUT_FILE_FORMATS:
         write(output_systems, output_path, output_format)
     elif output_format == ".crs":
