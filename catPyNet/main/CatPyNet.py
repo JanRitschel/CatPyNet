@@ -62,12 +62,12 @@ def parse_input_file_to_rs(file_name: str) -> ReactionSystem:
             " two-way)" if res_reactiosystem.number_of_two_way_reactions > 0 else ""
         output_str = ("Read " + str(res_reactiosystem.size) + " reactions " +
                       twr_str + " and " + str(res_reactiosystem.food_size) +
-                      " food items from file: " + file_name)
+                      " food items from file: " + file_name + "\n")
         if not leading_comments == "":
             output_str += "\n Comments:\n" + str(leading_comments)
         res_reactiosystem.update_inhibitors_present()
-        if res_reactiosystem.inhibitors_present:
-            output_str += "Input catalytic reaction system contains inhibitions. These are ignored in the computation of maxCAF, maxRAF and maxPseudoRAF"
+        """ if res_reactiosystem.inhibitors_present:
+            output_str += "Input catalytic reaction system contains inhibitions. These are ignored in the computation of maxCAF, maxRAF and maxPseudoRAF" """
 
         tqdm.write(output_str)
 

@@ -1,3 +1,5 @@
+#Example taken from CatReNet at https://github.com/husonlab/catrenet
+
 Food: 0, 1, 00, 01, 10, 11
 
 r1 : 0 + 10 [01100] => 100

@@ -1,0 +1,4 @@
+Food: food_1, food_2
+
+r1 : food_1 + food_2 [cat_1] => inh_1
+r2 : food_1 + food_2 [cat_1] {inh_1} => cat_1

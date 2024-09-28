@@ -2,12 +2,13 @@ from __future__ import annotations
 import sys
 import os
 sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '.')))
+    os.path.join(os.path.dirname(__file__), '..')))
 from model.ReactionSystem import ReactionSystem
 from enum import StrEnum
 from tqdm import tqdm
 import networkx as nx
 import matplotlib.pyplot as plt
+import math
 
 
 
@@ -43,9 +44,9 @@ EDGE_COLOR_DICT = {edge_types.INHIBITOR:"#FF0000",
                    edge_types.CATALYST_CONJUNCTION:"#00FF00",
                    edge_types.REACTANT:"#000000",
                    edge_types.PRODUCT:"#000000"}
-NODE_COLOR_DICT = {node_types.MOLECULE:'#d3d3d3', 
-                   node_types.REACTION:'#d3d3d3', 
-                   node_types.CATALYST_CONJUNCTION:'#d3d3d3'}
+NODE_COLOR_DICT = {node_types.MOLECULE:'#702963', 
+                   node_types.REACTION:'#FFC300', 
+                   node_types.CATALYST_CONJUNCTION:'#FFC300'}
 
 def write(reaction_systems: list[ReactionSystem], 
           filename: str, output_format:str) -> None:
@@ -245,9 +246,15 @@ def parse_rs_to_graph(reaction_system: ReactionSystem) -> nx.DiGraph:
 
 def print_graph(graph:nx.DiGraph) -> None:
     
-    pos = nx.spring_layout(graph)
+    if not graph.nodes:
+        tqdm.write("Graph cannot be printed as it is empty")
+        return
+    
     nodes = graph.nodes(data=True)
     edges = graph.edges(data=True)
+    max_iter = int(math.trunc(200/math.sqrt(len(nodes))))
+    if max_iter == 0: max_iter = 1
+    pos = nx.spring_layout(graph, 2, iterations=max_iter)
     node_shape_dict = {'circle':[], 
                        'triangle':[], 
                        'hexagon':[]}
@@ -275,14 +282,15 @@ def print_graph(graph:nx.DiGraph) -> None:
                                edgelist=[edge],
                                width = weight,
                                edge_color=edge[2]['graphics']['color'],
-                               arrowstyle=style)
+                               arrowstyle=style,
+                               connectionstyle='arc3, rad = 0.1')
     
     nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["circle"], 
-                           node_color=NODE_COLOR_DICT[node_types.MOLECULE], node_shape='o')
+                           node_color=NODE_COLOR_DICT[node_types.MOLECULE], node_shape='o', edgecolors='black')
     nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["triangle"], 
-                           node_color=NODE_COLOR_DICT[node_types.REACTION], node_shape='^')
+                           node_color=NODE_COLOR_DICT[node_types.REACTION], node_shape='^', edgecolors='black')
     nx.draw_networkx_nodes(graph, pos, nodelist=node_shape_dict["hexagon"], 
-                           node_color=NODE_COLOR_DICT[node_types.CATALYST_CONJUNCTION], node_shape='h')
+                           node_color=NODE_COLOR_DICT[node_types.CATALYST_CONJUNCTION], node_shape='h', edgecolors='black')
     
     nx.draw_networkx_labels(graph, pos)
     

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from model.ReactionSystem import ReactionSystem
+from catpynet.model.ReactionSystem import ReactionSystem
 '''
   AlgorithmBase.java Copyright (C) 2022 Daniel H. Huson
  
@@ -21,7 +21,7 @@ from model.ReactionSystem import ReactionSystem
 import sys
 import os
 sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '.')))
+    os.path.join(os.path.dirname(__file__), '..')))
 
 
 class AlgorithmBase:
@@ -73,9 +73,7 @@ class AlgorithmBase:
             for cls in classes:
                 setattr(sys.modules[__name__], cls.__name__, cls)
         for algorithm in AlgorithmBase.__subclasses__():
-            print(algorithm.NAME)
             list.append(algorithm.NAME)
-        print(list)
         return set(list)
 
     def get_algorithm_by_name(name: str) -> AlgorithmBase | None:

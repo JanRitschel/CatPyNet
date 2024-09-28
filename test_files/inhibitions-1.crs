@@ -1,3 +1,5 @@
+#Example taken from CatReNet at https://github.com/husonlab/catrenet
+
 Food: a, b, c, d, x, z
 
 r1 : a + b [x] => y

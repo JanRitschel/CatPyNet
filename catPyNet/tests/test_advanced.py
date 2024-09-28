@@ -11,8 +11,6 @@ import fileIO.GraphIO as gio
 from algorithm.AlgorithmBase import AlgorithmBase
 from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from algorithm.MaxCAFAlgorithm import MaxCAFAlgorithm
-from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
 from algorithm.MaxPseudoRAFAlgorithm import MaxPseudoRAFAlgorithm
 from os import listdir
 from os.path import isfile, join
@@ -251,10 +249,18 @@ def test_one_algo(algo:AlgorithmBase):
 
 if __name__ == "__main__":
     
-    reaction_system = cpn.parse_input_file_to_rs(os.path.join(mypath, "inhibitions-1.crs"))
-    gio.print_rs_as_graph(reaction_system)
+    reaction_system = cpn.parse_input_file_to_rs(os.path.join(mypath, "vis-2.crs"))
+    max_raf = cpn.apply_algorithm_to_rs(reaction_system, MaxRAFAlgorithm())
+    max_caf = cpn.apply_algorithm_to_rs(reaction_system, MaxCAFAlgorithm())
+    max_praf = cpn.apply_algorithm_to_rs(reaction_system, MaxPseudoRAFAlgorithm())
+    tqdm.write('max RAF: ')
+    gio.print_rs_as_graph(max_raf)
+    tqdm.write('max CAF: ')
+    gio.print_rs_as_graph(max_caf)
+    tqdm.write('max pRAF: ')
+    gio.print_rs_as_graph(max_praf)
     #tqdm.write(str(test_one_algo(MinIRAFHeuristic)))
-    #run_everything()           
+    run_everything()           
     
     
     

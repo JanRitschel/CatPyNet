@@ -105,10 +105,10 @@ def compare_files():
     cpn.export_rs_to_output_file(sys_1, "G:\\Github\\BA-Jan\\test_results\e_coli_rs_shared.crs")
     
 if __name__ == "__main__":
-    """ import requests
+    import requests
     enzyme = '5.3.1.1'
-    enz_url = f'https://rest.kegg.jp/get/{enzyme}'
+    enz_url = f'https://rest.kegg.jp/link/reaction/eco'
     response = requests.get(enz_url)
-    print(response.text) """
+    print(response.status_code)
     #get_org(pathway_code= 'eco01100', org_code='eco', output_path="G:\\Github\\BA-Jan\\test_results\e_coli_rs.crs")
-    compare_files()
+    #compare_files()
