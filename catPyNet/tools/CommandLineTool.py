@@ -3,13 +3,12 @@ import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
-from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
-from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
+from catpynet.fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
+from catpynet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from catpynet.algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
 from tqdm import tqdm
-import main.CatPyNet as cpn
+import catpynet.main.CatPyNet as cpn
 import argparse
-import importlib.metadata
 
 
 #__version__ = importlib.metadata.version('catPyNet')

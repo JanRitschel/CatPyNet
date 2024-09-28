@@ -1,6 +1,6 @@
 from __future__ import annotations
-from model.MoleculeType import MoleculeType
-from model.Reaction import Reaction
+from catpynet.model.MoleculeType import MoleculeType
+from catpynet.model.Reaction import Reaction
 import sys
 import os
 sys.path.insert(0, os.path.abspath(

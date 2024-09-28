@@ -1,7 +1,7 @@
 from __future__ import annotations
-from model.MoleculeType import MoleculeType
+from catpynet.model.MoleculeType import MoleculeType
 from copy import copy, deepcopy
-from model.DisjunctiveNormalForm import compute
+from catpynet.model.DisjunctiveNormalForm import compute
 from tqdm import tqdm
 import re
 import sys

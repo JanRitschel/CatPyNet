@@ -1,7 +1,7 @@
 from __future__ import annotations
 from enum import StrEnum
 
-from .ArrowNotation import ArrowNotation
+from catpynet.settings.ArrowNotation import ArrowNotation
 
 
 class ReactionNotation(StrEnum):

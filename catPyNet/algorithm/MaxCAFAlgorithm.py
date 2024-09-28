@@ -1,6 +1,6 @@
 from __future__ import annotations
-from algorithm.AlgorithmBase import AlgorithmBase
-from model.ReactionSystem import ReactionSystem
+from catpynet.algorithm.AlgorithmBase import AlgorithmBase
+from catpynet.model.ReactionSystem import ReactionSystem
 import Utilities as Utilities
 
 import sys

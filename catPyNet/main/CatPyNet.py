@@ -2,14 +2,14 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
-from model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
-from settings.ReactionNotation import ReactionNotation
-from settings.ArrowNotation import ArrowNotation
-from fileIO.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
-from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
-from algorithm.AlgorithmBase import AlgorithmBase
-import Utilities as Utilities
+from catpynet.model.ReactionSystem import ReactionSystem, MoleculeType, Reaction
+from catpynet.settings.ReactionNotation import ReactionNotation
+from catpynet.settings.ArrowNotation import ArrowNotation
+from catpynet.fileIO.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
+from catpynet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from catpynet.algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
+from catpynet.algorithm.AlgorithmBase import AlgorithmBase
+import catpynet.Utilities as Utilities
 from itertools import combinations_with_replacement
 import shutil
 import random

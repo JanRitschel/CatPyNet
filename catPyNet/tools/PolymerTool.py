@@ -4,10 +4,10 @@ sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
 
 from tqdm import tqdm
-import main.CatPyNet as cpn
+import catpynet.main.CatPyNet as cpn
 import argparse
-from fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
-import Utilities as Ut
+from catpynet.fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
+import catpynet.Utilities as Ut
 
 
 

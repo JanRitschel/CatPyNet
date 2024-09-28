@@ -2,12 +2,12 @@ from __future__ import annotations
 from tqdm import tqdm
 import random
 import copy
-from algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
-from algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
-from algorithm.AlgorithmBase import AlgorithmBase
-from model.ReactionSystem import ReactionSystem, MoleculeType
-from model.Reaction import Reaction, FORMAL_FOOD
+from catpynet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
+from catpynet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
+from catpynet.algorithm.CoreRAFAlgorithm import CoreRAFAlgorithm
+from catpynet.algorithm.AlgorithmBase import AlgorithmBase
+from catpynet.model.ReactionSystem import ReactionSystem, MoleculeType
+from catpynet.model.Reaction import Reaction, FORMAL_FOOD
 from time import time
 
 import sys

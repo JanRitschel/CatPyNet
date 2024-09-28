@@ -1,7 +1,7 @@
 from __future__ import annotations
-from algorithm.AlgorithmBase import AlgorithmBase
-from model.ReactionSystem import ReactionSystem
-import Utilities as Utilities
+from catpynet.algorithm.AlgorithmBase import AlgorithmBase
+from catpynet.model.ReactionSystem import ReactionSystem
+import catpynet.Utilities as Utilities
 from tqdm import tqdm
 import sys
 import os
