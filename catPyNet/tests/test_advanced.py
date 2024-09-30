@@ -260,7 +260,7 @@ if __name__ == "__main__":
     tqdm.write('max pRAF: ')
     gio.print_rs_as_graph(max_praf)
     #tqdm.write(str(test_one_algo(MinIRAFHeuristic)))
-    run_everything()           
+    #run_everything()           
     
     
     
@@ -285,5 +285,3 @@ if __name__ == "__main__":
             for i in range(1, len(sys.argv)):
                 del sys.argv[1]
             gc.collect() """
-    
-    print([[chr(v) for v in range(ord("a"), ord("a") + 26)]])

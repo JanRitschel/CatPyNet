@@ -247,7 +247,7 @@ class ReactionTests(unittest.TestCase):
            products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
            reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
            direction = st.integers(0, 2), tabbed = st.booleans())
-    def parser(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+    def test_parser(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
                               , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
                               direction:int, tabbed:bool):
         """doesnt test for and in catalysts"""
@@ -309,7 +309,7 @@ class ReactionTests(unittest.TestCase):
         
         self.assertEqual(test_obj,result)
             
-    def dnf(self):
+    def test_dnf(self):
         
         data_str = ["AB,CD&EF&GH,IJ", "AB,(CD&EF)&GH,IJ", "AB,(CD,EF)&GH,IJ", "(AB,CD)&(EF,GH),IJ"]
         dummy_res_str = [{"AB","CD&EF&GH","IJ"}, {"AB","CD&EF&GH","IJ"}, {"AB","CD&GH","EF&GH","IJ"}, {"AB&EF","AB&GH","CD&EF","CD&GH","IJ"}]
@@ -375,7 +375,7 @@ class ReactionSystemTests(unittest.TestCase):
            rs_name=standard_text(),
            outside_foods = standard_list(standard_text()))  
     @settings(max_examples=20)
-    def test_mentioned_foods(self,reaction_names:list[str], warned:list[bool], reactants:list[list[str]], products:list[list[str]], catalysts:list[list[str]]
+    def mentioned_foods(self,reaction_names:list[str], warned:list[bool], reactants:list[list[str]], products:list[list[str]], catalysts:list[list[str]]
                               , inhibitors:list[list[str]], reaction_coefficients:list[list[int]], product_coefficients:list[list[int]],
                               direction:list[int], foods:list[str], rs_name:str, outside_foods:list[str]):
         test_obj = self.basic_to_Reactionsystem(reaction_names, warned, reactants, products, catalysts, inhibitors, reaction_coefficients, product_coefficients, direction, foods, rs_name)

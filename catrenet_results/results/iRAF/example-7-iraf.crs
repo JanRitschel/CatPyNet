@@ -1,3 +1,0 @@
-Food: a b c d
-
-r1 : a + b [c,d,e&f] => d
