@@ -5,7 +5,6 @@ import copy
 from catpynet.algorithm.MaxRAFAlgorithm import MaxRAFAlgorithm
 from catpynet.algorithm.AlgorithmBase import AlgorithmBase
 from catpynet.model.ReactionSystem import ReactionSystem
-from time import time
 
 import sys
 import os
@@ -75,7 +74,6 @@ class MinIRAFHeuristic(AlgorithmBase):
 
         for seed in tqdm(seeds, desc="MinIRafHeuristic seeds: "):
             
-            start_time = time()
             work_system = ReactionSystem(self.name)
             work_system.reactions = max_raf.reactions.copy()
             work_system.foods.update(max_raf.foods)
@@ -87,8 +85,6 @@ class MinIRAFHeuristic(AlgorithmBase):
                 except: pass
                 next = MaxRAFAlgorithm().apply(work_system)
                 next.name = self.name
-                tqdm.write("reactions run: " + str(time() -start_time))
-                start_time = time()
                 if next.size > 0 and next.size <= work_system.size:
                     work_system = next
                     if next.size < best_size:

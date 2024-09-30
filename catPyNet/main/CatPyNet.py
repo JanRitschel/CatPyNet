@@ -115,7 +115,8 @@ def apply_algorithm_to_rs(input_system: ReactionSystem,
 
     Returns:
         ReactioSystem: autocatalytic ReactionSystem of given algorithm
-    """    
+    """
+    st = time()   
     if isinstance(algorithm, MinIRAFHeuristic):
         algorithm.number_of_random_insertion_orders = heuristic_runs
         output_system = algorithm.apply(input_system)
@@ -125,7 +126,7 @@ def apply_algorithm_to_rs(input_system: ReactionSystem,
         output_system = algorithm.apply(input_system)
     else:
         output_system = algorithm.apply(input_system)
-
+    tqdm.write('Total time spent on ' + algorithm.name + ': ' + str(time()-st))
     return output_system
 
 
