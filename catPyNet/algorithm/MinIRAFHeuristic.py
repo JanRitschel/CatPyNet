@@ -64,7 +64,9 @@ class MinIRAFHeuristic(AlgorithmBase):
         
         max_raf = MaxRAFAlgorithm().apply(input)
         
-        if self.number_of_random_insertion_orders == None:
+        try:
+            isinstance(self.number_of_random_insertion_orders, int)
+        except:
             self.number_of_random_insertion_orders = 10
         seeds = [
             i*123 for i in range(0, self.number_of_random_insertion_orders)]
