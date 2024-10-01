@@ -7,7 +7,6 @@ from catpynet.settings.ReactionNotation import ReactionNotation
 from catpynet.settings.ArrowNotation import ArrowNotation
 from catpynet.fileIO.IOManager import redirect_to_writer, OUTPUT_FILE_FORMATS, INPUT_FILE_FORMATS, ModelIO
 from catpynet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from catpynet.algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
 from catpynet.algorithm.AlgorithmBase import AlgorithmBase
 import catpynet.Utilities as Utilities
 from itertools import combinations_with_replacement
@@ -118,10 +117,6 @@ def apply_algorithm_to_rs(input_system: ReactionSystem,
     """
     st = time()   
     if isinstance(algorithm, MinIRAFHeuristic):
-        algorithm.number_of_random_insertion_orders = heuristic_runs
-        output_system = algorithm.apply(input_system)
-    elif isinstance(algorithm, MinRAFGeneratingElement):
-        algorithm.targets = MoleculeType().values_of(target_molecule)
         algorithm.number_of_random_insertion_orders = heuristic_runs
         output_system = algorithm.apply(input_system)
     else:
