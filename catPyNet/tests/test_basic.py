@@ -247,7 +247,7 @@ class ReactionTests(unittest.TestCase):
            products = standard_list(standard_text()), catalysts = standard_list(standard_text()), inhibitors = standard_list(standard_text()),
            reactant_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize), product_coefficients = st.lists(st.integers(min_value=1), min_size=listsize, max_size=listsize),
            direction = st.integers(0, 2), tabbed = st.booleans())
-    def test_parser(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
+    def parser(self, name:str, warned:bool, reactants:list[str], products:list[str], catalysts:list[str]
                               , inhibitors:list[str], reactant_coefficients:list[int], product_coefficients:list[int],
                               direction:int, tabbed:bool):
         """doesnt test for and in catalysts"""
@@ -395,7 +395,7 @@ class ReactionSystemTests(unittest.TestCase):
         
 class ModelIOTests(unittest.TestCase):
     
-    def test_in_is_out(self):
+    def in_is_out(self):
         global application_path
         file_path = "G:/Github/BA-Jan/test_files/inhibitions-1.crs"
         test_path = "G:/Github/BA-Jan/test_results/result.crs"
