@@ -5,7 +5,6 @@ sys.path.insert(0, os.path.abspath(
 
 from catpynet.fileIO.IOManager import OUTPUT_FILE_FORMATS, TRUTH_STRINGS
 from catpynet.algorithm.MinIRAFHeuristic import MinIRAFHeuristic
-from catpynet.algorithm.MinRAFGeneratingElement import MinRAFGeneratingElement
 from tqdm import tqdm
 import catpynet.main.CatPyNet as cpn
 import argparse
@@ -40,8 +39,6 @@ def main():
                         help="Output arrow notation", default="USES_EQUALS")
     parser.add_argument("-r", metavar="runs", help="Number of randomized runs for " +
                         MinIRAFHeuristic().name + " heuristic")
-    parser.add_argument("-t", metavar="target molecule", help="Target Molecule for " +
-                        MinRAFGeneratingElement().name, default="")
     parser.add_argument("-ow", metavar="overwrite ok", help="Sets if the program is allowed to " +
                         "write over files", choices=TRUTH_STRINGS, default="False")
 
