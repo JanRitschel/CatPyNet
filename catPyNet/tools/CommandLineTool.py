@@ -49,10 +49,11 @@ def main():
         input_file = input("Please enter the file path you want to read from:")
     else:
         input_file = arguments["i"]
-    if "," in arguments["t"]:
+    """ if "," in arguments["t"]:
         target_molecules = arguments["t"].split(",")
     else:
-        target_molecules = [arguments["t"]]
+        target_molecules = [arguments["t"]] """
+    target_molecules = []
     
     if os.path.isdir(input_file):
         cpn.apply_algorithm_to_directory(arguments['c'], input_file, arguments['o'],zipped, arguments['of'],
